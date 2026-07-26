@@ -33,7 +33,7 @@
     .nav-item.active { background: linear-gradient(135deg, #f472b6, #ec4899); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(236,72,153,0.25); }
     .nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; }
     .nav-item:hover:not(.active) { background: #f0f0f0; }
-    .bottom-nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 56px; }
+    .bottom-nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 56px; cursor: pointer; }
     .bottom-nav-item.active { color: #f472b6; }
     .bottom-nav-item:not(.active) { color: #9ca3af; }
     .checkbox:checked + span { text-decoration: line-through; color: #9ca3af; }
@@ -834,9 +834,23 @@ function showSection(sec) {
 }
 
 document.querySelectorAll('.bottom-nav-item').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.dataset.section) showSection(btn.dataset.section);
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const sec = this.dataset.section;
+    if (sec) showSection(sec);
   });
+});
+
+// 底部导航委托事件（更可靠）
+document.getElementById('bottomNav').addEventListener('click', function(e) {
+  const btn = e.target.closest('.bottom-nav-item');
+  if (!btn) return;
+  const sec = btn.dataset.section;
+  if (sec) {
+    e.preventDefault();
+    showSection(sec);
+  }
 });
 
 // ---------- 任务 ----------
