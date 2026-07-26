@@ -81,8 +81,8 @@
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="trends">
         <span>🔥</span><span class="hidden md:inline">爆款热点/二创</span>
       </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="review">
-        <span>📊</span><span class="hidden md:inline">内容复盘</span>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="diet">
+        <span>⚖️</span><span class="hidden md:inline">减肥目标</span>
       </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="memo">
         <span>📝</span><span class="hidden md:inline">备忘录</span>
@@ -233,6 +233,21 @@
           </div>
         </div>
       </div>
+
+      <!-- 跟读练习 -->
+      <div class="bg-gray-50 rounded-xl p-4 mt-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习</div>
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="newReadSentence" placeholder="要跟读的句子…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <button onclick="addReadSentence()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">添加</button>
+        </div>
+        <div id="readList" class="space-y-2"></div>
+        <div class="flex gap-4 mt-3 text-xs text-gray-500">
+          <span>🟢 会读 <span id="readOkCount">0</span></span>
+          <span>🟡 不会读 <span id="readBadCount">0</span></span>
+          <span>🔴 不认识 <span id="readUnknownCount">0</span></span>
+        </div>
+      </div>
     </section>
     <!-- 每日灵感 -->
     <section id="ideas" class="hidden-section card p-5 fade-in">
@@ -261,29 +276,56 @@
         💡 想接入真实抖音数据？运行 <code>python3 refresh_trends.py</code> 并替换其中的 API token。
       </div>
     </section>
-    <!-- 内容复盘 -->
-    <section id="review" class="hidden-section card p-5 fade-in">
-      <h2 class="font-bold text-lg mb-4 flex items-center gap-2">📊 内容复盘</h2>
-
-      <div class="bg-gray-50 rounded-xl p-4 mb-4">
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-          <input type="text" id="revTitle" placeholder="内容标题" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="number" id="revPlay" placeholder="播放量" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="number" id="revLike" placeholder="点赞" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="number" id="revComment" placeholder="评论" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="number" id="revShare" placeholder="转发" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="number" id="revRate" placeholder="完播率 %" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-        </div>
-        <select id="revSource" class="w-full md:w-auto px-3 py-2 rounded-lg border border-gray-200 text-sm mb-3">
-          <option value="自然推荐">流量来源：自然推荐</option>
-          <option value="关注页">流量来源：关注页</option>
-          <option value="搜索">流量来源：搜索</option>
-          <option value="付费">流量来源：付费</option>
-        </select>
-        <button onclick="addReview()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">生成复盘</button>
+    <!-- 减肥目标 -->
+    <section id="diet" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">⚖️ 减肥目标</h2>
+        <span class="text-xs text-gray-500" id="dietToday"></span>
       </div>
 
-      <div id="reviewOutput" class="space-y-3"></div>
+      <!-- 目标体重 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-2">🎯 目标设定</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <input type="number" id="dietTargetWeight" placeholder="目标体重(kg)" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onchange="saveDietGoal()">
+          <input type="number" id="dietStartWeight" placeholder="初始体重(kg)" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onchange="saveDietGoal()">
+          <input type="date" id="dietStartDate" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onchange="saveDietGoal()">
+        </div>
+        <div class="mt-2 text-xs text-gray-500" id="dietGoalSummary"></div>
+      </div>
+
+      <!-- 每日记录 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📝 今日记录</div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
+          <input type="number" id="dietWeight" placeholder="今日体重(kg)" step="0.1" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="dietFood" placeholder="吃了什么" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="dietWater" placeholder="喝水(杯)" step="1" min="0" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="dietPoop" placeholder="排便(次)" step="1" min="0" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="date" id="dietDate" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        </div>
+        <button onclick="addDietRecord()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">记录</button>
+      </div>
+
+      <!-- 记录列表 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📋 历史记录</div>
+        <div id="dietRecords" class="space-y-2"></div>
+      </div>
+
+      <!-- 自动分析 -->
+      <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border border-green-100">
+        <div class="text-sm font-semibold text-gray-800 mb-3">📊 自动总结分析</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-3">
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">当前体重</div><div class="text-lg font-bold text-green-700" id="dietCurrentWeight">--</div></div>
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">已减</div><div class="text-lg font-bold text-green-700" id="dietLost">--</div></div>
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">日均喝水</div><div class="text-lg font-bold text-blue-700" id="dietAvgWater">--</div></div>
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">日均排便</div><div class="text-lg font-bold text-amber-700" id="dietAvgPoop">--</div></div>
+        </div>
+        <div class="text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100" id="dietAnalysis" style="white-space:pre-line;">
+          开始记录后，这里自动生成总结分析。
+        </div>
+      </div>
     </section>
     <!-- 备忘录 -->
     <section id="memo" class="hidden-section card p-5 fade-in">
@@ -383,6 +425,14 @@
         <div class="mt-3 text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-100" id="tpSummary">
           填好上面五项 + 车费，这里自动生成一段一看就懂的攻略摘要。
         </div>
+
+        <!-- 路线图 -->
+        <div class="mt-3">
+          <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">🗺️ 路线图（一眼看懂）</div>
+          <textarea id="tpRoute" rows="5" placeholder="每一天的路线，一行一天…&#10;如：&#10;Day1 杭州东站→西湖（步行）→断桥→苏堤→河坊街夜市&#10;Day2 灵隐寺→法喜寺→龙井村（打车15元）→返程" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
+          <button onclick="saveTravelRoute()" class="mt-2 bg-green-700 text-white px-3 py-2 rounded-lg text-sm">保存路线</button>
+        </div>
+        <div id="tpRouteView" class="mt-3 text-xs text-gray-700 bg-white rounded-lg p-3 border border-gray-100" style="white-space:pre-line;line-height:1.8;"></div>
       </div>
 
       <div class="mt-3 text-xs text-gray-400 bg-yellow-50 border border-yellow-100 rounded-lg p-3">
@@ -505,7 +555,6 @@ let tasks = STORE.get('tasks', {
   ]
 });
 
-let reviews = STORE.get('reviews', []);
 let ideas = STORE.get('ideas', [
   { id: 'i1', text: '「独自带2岁女宝的一天」沉浸式 vlog', from: 'seed' },
   { id: 'i2', text: '「高能量宝妈如何不崩溃」口播', from: 'seed' }
@@ -655,74 +704,6 @@ function saveTrendIdea(trend) {
   renderIdeas();
 }
 
-// ---------- 复盘 ----------
-function addReview() {
-  const title = document.getElementById('revTitle').value.trim();
-  const play = +document.getElementById('revPlay').value || 0;
-  const like = +document.getElementById('revLike').value || 0;
-  const comment = +document.getElementById('revComment').value || 0;
-  const share = +document.getElementById('revShare').value || 0;
-  const rate = +document.getElementById('revRate').value || 0;
-  const source = document.getElementById('revSource').value;
-  if (!title) return toast('请填写内容标题');
-
-  const likeRate = play ? (like/play*100).toFixed(2) : 0;
-  const commentRate = play ? (comment/play*100).toFixed(2) : 0;
-  const shareRate = play ? (share/play*100).toFixed(2) : 0;
-
-  const suggestions = [];
-  if (rate < 30) suggestions.push('完播率偏低：前3秒加一个强钩子，直接抛冲突或结果。');
-  else if (rate < 50) suggestions.push('完播率有提升空间：中间加一句「看到最后有彩蛋/反转」。');
-  else suggestions.push('完播率优秀：保持当前节奏，可复制到下一期。');
-
-  if (comment < like*0.05) suggestions.push('评论率低：结尾抛一个具体问题，让观众有话可说。');
-  if (share < like*0.02) suggestions.push('转发率低：增加「值得收藏」的干货密度或金句。');
-  if (source === '自然推荐' && play < 5000) suggestions.push('自然流量少：标题/封面需要更情绪化，或蹭近期热点。');
-
-  const nextAction = suggestions.length > 0
-    ? '下次重点优化：' + suggestions[0].split('：')[0] + '，具体动作是「' + suggestions[0].split('：')[1] + '」'
-    : '整体表现健康，建议沿同选题方向继续产出。';
-
-  const review = {
-    id: 'r'+Date.now(), title, play, like, comment, share, rate, source,
-    metrics: { likeRate, commentRate, shareRate },
-    suggestions, nextAction,
-    date: new Date().toISOString()
-  };
-  reviews.unshift(review);
-  STORE.set('reviews', reviews);
-  renderReviews();
-
-  // 清空输入
-  ['revTitle','revPlay','revLike','revComment','revShare','revRate'].forEach(id=>document.getElementById(id).value='');
-}
-
-function renderReviews() {
-  const el = document.getElementById('reviewOutput');
-  el.innerHTML = '';
-  if (reviews.length===0) { el.innerHTML = '<div class="text-sm text-gray-500">还没有复盘记录。</div>'; return; }
-  reviews.forEach(r => {
-    const div = document.createElement('div');
-    div.className = 'bg-gray-50 rounded-xl p-4 border border-gray-100';
-    div.innerHTML = `
-      <div class="flex items-center justify-between mb-2">
-        <div class="font-semibold text-sm">${r.title}</div>
-        <div class="text-xs text-gray-400">${r.date.slice(0,16).replace('T',' ')}</div>
-      </div>
-      <div class="grid grid-cols-3 gap-2 text-xs text-gray-600 mb-3">
-        <div class="bg-white rounded p-2">播放<br><strong>${formatHeat(r.play)}</strong></div>
-        <div class="bg-white rounded p-2">赞播比<br><strong>${r.metrics.likeRate}%</strong></div>
-        <div class="bg-white rounded p-2">完播率<br><strong>${r.rate}%</strong></div>
-      </div>
-      <ul class="text-xs text-gray-700 space-y-1 mb-2">
-        ${r.suggestions.map(s=>`<li>• ${s}</li>`).join('')}
-      </ul>
-      <div class="text-xs font-medium text-green-800 bg-green-50 rounded-lg p-2">🎯 ${r.nextAction}</div>
-    `;
-    el.appendChild(div);
-  });
-}
-
 // ---------- 灵感 ----------
 function renderIdeas() {
   const el = document.getElementById('ideasList');
@@ -829,6 +810,181 @@ function addWord() {
 }
 
 function delWord(idx) { words.splice(idx,1); STORE.set('words', words); renderWords(); }
+
+// ---------- 跟读练习 ----------
+let readSentences = STORE.get('readSentences', [
+  { id: 'rs1', text: 'Good morning, how are you today?', status: 'ok' },
+  { id: 'rs2', text: 'Could you please pass me the salt?', status: 'bad' },
+  { id: 'rs3', text: 'I would like to make a reservation.', status: 'unknown' }
+]);
+
+function renderReadList() {
+  const el = document.getElementById('readList');
+  el.innerHTML = '';
+  if (readSentences.length === 0) { el.innerHTML = '<div class="text-xs text-gray-400">还没有跟读句子。</div>'; return; }
+  let ok = 0, bad = 0, unknown = 0;
+  readSentences.forEach((rs, idx) => {
+    if (rs.status === 'ok') ok++; else if (rs.status === 'bad') bad++; else unknown++;
+    const colors = { ok: 'border-green-300 bg-green-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
+    const labels = { ok: '🟢 会读', bad: '🟡 不会读', unknown: '🔴 不认识' };
+    const div = document.createElement('div');
+    div.className = `flex items-center gap-2 px-3 py-2 rounded-lg border ${colors[rs.status]}`;
+    div.innerHTML = `
+      <span class="text-sm flex-1">${escapeHtml(rs.text)}</span>
+      <span class="text-xs text-gray-500">${labels[rs.status]}</span>
+      <button onclick="setReadStatus(${idx},'ok')" class="text-xs px-2 py-1 rounded ${rs.status==='ok'?'bg-green-700 text-white':'bg-gray-200'}">会读</button>
+      <button onclick="setReadStatus(${idx},'bad')" class="text-xs px-2 py-1 rounded ${rs.status==='bad'?'bg-yellow-500 text-white':'bg-gray-200'}">不会读</button>
+      <button onclick="setReadStatus(${idx},'unknown')" class="text-xs px-2 py-1 rounded ${rs.status==='unknown'?'bg-red-500 text-white':'bg-gray-200'}">不认识</button>
+      <button onclick="delReadSentence(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+    `;
+    el.appendChild(div);
+  });
+  document.getElementById('readOkCount').textContent = ok;
+  document.getElementById('readBadCount').textContent = bad;
+  document.getElementById('readUnknownCount').textContent = unknown;
+}
+
+function addReadSentence() {
+  const input = document.getElementById('newReadSentence');
+  const text = input.value.trim();
+  if (!text) return;
+  readSentences.unshift({ id: 'rs'+Date.now(), text, status: 'bad' });
+  input.value = '';
+  STORE.set('readSentences', readSentences);
+  renderReadList();
+}
+
+function setReadStatus(idx, status) {
+  readSentences[idx].status = status;
+  STORE.set('readSentences', readSentences);
+  renderReadList();
+}
+
+function delReadSentence(idx) {
+  readSentences.splice(idx, 1);
+  STORE.set('readSentences', readSentences);
+  renderReadList();
+}
+
+// ---------- 减肥目标 ----------
+let dietGoal = STORE.get('dietGoal', { targetWeight: 55, startWeight: 62, startDate: '' });
+let dietRecords = STORE.get('dietRecords', []);
+
+function initDiet() {
+  document.getElementById('dietTargetWeight').value = dietGoal.targetWeight || '';
+  document.getElementById('dietStartWeight').value = dietGoal.startWeight || '';
+  document.getElementById('dietStartDate').value = dietGoal.startDate || '';
+  document.getElementById('dietToday').textContent = new Date().toISOString().slice(0,10);
+  updateDietGoalSummary();
+  renderDietRecords();
+  updateDietAnalysis();
+}
+
+function saveDietGoal() {
+  dietGoal.targetWeight = +document.getElementById('dietTargetWeight').value || dietGoal.targetWeight;
+  dietGoal.startWeight = +document.getElementById('dietStartWeight').value || dietGoal.startWeight;
+  dietGoal.startDate = document.getElementById('dietStartDate').value || dietGoal.startDate;
+  STORE.set('dietGoal', dietGoal);
+  updateDietGoalSummary();
+  updateDietAnalysis();
+}
+
+function updateDietGoalSummary() {
+  const el = document.getElementById('dietGoalSummary');
+  if (dietGoal.targetWeight && dietGoal.startWeight) {
+    const toLose = (dietGoal.startWeight - dietGoal.targetWeight).toFixed(1);
+    el.textContent = `目标：${dietGoal.startWeight}kg → ${dietGoal.targetWeight}kg，需减 ${toLose}kg` + (dietGoal.startDate ? `，从 ${dietGoal.startDate} 开始` : '');
+  } else {
+    el.textContent = '设定目标体重和初始体重后显示进度。';
+  }
+}
+
+function addDietRecord() {
+  const weight = +document.getElementById('dietWeight').value;
+  const food = document.getElementById('dietFood').value.trim();
+  const water = +document.getElementById('dietWater').value || 0;
+  const poop = +document.getElementById('dietPoop').value || 0;
+  const date = document.getElementById('dietDate').value || new Date().toISOString().slice(0,10);
+  if (!weight) return toast('请填写今日体重');
+  dietRecords.unshift({ id: 'dr'+Date.now(), weight, food: food||'未填', water, poop, date });
+  STORE.set('dietRecords', dietRecords);
+  ['dietWeight','dietFood','dietWater','dietPoop','dietDate'].forEach(id => document.getElementById(id).value = '');
+  renderDietRecords();
+  updateDietAnalysis();
+}
+
+function renderDietRecords() {
+  const el = document.getElementById('dietRecords');
+  el.innerHTML = '';
+  if (dietRecords.length === 0) { el.innerHTML = '<div class="text-xs text-gray-400">还没有记录。</div>'; return; }
+  const sorted = [...dietRecords].sort((a,b) => b.date.localeCompare(a.date));
+  sorted.forEach(r => {
+    const idx = dietRecords.indexOf(r);
+    const div = document.createElement('div');
+    div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-2 flex-wrap';
+    div.innerHTML = `
+      <span class="text-xs text-gray-400">${r.date}</span>
+      <span class="text-sm font-bold text-green-700">${r.weight}kg</span>
+      <span class="text-xs text-gray-500">吃：${r.food}</span>
+      <span class="text-xs text-blue-500">💧${r.water}杯</span>
+      <span class="text-xs text-amber-500">🚽${r.poop}次</span>
+      <button onclick="delDietRecord(${idx})" class="text-gray-400 hover:text-red-500 text-xs ml-auto">✕</button>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function delDietRecord(idx) {
+  dietRecords.splice(idx, 1);
+  STORE.set('dietRecords', dietRecords);
+  renderDietRecords();
+  updateDietAnalysis();
+}
+
+function updateDietAnalysis() {
+  if (dietRecords.length === 0) {
+    document.getElementById('dietCurrentWeight').textContent = dietGoal.startWeight ? dietGoal.startWeight+'kg' : '--';
+    document.getElementById('dietLost').textContent = '--';
+    document.getElementById('dietAvgWater').textContent = '--';
+    document.getElementById('dietAvgPoop').textContent = '--';
+    document.getElementById('dietAnalysis').textContent = '开始记录后，这里自动生成总结分析。';
+    return;
+  }
+  const latest = dietRecords[0];
+  const currentWeight = latest.weight;
+  const lost = dietGoal.startWeight ? (dietGoal.startWeight - currentWeight).toFixed(1) : 0;
+  const totalWater = dietRecords.reduce((s,r) => s + r.water, 0);
+  const totalPoop = dietRecords.reduce((s,r) => s + r.poop, 0);
+  const days = dietRecords.length;
+  const avgWater = (totalWater / days).toFixed(1);
+  const avgPoop = (totalPoop / days).toFixed(1);
+
+  document.getElementById('dietCurrentWeight').textContent = currentWeight + 'kg';
+  document.getElementById('dietLost').textContent = (lost > 0 ? '-' : '') + Math.abs(lost) + 'kg';
+  document.getElementById('dietAvgWater').textContent = avgWater + '杯/天';
+  document.getElementById('dietAvgPoop').textContent = avgPoop + '次/天';
+
+  let analysis = '';
+  const trend = dietRecords.length >= 2 ? dietRecords[0].weight - dietRecords[dietRecords.length-1].weight : 0;
+  if (trend < -0.3) analysis += '📉 体重呈下降趋势，继续保持！';
+  else if (trend > 0.3) analysis += '📈 体重有上升趋势，注意饮食控制。';
+  else analysis += '➡️ 体重变化不大，维持中。';
+
+  if (avgWater < 4) analysis += '\n💧 日均喝水不足 4 杯，建议至少 6-8 杯。';
+  else if (avgWater >= 6) analysis += '\n💧 喝水习惯很好，保持！';
+
+  if (avgPoop < 1) analysis += '\n🚽 日均排便少于 1 次，多吃蔬菜水果。';
+  else analysis += '\n🚽 排便规律，肠道健康不错。';
+
+  if (dietGoal.targetWeight && currentWeight <= dietGoal.targetWeight) {
+    analysis += '\n\n🎉 恭喜！已达到目标体重！';
+  } else if (dietGoal.targetWeight) {
+    const remain = (currentWeight - dietGoal.targetWeight).toFixed(1);
+    analysis += `\n\n🎯 距离目标还有 ${remain}kg，加油！`;
+  }
+
+  document.getElementById('dietAnalysis').textContent = analysis;
+}
 
 // ---------- 每月收支 ----------
 function getCurrentFinanceList() {
@@ -998,7 +1154,9 @@ function renderTravelPlan() {
   document.getElementById('tpBudgetPlay').value = p.budgetPlay || '';
   document.getElementById('tpBudgetStay').value = p.budgetStay || '';
   document.getElementById('tpBudgetOther').value = p.budgetOther || '';
+  document.getElementById('tpRoute').value = p.route || '';
   updateTravelSummary();
+  updateTravelRouteView();
 }
 
 function updateTravelSummary() {
@@ -1061,6 +1219,34 @@ function saveTravelBudget() {
   STORE.set('travelPlans', travelPlans);
   updateTravelSummary();
   toast('攻略和车费已保存，下方已自动算出总花销');
+}
+
+function saveTravelRoute() {
+  if (!travelCurrentId) return toast('请先新建一个计划');
+  const p = travelPlans[travelCurrentId];
+  p.route = document.getElementById('tpRoute').value;
+  STORE.set('travelPlans', travelPlans);
+  updateTravelRouteView();
+  toast('路��已保存');
+}
+
+function updateTravelRouteView() {
+  const p = travelPlans[travelCurrentId] || {};
+  const el = document.getElementById('tpRouteView');
+  if (p.route) {
+    // 把路线变成可视化：每天一行带箭头
+    const lines = p.route.split('\n').filter(l => l.trim());
+    el.innerHTML = lines.map((line, i) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('Day') || trimmed.startsWith('第')) {
+        return `<div style="margin-bottom:6px;font-weight:bold;color:#374151;">📍 ${trimmed}</div>`;
+      }
+      return `<div style="margin-left:16px;margin-bottom:4px;color:#6b7280;">→ ${trimmed}</div>`;
+    }).join('');
+    if (lines.length === 0) el.textContent = '填好路线后这里会一目了然。';
+  } else {
+    el.textContent = '填好路线后这里会一目了然。';
+  }
 }
 
 function newTravelPlan() {
@@ -1304,26 +1490,24 @@ function showCustomModule(modId) {
 // ---------- 初始化 ----------
 renderTasks();
 loadTrends();
-renderReviews();
 renderIdeas();
 renderEnglishTasks();
 renderWords();
+renderReadList();
 document.getElementById('financeMonth').value = financeCurrentMonth;
 renderFinance();
 renderMemos();
 renderTravelSelect();
 renderTravelPlan();
+initDiet();
 renderCustomNav();
 renderCustomSections();
 // 首次访问预置一个示例自定义模块，让用户秒懂
 if (customModules.length === 0 && !localStorage.getItem('hcj_customInited')) {
   customModules.push({
-    id: 'cm_demo', name: '健身打卡', icon: '🏃', type: 'list',
-    items: [
-      { id: 'ci1', text: '帕梅拉 20 分钟', done: false },
-      { id: 'ci2', text: '深蹲 50 个', done: true }
-    ],
-    note: ''
+    id: 'cm_demo', name: '读书笔记', icon: '📚', type: 'note',
+    items: [],
+    note: '在这里记录读过的书和感想…\n\n例如：《被讨厌的勇气》\n- 课题分离：别人的事和你无关\n- 活在当下，不纠结过去'
   });
   STORE.set('customModules', customModules);
   localStorage.setItem('hcj_customInited', '1');
