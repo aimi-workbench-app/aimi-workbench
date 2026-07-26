@@ -16,9 +16,9 @@
   <link rel="icon" type="image/png" href="icon-192.png">
   <script src="tailwind.js"></script>
   <style>
-    :root { --brand: #5e7a3a; --brand-light: #eef3e6; }
+    :root { --brand: #f472b6; --brand-light: #fce7f3; --accent: #c084fc; }
     html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6f4; -webkit-text-size-adjust: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 100%); -webkit-text-size-adjust: 100%; }
     /* iOS PWA 输入修复：确保输入框可聚焦可输入 */
     input, textarea, select {
       -webkit-user-select: text;
@@ -29,8 +29,8 @@
       -webkit-tap-highlight-color: transparent;
     }
     input[type="checkbox"] { -webkit-appearance: checkbox; appearance: checkbox; }
-    .card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
-    .nav-item.active { background: var(--brand); color: #fff; font-weight: 600; }
+    .card { background: #fff; border-radius: 20px; box-shadow: 0 4px 16px rgba(244,114,182,0.08); border: 1px solid #fce7f3; }
+    .nav-item.active { background: linear-gradient(135deg, #f472b6, #ec4899); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(236,72,153,0.25); }
     .nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; }
     .nav-item:hover:not(.active) { background: #f0f0f0; }
     .checkbox:checked + span { text-decoration: line-through; color: #9ca3af; }
@@ -69,11 +69,14 @@
       <button class="nav-item active w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="tasks">
         <span>📋</span><span class="hidden md:inline">每日任务</span>
       </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="finance">
-        <span>💰</span><span class="hidden md:inline">每月收支</span>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="diet">
+        <span>⚖️</span><span class="hidden md:inline">减肥目标</span>
       </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="english">
         <span>🌍</span><span class="hidden md:inline">英语学习</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="finance">
+        <span>💰</span><span class="hidden md:inline">每月收支</span>
       </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="ideas">
         <span>💡</span><span class="hidden md:inline">每日灵感</span>
@@ -81,16 +84,13 @@
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="trends">
         <span>🔥</span><span class="hidden md:inline">爆款热点/二创</span>
       </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="diet">
-        <span>⚖️</span><span class="hidden md:inline">减肥目标</span>
-      </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="memo">
         <span>📝</span><span class="hidden md:inline">备忘录</span>
       </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="travel">
         <span>✈️</span><span class="hidden md:inline">旅游计划</span>
       </button>
-      <button onclick="openNewModuleDialog()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 border-2 border-dashed border-gray-300 text-gray-500 hover:border-green-600 hover:text-green-700 transition">
+<button onclick="openNewModuleDialog()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 border-2 border-dashed border-gray-300 text-gray-500 hover:border-pink-400 hover:text-pink-500 transition">
         <span>➕</span><span class="hidden md:inline">新建模块</span>
       </button>
     </nav>
@@ -103,17 +103,17 @@
     <section id="tasks" class="card p-5 fade-in">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-bold text-lg flex items-center gap-2">📋 每日任务</h2>
-        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full" id="taskProgress">0/0</span>
+        <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded-full" id="taskProgress">0/0</span>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-4">
+      <div class="grid md:grid-cols-2 gap-4">
         <!-- 当天任务 -->
         <div class="bg-gray-50 rounded-xl p-4">
           <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">☀️ 当天任务</div>
           <ul class="space-y-2" id="todayTaskList"></ul>
           <div class="mt-3 flex gap-2">
-            <input type="text" id="newTodayTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-green-600">
-            <button onclick="addTask('today')" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
+            <input type="text" id="newTodayTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
+            <button onclick="addTask('today')" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
           </div>
         </div>
         <!-- 排期任务 -->
@@ -121,159 +121,14 @@
           <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 排期任务</div>
           <ul class="space-y-2" id="scheduledTaskList"></ul>
           <div class="mt-3 flex gap-2">
-            <input type="text" id="newScheduledTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-green-600">
-            <button onclick="addTask('scheduled')" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
+            <input type="text" id="newScheduledTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
+            <button onclick="addTask('scheduled')" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
           </div>
-        </div>
-        <!-- 例行任务 -->
-        <div class="bg-gray-50 rounded-xl p-4">
-          <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🔄 每日例行</div>
-          <ul class="space-y-2" id="routineTaskList"></ul>
         </div>
       </div>
 
       <div class="mt-4 text-xs text-gray-500 bg-yellow-50 border border-yellow-100 rounded-lg p-3">
-        <strong>「趁热打铁」三连击：</strong>爆款来了马上拍 → 当天剪完 → 晚上发。每日例行：9点收灵感、刷对标、发完即复盘。
-      </div>
-    </section>
-    <!-- 每月收支 -->
-    <section id="finance" class="hidden-section card p-5 fade-in">
-      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h2 class="font-bold text-lg flex items-center gap-2">💰 每月收支</h2>
-        <div class="flex items-center gap-2">
-          <input type="month" id="financeMonth" class="text-sm px-3 py-1.5 rounded-lg border border-gray-200">
-          <button onclick="switchFinanceMonth()" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm">切换</button>
-        </div>
-      </div>
-
-      <!-- 汇总卡片 -->
-      <div class="grid grid-cols-3 gap-3 mb-4">
-        <div class="bg-green-50 rounded-xl p-4">
-          <div class="text-xs text-gray-600">收入</div>
-          <div class="text-xl font-bold text-green-700 mt-1" id="totalIncome">¥0</div>
-        </div>
-        <div class="bg-red-50 rounded-xl p-4">
-          <div class="text-xs text-gray-600">支出</div>
-          <div class="text-xl font-bold text-red-600 mt-1" id="totalExpense">¥0</div>
-        </div>
-        <div class="bg-blue-50 rounded-xl p-4">
-          <div class="text-xs text-gray-600">结余</div>
-          <div class="text-xl font-bold text-blue-700 mt-1" id="totalBalance">¥0</div>
-        </div>
-      </div>
-
-      <!-- 记账输入 -->
-      <div class="bg-gray-50 rounded-xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3">✍️ 记一笔</div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-          <select id="finType" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-            <option value="income">收入</option>
-            <option value="expense">支出</option>
-          </select>
-          <input type="number" id="finAmount" placeholder="金额" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="text" id="finCategory" placeholder="分类（如工资/奶粉/尿不湿）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="text" id="finUsage" placeholder="用途说明（必填）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-        </div>
-        <div class="flex gap-2">
-          <input type="text" id="finDate" placeholder="日期（如 7-24，留空为今天）" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <button onclick="addFinance()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">记一笔</button>
-        </div>
-      </div>
-
-      <!-- 流水列表 -->
-      <div class="bg-gray-50 rounded-xl p-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3">📋 本月流水（每笔用途已标注）</div>
-        <div id="financeList" class="space-y-2"></div>
-      </div>
-    </section>
-    <!-- 英语学习 -->
-    <section id="english" class="hidden-section card p-5 fade-in">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-bold text-lg flex items-center gap-2">🌍 英语学习</h2>
-        <span class="text-xs text-gray-500">每天 20 分钟 · 持续输入</span>
-      </div>
-
-      <!-- 今日学习计划 -->
-      <div class="bg-gray-50 rounded-xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📖 今日学习计划</div>
-        <ul class="space-y-2" id="englishTaskList"></ul>
-        <div class="mt-3 flex gap-2">
-          <input type="text" id="newEnglishTask" placeholder="加一项学习任务…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-green-600">
-          <button onclick="addEnglishTask()" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
-        </div>
-      </div>
-
-      <!-- 单词本 -->
-      <div class="bg-gray-50 rounded-xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📓 单词本</div>
-        <div class="flex gap-2 mb-3">
-          <input type="text" id="newWord" placeholder="单词" class="w-24 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="text" id="newMeaning" placeholder="中文释义" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="text" id="newExample" placeholder="例句（可选）" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <button onclick="addWord()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">添加</button>
-        </div>
-        <div id="wordList" class="space-y-2"></div>
-      </div>
-
-      <!-- 学习进度 -->
-      <div class="bg-gray-50 rounded-xl p-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 本周进度</div>
-        <div class="grid grid-cols-3 gap-3 text-center text-xs">
-          <div class="bg-white rounded-lg p-3">
-            <div class="text-2xl font-bold text-green-700" id="engDoneCount">0</div>
-            <div class="text-gray-500 mt-1">完成任务</div>
-          </div>
-          <div class="bg-white rounded-lg p-3">
-            <div class="text-2xl font-bold text-green-700" id="engWordCount">0</div>
-            <div class="text-gray-500 mt-1">累计单词</div>
-          </div>
-          <div class="bg-white rounded-lg p-3">
-            <div class="text-2xl font-bold text-green-700" id="engStreak">0</div>
-            <div class="text-gray-500 mt-1">连续天数</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 跟读练习 -->
-      <div class="bg-gray-50 rounded-xl p-4 mt-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习</div>
-        <div class="flex gap-2 mb-3">
-          <input type="text" id="newReadSentence" placeholder="要跟读的句子…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <button onclick="addReadSentence()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">添加</button>
-        </div>
-        <div id="readList" class="space-y-2"></div>
-        <div class="flex gap-4 mt-3 text-xs text-gray-500">
-          <span>🟢 会读 <span id="readOkCount">0</span></span>
-          <span>🟡 不会读 <span id="readBadCount">0</span></span>
-          <span>🔴 不认识 <span id="readUnknownCount">0</span></span>
-        </div>
-      </div>
-    </section>
-    <!-- 每日灵感 -->
-    <section id="ideas" class="hidden-section card p-5 fade-in">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-bold text-lg flex items-center gap-2">💡 每日灵感</h2>
-        <span class="text-xs text-gray-500">每天早上 9:00 自动汇聚</span>
-      </div>
-      <div class="flex gap-2 mb-4">
-        <input type="text" id="newIdea" placeholder="记录一个新选题…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-        <button onclick="addIdea()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">保存</button>
-      </div>
-      <div id="ideasList" class="space-y-2"></div>
-    </section>
-    <!-- 爆款热点/二创 -->
-    <section id="trends" class="hidden-section card p-5 fade-in">
-      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h2 class="font-bold text-lg flex items-center gap-2">🔥 爆款热点/二创</h2>
-        <div class="text-xs text-gray-500">数据更新于 <span id="trendsUpdated">--</span></div>
-      </div>
-
-      <div class="flex flex-wrap gap-2 mb-4" id="categoryFilters"></div>
-
-      <div id="trendsList" class="space-y-3"></div>
-
-      <div class="mt-4 text-xs text-gray-500 bg-blue-50 border border-blue-100 rounded-lg p-3">
-        💡 想接入真实抖音数据？运行 <code>python3 refresh_trends.py</code> 并替换其中的 API token。
+        <strong>「趁热打铁」三连击：</strong>爆款来了马上拍 → 当天剪完 → 晚上发。
       </div>
     </section>
     <!-- 减肥目标 -->
@@ -304,7 +159,7 @@
           <input type="number" id="dietPoop" placeholder="排便(次)" step="1" min="0" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
           <input type="date" id="dietDate" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
         </div>
-        <button onclick="addDietRecord()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">记录</button>
+        <button onclick="addDietRecord()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">记录</button>
       </div>
 
       <!-- 记录列表 -->
@@ -314,17 +169,178 @@
       </div>
 
       <!-- 自动分析 -->
-      <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border border-green-100">
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">
         <div class="text-sm font-semibold text-gray-800 mb-3">📊 自动总结分析</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-3">
-          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">当前体重</div><div class="text-lg font-bold text-green-700" id="dietCurrentWeight">--</div></div>
-          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">已减</div><div class="text-lg font-bold text-green-700" id="dietLost">--</div></div>
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">当前体重</div><div class="text-lg font-bold text-pink-500" id="dietCurrentWeight">--</div></div>
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">已减</div><div class="text-lg font-bold text-pink-500" id="dietLost">--</div></div>
           <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">日均喝水</div><div class="text-lg font-bold text-blue-700" id="dietAvgWater">--</div></div>
           <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">日均排便</div><div class="text-lg font-bold text-amber-700" id="dietAvgPoop">--</div></div>
         </div>
         <div class="text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100" id="dietAnalysis" style="white-space:pre-line;">
           开始记录后，这里自动生成总结分析。
         </div>
+      </div>
+
+      <!-- 健身打卡 -->
+      <div class="bg-gray-50 rounded-xl p-4 mt-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">💪 每日健身打卡</div>
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="newWorkout" placeholder="如：帕梅拉20分钟 / 跳绳300个" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addWorkout()">
+          <button onclick="addWorkout()" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+        </div>
+        <ul class="space-y-2" id="workoutList"></ul>
+        <div class="mt-3 text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-100" id="workoutSummary">
+          还没有健身记录。
+        </div>
+      </div>
+    </section>
+    <!-- 英语学习 -->
+    <section id="english" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">🌍 英语学习</h2>
+        <span class="text-xs text-gray-500">每天 20 分钟 · 持续输入</span>
+      </div>
+
+      <!-- 今日学习计划 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📖 今日学习计划</div>
+        <ul class="space-y-2" id="englishTaskList"></ul>
+        <div class="mt-3 flex gap-2">
+          <input type="text" id="newEnglishTask" placeholder="加一项学习任务…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
+          <button onclick="addEnglishTask()" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+        </div>
+      </div>
+
+      <!-- 学习进度 -->
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 本周进度</div>
+        <div class="grid grid-cols-3 gap-3 text-center text-xs">
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-2xl font-bold text-pink-500" id="engDoneCount">0</div>
+            <div class="text-gray-500 mt-1">完成任务</div>
+          </div>
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-2xl font-bold text-pink-500" id="engReadCount">0</div>
+            <div class="text-gray-500 mt-1">跟读句子</div>
+          </div>
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-2xl font-bold text-pink-500" id="engStreak">0</div>
+            <div class="text-gray-500 mt-1">连续天数</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 跟读练习 -->
+      <div class="bg-gray-50 rounded-xl p-4 mt-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习</div>
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="newReadSentence" placeholder="要跟读的句子…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <button onclick="addReadSentence()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">添加</button>
+        </div>
+        <div id="readList" class="space-y-2"></div>
+        <div class="flex gap-4 mt-3 text-xs text-gray-500">
+          <span>🟢 会读 <span id="readOkCount">0</span></span>
+          <span>🟡 不会读 <span id="readBadCount">0</span></span>
+          <span>🔴 不认识 <span id="readUnknownCount">0</span></span>
+        </div>
+      </div>
+    </section>
+    <!-- 每月收支 -->
+    <section id="finance" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 class="font-bold text-lg flex items-center gap-2">💰 每月收支</h2>
+        <div class="flex items-center gap-2">
+          <input type="month" id="financeMonth" class="text-sm px-3 py-1.5 rounded-lg border border-gray-200">
+          <button onclick="switchFinanceMonth()" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm">切换</button>
+        </div>
+      </div>
+
+      <!-- 汇总卡片 -->
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="bg-pink-50 rounded-xl p-4">
+          <div class="text-xs text-gray-600">收入</div>
+          <div class="text-xl font-bold text-pink-500 mt-1" id="totalIncome">¥0</div>
+        </div>
+        <div class="bg-red-50 rounded-xl p-4">
+          <div class="text-xs text-gray-600">支出</div>
+          <div class="text-xl font-bold text-red-600 mt-1" id="totalExpense">¥0</div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-4">
+          <div class="text-xs text-gray-600">结余</div>
+          <div class="text-xl font-bold text-blue-700 mt-1" id="totalBalance">¥0</div>
+        </div>
+      </div>
+
+      <!-- 记账输入 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">✍️ 记一笔</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+          <select id="finType" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+            <option value="income">收入</option>
+            <option value="expense">支出</option>
+          </select>
+          <input type="number" id="finAmount" placeholder="金额" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="finCategory" placeholder="分类（如工资/奶粉/尿不湿）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="finUsage" placeholder="用途说明（必填）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="finDate" placeholder="日期（如 7-24，留空为今天）" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <button onclick="addFinance()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">记一笔</button>
+        </div>
+      </div>
+
+      <!-- 流水列表 -->
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📋 本月流水（每笔用途已标注）</div>
+        <div id="financeList" class="space-y-2"></div>
+      </div>
+
+      <!-- 存钱计划 -->
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 mt-4 border border-pink-100">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🐷 存钱计划（每月打卡）</div>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div class="bg-white rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-500">给自己存</div>
+            <div class="text-lg font-bold text-pink-500">¥300/月</div>
+            <button onclick="toggleSavings('self')" id="savingsSelfBtn" class="mt-2 text-xs px-3 py-1 rounded-full">未打卡</button>
+          </div>
+          <div class="bg-white rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-500">给宝宝存</div>
+            <div class="text-lg font-bold text-purple-500">¥200/月</div>
+            <button onclick="toggleSavings('baby')" id="savingsBabyBtn" class="mt-2 text-xs px-3 py-1 rounded-full">未打卡</button>
+          </div>
+        </div>
+        <div class="text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100" id="savingsSummary">
+          还没有存钱记录。
+        </div>
+      </div>
+    </section>
+    <!-- 每日灵感 -->
+    <section id="ideas" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">💡 每日灵感</h2>
+        <span class="text-xs text-gray-500">每天早上 9:00 自动汇聚</span>
+      </div>
+      <div class="flex gap-2 mb-4">
+        <input type="text" id="newIdea" placeholder="记录一个新选题…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        <button onclick="addIdea()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">保存</button>
+      </div>
+      <div id="ideasList" class="space-y-2"></div>
+    </section>
+    <!-- 爆款热点/二创 -->
+    <section id="trends" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 class="font-bold text-lg flex items-center gap-2">🔥 爆款热点/二创</h2>
+        <div class="text-xs text-gray-500">数据更新于 <span id="trendsUpdated">--</span></div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-4" id="categoryFilters"></div>
+
+      <div id="trendsList" class="space-y-3"></div>
+
+      <div class="mt-4 text-xs text-gray-500 bg-blue-50 border border-blue-100 rounded-lg p-3">
+        💡 想接入真实抖音数据？运行 <code>python3 refresh_trends.py</code> 并替换其中的 API token。
       </div>
     </section>
     <!-- 备忘录 -->
@@ -335,7 +351,7 @@
       </div>
       <div class="flex gap-2 mb-4">
         <input type="text" id="newMemo" placeholder="记点什么…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addMemo()">
-        <button onclick="addMemo()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">记下</button>
+        <button onclick="addMemo()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">记下</button>
       </div>
       <div id="memoList" class="space-y-2"></div>
     </section>
@@ -358,7 +374,7 @@
           <input type="text" id="tpPeople" placeholder="人数（如 2大1小）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
           <input type="text" id="tpSeason" placeholder="季节/月份" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
         </div>
-        <button onclick="saveTravelInfo()" class="mt-3 bg-green-700 text-white px-4 py-2 rounded-lg text-sm">保存基本信息</button>
+        <button onclick="saveTravelInfo()" class="mt-3 bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">保存基本信息</button>
       </div>
 
       <!-- 五大类攻略 -->
@@ -374,8 +390,8 @@
           <textarea id="tpDrink" rows="3" placeholder="奶茶/咖啡/当地饮品…&#10;如：清补凉15元，老爸茶10元" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
         </div>
         <!-- 玩 -->
-        <div class="bg-green-50 rounded-xl p-4">
-          <div class="text-sm font-semibold text-green-700 mb-2 flex items-center gap-2">🎢 玩什么</div>
+        <div class="bg-pink-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-pink-500 mb-2 flex items-center gap-2">🎢 玩什么</div>
           <textarea id="tpPlay" rows="3" placeholder="景点、体验、门票…&#10;如：蜈支洲岛门票144，潜水300" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
         </div>
         <!-- 乐 -->
@@ -401,11 +417,11 @@
           <input type="number" id="tpBudgetStay" placeholder="住宿预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
           <input type="number" id="tpBudgetOther" placeholder="其他预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
         </div>
-        <button onclick="saveTravelBudget()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">保存车费预算</button>
+        <button onclick="saveTravelBudget()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">保存车费预算</button>
       </div>
 
       <!-- 懒人总览 -->
-      <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border border-green-100">
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">
         <div class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">📌 懒人一图看懂（自动计算）</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
           <div class="bg-white rounded-lg p-3">
@@ -418,7 +434,7 @@
           </div>
           <div class="bg-white rounded-lg p-3 md:col-span-2">
             <div class="text-xs text-gray-500">总预算（人均自动 ÷ 人数）</div>
-            <div class="text-lg font-bold text-green-700" id="tpSumTotal">¥0</div>
+            <div class="text-lg font-bold text-pink-500" id="tpSumTotal">¥0</div>
             <div class="text-xs text-gray-400 mt-1" id="tpSumPerPerson">人均 ¥0</div>
           </div>
         </div>
@@ -430,9 +446,16 @@
         <div class="mt-3">
           <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">🗺️ 路线图（一眼看懂）</div>
           <textarea id="tpRoute" rows="5" placeholder="每一天的路线，一行一天…&#10;如：&#10;Day1 杭州东站→西湖（步行）→断桥→苏堤→河坊街夜市&#10;Day2 灵隐寺→法喜寺→龙井村（打车15元）→返程" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
-          <button onclick="saveTravelRoute()" class="mt-2 bg-green-700 text-white px-3 py-2 rounded-lg text-sm">保存路线</button>
+          <button onclick="saveTravelRoute()" class="mt-2 bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">保存路线</button>
         </div>
         <div id="tpRouteView" class="mt-3 text-xs text-gray-700 bg-white rounded-lg p-3 border border-gray-100" style="white-space:pre-line;line-height:1.8;"></div>
+
+        <!-- 路线图片 -->
+        <div class="mt-3">
+          <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">📸 路线图片（截图/手绘都行）</div>
+          <input type="file" accept="image/*" onchange="uploadRouteImage(event)" class="text-xs text-gray-500">
+          <div id="tpImages" class="mt-2 grid grid-cols-2 gap-2"></div>
+        </div>
       </div>
 
       <div class="mt-3 text-xs text-gray-400 bg-yellow-50 border border-yellow-100 rounded-lg p-3">
@@ -475,10 +498,10 @@
       <div>
         <label class="text-xs text-gray-500">类型</label>
         <div class="flex gap-2 mt-1">
-          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-green-600 has-[:checked]:bg-green-50">
+          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-pink-400 has-[:checked]:bg-pink-50">
             <input type="radio" name="modType" value="list" checked class="hidden">📋 清单
           </label>
-          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-green-600 has-[:checked]:bg-green-50">
+          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-pink-400 has-[:checked]:bg-pink-50">
             <input type="radio" name="modType" value="note" class="hidden">📝 笔记
           </label>
         </div>
@@ -487,7 +510,7 @@
     </div>
     <div class="flex gap-2 mt-4">
       <button onclick="closeModuleDialog()" class="flex-1 px-4 py-2 rounded-lg bg-gray-100 text-sm">取消</button>
-      <button onclick="saveModule()" class="flex-1 px-4 py-2 rounded-lg bg-green-700 text-white text-sm">创建</button>
+      <button onclick="saveModule()" class="flex-1 px-4 py-2 rounded-lg bg-pink-500 text-white text-sm">创建</button>
     </div>
   </div>
 </div>
@@ -547,11 +570,6 @@ let tasks = STORE.get('tasks', {
   scheduled: [
     { id: 's1', text: '周三：好物种草视频（母婴用品）', done: false },
     { id: 's2', text: '周五：一周带娃 vlog', done: false }
-  ],
-  routine: [
-    { id: 'r1', text: '9:00 收灵感（刷宝妈对标号）', done: false },
-    { id: 'r2', text: '刷对标账号 30min', done: false },
-    { id: 'r3', text: '发完即复盘', done: false }
   ]
 });
 
@@ -567,11 +585,6 @@ let englishTasks = STORE.get('englishTasks', [
   { id: 'e1', text: '听 BBC Learning English 10 分钟', done: false },
   { id: 'e2', text: '背 10 个日常单词', done: false },
   { id: 'e3', text: '跟读 1 段亲子英语对话', done: false }
-]);
-let words = STORE.get('words', [
-  { id: 'w1', word: 'toddler', meaning: '幼儿（1-3岁）', example: 'My toddler is 2 years old.' },
-  { id: 'w2', word: 'nap', meaning: '小睡', example: 'The baby is taking a nap.' },
-  { id: 'w3', word: 'patience', meaning: '耐心', example: 'Parenting requires a lot of patience.' }
 ]);
 let engStreak = STORE.get('engStreak', { lastDate: '', count: 0 });
 
@@ -599,7 +612,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 
 // ---------- 任务 ----------
 function renderTasks() {
-  const cols = { today: 'todayTaskList', scheduled: 'scheduledTaskList', routine: 'routineTaskList' };
+  const cols = { today: 'todayTaskList', scheduled: 'scheduledTaskList' };
   let total = 0, done = 0;
   for (const [col, elId] of Object.entries(cols)) {
     const el = document.getElementById(elId);
@@ -610,7 +623,7 @@ function renderTasks() {
       const li = document.createElement('li');
       li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
       li.innerHTML = `
-        <input type="checkbox" class="checkbox w-4 h-4 accent-green-700" ${t.done?'checked':''} onchange="toggleTask('${col}',${idx})">
+        <input type="checkbox" class="checkbox w-4 h-4 accent-pink-500" ${t.done?'checked':''} onchange="toggleTask('${col}',${idx})">
         <span class="text-sm flex-1 ${t.done?'line-through text-gray-400':''}">${t.text}</span>
         <button onclick="delTask('${col}',${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
       `;
@@ -652,7 +665,7 @@ function renderCategoryFilters() {
   el.innerHTML = '';
   cats.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = `text-xs px-3 py-1.5 rounded-full border transition ${activeCategories.has(c) ? 'bg-green-700 text-white border-green-700' : 'bg-white text-gray-600 border-gray-200'}`;
+    btn.className = `text-xs px-3 py-1.5 rounded-full border transition ${activeCategories.has(c) ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-gray-600 border-gray-200'}`;
     btn.textContent = c;
     btn.onclick = () => {
       if (activeCategories.has(c)) activeCategories.delete(c); else activeCategories.add(c);
@@ -675,16 +688,16 @@ function renderTrends() {
       <div class="flex items-start justify-between gap-3">
         <div>
           <div class="font-semibold text-sm">${t.title}</div>
-          <div class="text-xs text-gray-500 mt-1">🔥 ${formatHeat(t.heat)} · 适配分 <span class="text-green-700 font-bold">${t.fit_score}</span></div>
+          <div class="text-xs text-gray-500 mt-1">🔥 ${formatHeat(t.heat)} · 适配分 <span class="text-pink-500 font-bold">${t.fit_score}</span></div>
         </div>
-        <button onclick='saveTrendIdea(${JSON.stringify(t).replace(/'/g,"&#39;")})' class="shrink-0 bg-green-700 text-white text-xs px-3 py-1.5 rounded-lg">存灵感</button>
+        <button onclick='saveTrendIdea(${JSON.stringify(t).replace(/'/g,"&#39;")})' class="shrink-0 bg-pink-500 text-white text-xs px-3 py-1.5 rounded-lg">存灵感</button>
       </div>
       <div class="flex flex-wrap gap-1.5 mt-2">${t.category.map(c=>`<span class="tag">${c}</span>`).join('')}</div>
       <div class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100">
         <div class="font-medium text-gray-800 mb-1">为什么适合我</div>
         ${t.why_fit}
       </div>
-      <div class="mt-2 text-xs text-green-800 bg-green-50 rounded-lg p-2">
+      <div class="mt-2 text-xs text-pink-600 bg-pink-50 rounded-lg p-2">
         💡 二创思路：${t.idea}
       </div>
     `;
@@ -746,7 +759,7 @@ function renderEnglishTasks() {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
     li.innerHTML = `
-      <input type="checkbox" class="w-4 h-4 accent-green-700" ${t.done?'checked':''} onchange="toggleEnglishTask(${idx})">
+      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${t.done?'checked':''} onchange="toggleEnglishTask(${idx})">
       <span class="text-sm flex-1 ${t.done?'line-through text-gray-400':''}">${t.text}</span>
       <button onclick="delEnglishTask(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
     `;
@@ -776,41 +789,6 @@ function addEnglishTask() {
   renderEnglishTasks();
 }
 
-function renderWords() {
-  const el = document.getElementById('wordList');
-  el.innerHTML = '';
-  if (words.length===0) { el.innerHTML = '<div class="text-xs text-gray-400">还没有单词。</div>'; return; }
-  words.forEach((w, idx) => {
-    const div = document.createElement('div');
-    div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100';
-    div.innerHTML = `
-      <div class="flex items-center justify-between">
-        <div class="flex-1 min-w-0">
-          <span class="font-semibold text-sm text-green-800">${w.word}</span>
-          <span class="text-sm text-gray-600 ml-2">${w.meaning}</span>
-          ${w.example ? `<div class="text-xs text-gray-400 mt-1">📝 ${w.example}</div>` : ''}
-        </div>
-        <button onclick="delWord(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
-      </div>
-    `;
-    el.appendChild(div);
-  });
-  document.getElementById('engWordCount').textContent = words.length;
-}
-
-function addWord() {
-  const word = document.getElementById('newWord').value.trim();
-  const meaning = document.getElementById('newMeaning').value.trim();
-  const example = document.getElementById('newExample').value.trim();
-  if (!word || !meaning) return toast('请填写单词和释义');
-  words.unshift({ id: 'w'+Date.now(), word, meaning, example });
-  ['newWord','newMeaning','newExample'].forEach(id=>document.getElementById(id).value='');
-  STORE.set('words', words);
-  renderWords();
-}
-
-function delWord(idx) { words.splice(idx,1); STORE.set('words', words); renderWords(); }
-
 // ---------- 跟读练习 ----------
 let readSentences = STORE.get('readSentences', [
   { id: 'rs1', text: 'Good morning, how are you today?', status: 'ok' },
@@ -825,14 +803,14 @@ function renderReadList() {
   let ok = 0, bad = 0, unknown = 0;
   readSentences.forEach((rs, idx) => {
     if (rs.status === 'ok') ok++; else if (rs.status === 'bad') bad++; else unknown++;
-    const colors = { ok: 'border-green-300 bg-green-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
+    const colors = { ok: 'border-green-300 bg-pink-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
     const labels = { ok: '🟢 会读', bad: '🟡 不会读', unknown: '🔴 不认识' };
     const div = document.createElement('div');
     div.className = `flex items-center gap-2 px-3 py-2 rounded-lg border ${colors[rs.status]}`;
     div.innerHTML = `
       <span class="text-sm flex-1">${escapeHtml(rs.text)}</span>
       <span class="text-xs text-gray-500">${labels[rs.status]}</span>
-      <button onclick="setReadStatus(${idx},'ok')" class="text-xs px-2 py-1 rounded ${rs.status==='ok'?'bg-green-700 text-white':'bg-gray-200'}">会读</button>
+      <button onclick="setReadStatus(${idx},'ok')" class="text-xs px-2 py-1 rounded ${rs.status==='ok'?'bg-pink-500 text-white':'bg-gray-200'}">会读</button>
       <button onclick="setReadStatus(${idx},'bad')" class="text-xs px-2 py-1 rounded ${rs.status==='bad'?'bg-yellow-500 text-white':'bg-gray-200'}">不会读</button>
       <button onclick="setReadStatus(${idx},'unknown')" class="text-xs px-2 py-1 rounded ${rs.status==='unknown'?'bg-red-500 text-white':'bg-gray-200'}">不认识</button>
       <button onclick="delReadSentence(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
@@ -842,6 +820,8 @@ function renderReadList() {
   document.getElementById('readOkCount').textContent = ok;
   document.getElementById('readBadCount').textContent = bad;
   document.getElementById('readUnknownCount').textContent = unknown;
+  const el2 = document.getElementById('engReadCount');
+  if (el2) el2.textContent = readSentences.length;
 }
 
 function addReadSentence() {
@@ -924,7 +904,7 @@ function renderDietRecords() {
     div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-2 flex-wrap';
     div.innerHTML = `
       <span class="text-xs text-gray-400">${r.date}</span>
-      <span class="text-sm font-bold text-green-700">${r.weight}kg</span>
+      <span class="text-sm font-bold text-pink-500">${r.weight}kg</span>
       <span class="text-xs text-gray-500">吃：${r.food}</span>
       <span class="text-xs text-blue-500">💧${r.water}杯</span>
       <span class="text-xs text-amber-500">🚽${r.poop}次</span>
@@ -986,6 +966,61 @@ function updateDietAnalysis() {
   document.getElementById('dietAnalysis').textContent = analysis;
 }
 
+// ---------- 健身打卡 ----------
+let workouts = STORE.get('workouts', []);
+
+function renderWorkouts() {
+  const el = document.getElementById('workoutList');
+  el.innerHTML = '';
+  let done = 0;
+  workouts.forEach((w, idx) => {
+    if (w.done) done++;
+    const li = document.createElement('li');
+    li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
+    li.innerHTML = `
+      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${w.done?'checked':''} onchange="toggleWorkout(${idx})">
+      <span class="text-sm flex-1 ${w.done?'line-through text-gray-400':''}">${escapeHtml(w.text)}</span>
+      <span class="text-xs text-gray-400">${w.date||''}</span>
+      <button onclick="delWorkout(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+    `;
+    el.appendChild(li);
+  });
+  const sum = document.getElementById('workoutSummary');
+  if (workouts.length === 0) {
+    sum.textContent = '还没有健身记录。';
+  } else {
+    const today = new Date().toISOString().slice(0,10);
+    const todayCount = workouts.filter(w => w.date === today).length;
+    sum.textContent = `累计打卡 ${workouts.length} 次，完成 ${done} 次，今天 ${todayCount} 项。${done >= workouts.length && workouts.length > 0 ? '🎉 全部完成！太棒了！' : '继续加油～'}`;
+  }
+}
+
+function addWorkout() {
+  const input = document.getElementById('newWorkout');
+  const text = input.value.trim();
+  if (!text) return;
+  workouts.unshift({ id: 'w'+Date.now(), text, done: false, date: new Date().toISOString().slice(0,10) });
+  input.value = '';
+  STORE.set('workouts', workouts);
+  renderWorkouts();
+}
+
+function toggleWorkout(idx) { workouts[idx].done = !workouts[idx].done; STORE.set('workouts', workouts); renderWorkouts(); }
+function delWorkout(idx) { workouts.splice(idx,1); STORE.set('workouts', workouts); renderWorkouts(); }
+
+// 晚上10点自动提醒更新健身内容
+function checkWorkoutReminder() {
+  const now = new Date();
+  const hour = now.getHours();
+  if (hour >= 22) {
+    const today = now.toISOString().slice(0,10);
+    const hasToday = workouts.some(w => w.date === today);
+    if (!hasToday) {
+      toast('💪 晚上好！今天还没健身打卡，加一项吧～');
+    }
+  }
+}
+
 // ---------- 每月收支 ----------
 function getCurrentFinanceList() {
   if (!financeData[financeCurrentMonth]) financeData[financeCurrentMonth] = [];
@@ -1016,10 +1051,10 @@ function renderFinance() {
     const div = document.createElement('div');
     div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-3';
     div.innerHTML = `
-      <div class="w-2 h-2 rounded-full ${item.type==='income'?'bg-green-500':'bg-red-500'}"></div>
+      <div class="w-2 h-2 rounded-full ${item.type==='income'?'bg-pink-500':'bg-red-500'}"></div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-sm font-medium ${item.type==='income'?'text-green-700':'text-red-600'}">${item.type==='income'?'+':'-'}¥${item.amount.toLocaleString()}</span>
+          <span class="text-sm font-medium ${item.type==='income'?'text-pink-500':'text-red-600'}">${item.type==='income'?'+':'-'}¥${item.amount.toLocaleString()}</span>
           <span class="text-xs text-gray-500">[${item.category}]</span>
           <span class="text-xs text-gray-400">${item.date||'未填日期'}</span>
         </div>
@@ -1058,6 +1093,49 @@ function delFinance(idx) {
 function switchFinanceMonth() {
   financeCurrentMonth = document.getElementById('financeMonth').value || financeCurrentMonth;
   renderFinance();
+  renderSavings();
+}
+
+// ---------- 存钱计划 ----------
+let savings = STORE.get('savings', {});
+
+function getCurrentSavings() {
+  if (!savings[financeCurrentMonth]) savings[financeCurrentMonth] = { self: false, baby: false };
+  return savings[financeCurrentMonth];
+}
+
+function toggleSavings(type) {
+  const s = getCurrentSavings();
+  s[type] = !s[type];
+  STORE.set('savings', savings);
+  renderSavings();
+}
+
+function renderSavings() {
+  const s = getCurrentSavings();
+  const selfBtn = document.getElementById('savingsSelfBtn');
+  const babyBtn = document.getElementById('savingsBabyBtn');
+  if (selfBtn) {
+    selfBtn.textContent = s.self ? '✅ 已打卡' : '未打卡';
+    selfBtn.className = 'mt-2 text-xs px-3 py-1 rounded-full ' + (s.self ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500');
+  }
+  if (babyBtn) {
+    babyBtn.textContent = s.baby ? '✅ 已打卡' : '未打卡';
+    babyBtn.className = 'mt-2 text-xs px-3 py-1 rounded-full ' + (s.baby ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-500');
+  }
+  const sum = document.getElementById('savingsSummary');
+  if (sum) {
+    const total = (s.self ? 300 : 0) + (s.baby ? 200 : 0);
+    const months = Object.keys(savings).sort();
+    let totalSelf = 0, totalBaby = 0, totalAll = 0;
+    months.forEach(m => {
+      if (savings[m].self) totalSelf += 300;
+      if (savings[m].baby) totalBaby += 200;
+    });
+    totalAll = totalSelf + totalBaby;
+    sum.textContent = `本月已存 ¥${total}（自己 ${s.self?'✅':'⬜'} 宝宝 ${s.baby?'✅':'⬜'}）\n累计：自己 ¥${totalSelf} + 宝宝 ¥${totalBaby} = ¥${totalAll}（共 ${months.filter(m=>savings[m].self||savings[m].baby).length} 个月）`;
+    sum.style.whiteSpace = 'pre-line';
+  }
 }
 
 // ---------- 备忘录 ----------
@@ -1234,12 +1312,11 @@ function updateTravelRouteView() {
   const p = travelPlans[travelCurrentId] || {};
   const el = document.getElementById('tpRouteView');
   if (p.route) {
-    // 把路线变成可视化：每天一行带箭头
     const lines = p.route.split('\n').filter(l => l.trim());
-    el.innerHTML = lines.map((line, i) => {
+    el.innerHTML = lines.map((line) => {
       const trimmed = line.trim();
       if (trimmed.startsWith('Day') || trimmed.startsWith('第')) {
-        return `<div style="margin-bottom:6px;font-weight:bold;color:#374151;">📍 ${trimmed}</div>`;
+        return `<div style="margin-bottom:6px;font-weight:bold;color:#db2777;">📍 ${trimmed}</div>`;
       }
       return `<div style="margin-left:16px;margin-bottom:4px;color:#6b7280;">→ ${trimmed}</div>`;
     }).join('');
@@ -1247,6 +1324,42 @@ function updateTravelRouteView() {
   } else {
     el.textContent = '填好路线后这里会一目了然。';
   }
+  // 渲染路线图片
+  const imgEl = document.getElementById('tpImages');
+  if (imgEl) {
+    const imgs = p.images || [];
+    imgEl.innerHTML = imgs.map((src, i) => `
+      <div class="relative">
+        <img src="${src}" class="w-full rounded-lg border border-pink-100" style="max-height:150px;object-fit:cover;">
+        <button onclick="delRouteImage(${i})" class="absolute top-1 right-1 bg-white/80 rounded-full w-6 h-6 text-xs text-red-500">✕</button>
+      </div>
+    `).join('');
+  }
+}
+
+function uploadRouteImage(event) {
+  if (!travelCurrentId) return toast('请先新建一个计划');
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const p = travelPlans[travelCurrentId];
+    if (!p.images) p.images = [];
+    p.images.push(e.target.result);
+    STORE.set('travelPlans', travelPlans);
+    updateTravelRouteView();
+    toast('图片已添加');
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function delRouteImage(idx) {
+  if (!travelCurrentId) return;
+  const p = travelPlans[travelCurrentId];
+  p.images.splice(idx, 1);
+  STORE.set('travelPlans', travelPlans);
+  updateTravelRouteView();
 }
 
 function newTravelPlan() {
@@ -1304,9 +1417,9 @@ function closeModuleDialog() {
 function highlightIcon() {
   document.querySelectorAll('.icon-opt').forEach(b => {
     if (b.dataset.icon === selectedIcon) {
-      b.classList.add('border-green-600','bg-green-50');
+      b.classList.add('border-pink-400','bg-pink-50');
     } else {
-      b.classList.remove('border-green-600','bg-green-50');
+      b.classList.remove('border-pink-400','bg-pink-50');
     }
   });
 }
@@ -1365,7 +1478,7 @@ function renderCustomSections() {
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-bold text-lg flex items-center gap-2">${m.icon} ${escapeHtml(m.name)}</h2>
         <div class="flex gap-2">
-          <button onclick="editModule('${m.id}')" class="text-xs text-gray-500 hover:text-green-700 bg-gray-100 px-2 py-1 rounded">编辑</button>
+          <button onclick="editModule('${m.id}')" class="text-xs text-gray-500 hover:text-pink-500 bg-gray-100 px-2 py-1 rounded">编辑</button>
           <button onclick="delModule('${m.id}')" class="text-xs text-gray-500 hover:text-red-600 bg-gray-100 px-2 py-1 rounded">删除</button>
         </div>
       </div>
@@ -1374,7 +1487,7 @@ function renderCustomSections() {
       inner += `
         <div class="flex gap-2 mb-3">
           <input type="text" id="cmInput_${m.id}" placeholder="加一项…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addCustomItem('${m.id}')">
-          <button onclick="addCustomItem('${m.id}')" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
+          <button onclick="addCustomItem('${m.id}')" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
         </div>
         <ul class="space-y-2" id="cmList_${m.id}"></ul>
       `;
@@ -1404,7 +1517,7 @@ function renderCustomItems(modId) {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100';
     li.innerHTML = `
-      <input type="checkbox" class="w-4 h-4 accent-green-700" ${item.done?'checked':''} onchange="toggleCustomItem('${modId}',${idx})">
+      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${item.done?'checked':''} onchange="toggleCustomItem('${modId}',${idx})">
       <span class="text-sm flex-1 ${item.done?'line-through text-gray-400':''}">${escapeHtml(item.text)}</span>
       <button onclick="delCustomItem('${modId}',${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
     `;
@@ -1492,14 +1605,16 @@ renderTasks();
 loadTrends();
 renderIdeas();
 renderEnglishTasks();
-renderWords();
 renderReadList();
 document.getElementById('financeMonth').value = financeCurrentMonth;
 renderFinance();
+renderSavings();
 renderMemos();
 renderTravelSelect();
 renderTravelPlan();
 initDiet();
+renderWorkouts();
+setInterval(checkWorkoutReminder, 60000);
 renderCustomNav();
 renderCustomSections();
 // 首次访问预置一个示例自定义模块，让用户秒懂
