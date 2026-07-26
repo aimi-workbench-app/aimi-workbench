@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+refresh_trends.py
+刷新抖音爆款热点数据。
+
+当前版本：seed_data 模式（无需 token，生成示例数据）。
+后续接入抖音开放平台 / 巨量算数时，只需替换 fetch_trends() 实现，
+保持输出格式与本脚本一致即可。
+
+用法：
+    python3 refresh_trends.py
+
+输出：
+    data/trends.json
+"""
+import json
+import os
+from datetime import datetime, timezone, timedelta
+
+OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "data", "trends.json")
+
+
+def fetch_trends():
+    """
+    TODO: 接入真实 API。
+    建议数据源：
+      - 抖音开放平台热点 API
+      - 巨量算数 / 抖音热点宝
+      - 新榜 / 蝉妈妈等第三方平台
+    """
+    cn_tz = timezone(timedelta(hours=8))
+    return {
+        "updated_at": datetime.now(cn_tz).isoformat(),
+        "source": "seed_data",
+        "notes": "真实抖音爆款需接入抖音开放平台/巨量算数 token 后由 refresh_trends.py 刷新。当前为宝妈赛道示例种子数据。",
+        "trends": [
+            {
+                "id": "t001",
+                "title": "「独自带2岁女宝的一天」沉浸式 vlog",
+                "platform": "抖音",
+                "heat": 9820000,
+                "category": ["宝妈", "vlog", "独自带娃", "高能量", "治愈", "母婴"],
+                "why_fit": "你的「一个人高能量带娃」人设完全契合，记录真实日常最容易引发同频宝妈共鸣和评论。",
+                "fit_score": 95,
+                "idea": "从早上6点娃醒拍到晚上9点哄睡，重点突出「高效带娃不崩溃」的细节，结尾金句：一个人也能把日子过成光。",
+                "tags": ["独自带娃", "2岁女宝", "高能量宝妈"]
+            },
+            {
+                "id": "t002",
+                "title": "「全职妈妈如何不崩溃」口播",
+                "platform": "抖音",
+                "heat": 8650000,
+                "category": ["宝妈", "口播", "女性成长", "情绪管理", "共鸣", "励志"],
+                "why_fit": "高能量人设 + 口播形式 = 强情绪输出，完播率和转发率双高，适合沉淀铁粉。",
+                "fit_score": 92,
+                "idea": "3个让你不崩溃的小习惯：早起30分钟独处、把家务游戏化、允许自己「不完美」，配真实带娃画面。",
+                "tags": ["全职妈妈", "情绪管理", "高能量"]
+            },
+            {
+                "id": "t003",
+                "title": "「2岁宝宝辅食一周食谱」干货合集",
+                "platform": "抖音",
+                "heat": 7540000,
+                "category": ["辅食", "干货", "母婴", "教程", "育儿", "种草"],
+                "why_fit": "干货类内容收藏率高，适合接母婴品牌广告，且能持续给新粉提供价值。",
+                "fit_score": 88,
+                "idea": "一周7天辅食速览，每天一道快手菜，标注营养点和宝宝爱吃反应，最后总结省时技巧。",
+                "tags": ["2岁辅食", "食谱", "快手辅食"]
+            },
+            {
+                "id": "t004",
+                "title": "「一个人带娃如何搞定家务」效率神器",
+                "platform": "抖音",
+                "heat": 6430000,
+                "category": ["宝妈", "效率", "种草", "家居", "独自带娃", "干货"],
+                "why_fit": "效率神器类内容种草属性强，广告承接顺滑，且契合你「高能量搞定一切」的人设。",
+                "fit_score": 90,
+                "idea": "展示3个让你边带娃边搞卫生的神器：可移动餐椅、感应垃圾桶、宝宝围栏游戏区，对比「有vs无」的反差。",
+                "tags": ["带娃神器", "效率", "家居好物"]
+            },
+            {
+                "id": "t005",
+                "title": "「女儿2岁我学会的5件事」情感口播",
+                "platform": "抖音",
+                "heat": 8210000,
+                "category": ["宝妈", "情感", "母女", "女性成长", "口播", "共鸣"],
+                "why_fit": "母女情感题材天然治愈，你的高能量基调能把它讲得既温柔又有力量，转发率会很高。",
+                "fit_score": 91,
+                "idea": "坐在娃的小床边自然光口播，每件事配一个真实小故事，结尾：谢谢你选我做妈妈。",
+                "tags": ["母女", "2岁", "情感口播"]
+            },
+            {
+                "id": "t006",
+                "title": "「高能量妈妈的早晨5件套」自律 vlog",
+                "platform": "抖音",
+                "heat": 7120000,
+                "category": ["宝妈", "自律", "vlog", "高能量", "女性成长", "治愈"],
+                "why_fit": "「高能量」是你的核心标签，早晨自律 vlog 能强化人设，同时吸引想变好的宝妈群体。",
+                "fit_score": 93,
+                "idea": "记录娃没醒前的1小时：喝水/运动/看本书/列今日清单，配轻音乐，字幕打出「妈妈先照顾好自己」。",
+                "tags": ["高能量", "自律早晨", "妈妈自我管理"]
+            }
+        ]
+    }
+
+
+def main():
+    data = fetch_trends()
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    print(f"[OK] 已刷新 {OUTPUT_PATH}，共 {len(data['trends'])} 条热点。")
+
+
+if __name__ == "__main__":
+    main()

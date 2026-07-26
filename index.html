@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>艾米的工作台</title>
+
+  <!-- PWA / 添加到主屏幕配置 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="艾米工作台">
+  <meta name="theme-color" content="#5e7a3a">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <script src="tailwind.js"></script>
+  <style>
+    :root { --brand: #5e7a3a; --brand-light: #eef3e6; }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6f4; -webkit-text-size-adjust: 100%; }
+    /* iOS PWA 输入修复：确保输入框可聚焦可输入 */
+    input, textarea, select {
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-appearance: none;
+      appearance: none;
+      font-size: 16px; /* 防止 iOS 自动放大 */
+      -webkit-tap-highlight-color: transparent;
+    }
+    input[type="checkbox"] { -webkit-appearance: checkbox; appearance: checkbox; }
+    .card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+    .nav-item.active { background: var(--brand); color: #fff; font-weight: 600; }
+    .nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; }
+    .nav-item:hover:not(.active) { background: #f0f0f0; }
+    .checkbox:checked + span { text-decoration: line-through; color: #9ca3af; }
+    .heat-bar { background: linear-gradient(90deg, #fde68a, #f59e0b); }
+    .hidden-section { display: none; }
+    .fade-in { animation: fadeIn .25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .tag { @apply text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600; }
+    /* 弹窗在 PWA 模式下必须用 fixed + 顶层 z-index */
+    #moduleDialog:not(.hidden) { display: flex !important; }
+  </style>
+  <script>
+    // Service Worker：让 App 离线也能用
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    }
+  </script>
+</head>
+<body class="text-gray-800 min-h-screen">
+
+<!-- 顶部 -->
+<header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-200">
+  <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-rose-400 flex items-center justify-center text-white text-sm">米</div>
+      <h1 class="font-bold text-lg">艾米的工作台</h1>
+    </div>
+    <div class="text-xs text-gray-500" id="todayDate"></div>
+  </div>
+</header>
+
+<div class="max-w-4xl mx-auto px-4 py-4 flex gap-4">
+  <!-- 侧边导航 -->
+  <aside class="w-16 md:w-52 shrink-0">
+    <nav class="card p-2 sticky top-20 space-y-1" id="nav">
+      <button class="nav-item active w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="tasks">
+        <span>📋</span><span class="hidden md:inline">每日任务</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="finance">
+        <span>💰</span><span class="hidden md:inline">每月收支</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="english">
+        <span>🌍</span><span class="hidden md:inline">英语学习</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="ideas">
+        <span>💡</span><span class="hidden md:inline">每日灵感</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="trends">
+        <span>🔥</span><span class="hidden md:inline">爆款热点/二创</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="review">
+        <span>📊</span><span class="hidden md:inline">内容复盘</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="memo">
+        <span>📝</span><span class="hidden md:inline">备忘录</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="travel">
+        <span>✈️</span><span class="hidden md:inline">旅游计划</span>
+      </button>
+      <button onclick="openNewModuleDialog()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 border-2 border-dashed border-gray-300 text-gray-500 hover:border-green-600 hover:text-green-700 transition">
+        <span>➕</span><span class="hidden md:inline">新建模块</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="flex-1 min-w-0 space-y-4">
+
+    <!-- 每日任务 -->
+    <section id="tasks" class="card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">📋 每日任务</h2>
+        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full" id="taskProgress">0/0</span>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <!-- 当天任务 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">☀️ 当天任务</div>
+          <ul class="space-y-2" id="todayTaskList"></ul>
+          <div class="mt-3 flex gap-2">
+            <input type="text" id="newTodayTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-green-600">
+            <button onclick="addTask('today')" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
+          </div>
+        </div>
+        <!-- 排期任务 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 排期任务</div>
+          <ul class="space-y-2" id="scheduledTaskList"></ul>
+          <div class="mt-3 flex gap-2">
+            <input type="text" id="newScheduledTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-green-600">
+            <button onclick="addTask('scheduled')" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
+          </div>
+        </div>
+        <!-- 例行任务 -->
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🔄 每日例行</div>
+          <ul class="space-y-2" id="routineTaskList"></ul>
+        </div>
+      </div>
+
+      <div class="mt-4 text-xs text-gray-500 bg-yellow-50 border border-yellow-100 rounded-lg p-3">
+        <strong>「趁热打铁」三连击：</strong>爆款来了马上拍 → 当天剪完 → 晚上发。每日例行：9点收灵感、刷对标、发完即复盘。
+      </div>
+    </section>
+    <!-- 每月收支 -->
+    <section id="finance" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 class="font-bold text-lg flex items-center gap-2">💰 每月收支</h2>
+        <div class="flex items-center gap-2">
+          <input type="month" id="financeMonth" class="text-sm px-3 py-1.5 rounded-lg border border-gray-200">
+          <button onclick="switchFinanceMonth()" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm">切换</button>
+        </div>
+      </div>
+
+      <!-- 汇总卡片 -->
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="bg-green-50 rounded-xl p-4">
+          <div class="text-xs text-gray-600">收入</div>
+          <div class="text-xl font-bold text-green-700 mt-1" id="totalIncome">¥0</div>
+        </div>
+        <div class="bg-red-50 rounded-xl p-4">
+          <div class="text-xs text-gray-600">支出</div>
+          <div class="text-xl font-bold text-red-600 mt-1" id="totalExpense">¥0</div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-4">
+          <div class="text-xs text-gray-600">结余</div>
+          <div class="text-xl font-bold text-blue-700 mt-1" id="totalBalance">¥0</div>
+        </div>
+      </div>
+
+      <!-- 记账输入 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">✍️ 记一笔</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+          <select id="finType" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+            <option value="income">收入</option>
+            <option value="expense">支出</option>
+          </select>
+          <input type="number" id="finAmount" placeholder="金额" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="finCategory" placeholder="分类（如工资/奶粉/尿不湿）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="finUsage" placeholder="用途说明（必填）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="finDate" placeholder="日期（如 7-24，留空为今天）" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <button onclick="addFinance()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">记一笔</button>
+        </div>
+      </div>
+
+      <!-- 流水列表 -->
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📋 本月流水（每笔用途已标注）</div>
+        <div id="financeList" class="space-y-2"></div>
+      </div>
+    </section>
+    <!-- 英语学习 -->
+    <section id="english" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">🌍 英语学习</h2>
+        <span class="text-xs text-gray-500">每天 20 分钟 · 持续输入</span>
+      </div>
+
+      <!-- 今日学习计划 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📖 今日学习计划</div>
+        <ul class="space-y-2" id="englishTaskList"></ul>
+        <div class="mt-3 flex gap-2">
+          <input type="text" id="newEnglishTask" placeholder="加一项学习任务…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-green-600">
+          <button onclick="addEnglishTask()" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
+        </div>
+      </div>
+
+      <!-- 单词本 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📓 单词本</div>
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="newWord" placeholder="单词" class="w-24 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="newMeaning" placeholder="中文释义" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="newExample" placeholder="例句（可选）" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <button onclick="addWord()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">添加</button>
+        </div>
+        <div id="wordList" class="space-y-2"></div>
+      </div>
+
+      <!-- 学习进度 -->
+      <div class="bg-gray-50 rounded-xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 本周进度</div>
+        <div class="grid grid-cols-3 gap-3 text-center text-xs">
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-2xl font-bold text-green-700" id="engDoneCount">0</div>
+            <div class="text-gray-500 mt-1">完成任务</div>
+          </div>
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-2xl font-bold text-green-700" id="engWordCount">0</div>
+            <div class="text-gray-500 mt-1">累计单词</div>
+          </div>
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-2xl font-bold text-green-700" id="engStreak">0</div>
+            <div class="text-gray-500 mt-1">连续天数</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- 每日灵感 -->
+    <section id="ideas" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">💡 每日灵感</h2>
+        <span class="text-xs text-gray-500">每天早上 9:00 自动汇聚</span>
+      </div>
+      <div class="flex gap-2 mb-4">
+        <input type="text" id="newIdea" placeholder="记录一个新选题…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        <button onclick="addIdea()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">保存</button>
+      </div>
+      <div id="ideasList" class="space-y-2"></div>
+    </section>
+    <!-- 爆款热点/二创 -->
+    <section id="trends" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 class="font-bold text-lg flex items-center gap-2">🔥 爆款热点/二创</h2>
+        <div class="text-xs text-gray-500">数据更新于 <span id="trendsUpdated">--</span></div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-4" id="categoryFilters"></div>
+
+      <div id="trendsList" class="space-y-3"></div>
+
+      <div class="mt-4 text-xs text-gray-500 bg-blue-50 border border-blue-100 rounded-lg p-3">
+        💡 想接入真实抖音数据？运行 <code>python3 refresh_trends.py</code> 并替换其中的 API token。
+      </div>
+    </section>
+    <!-- 内容复盘 -->
+    <section id="review" class="hidden-section card p-5 fade-in">
+      <h2 class="font-bold text-lg mb-4 flex items-center gap-2">📊 内容复盘</h2>
+
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+          <input type="text" id="revTitle" placeholder="内容标题" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="revPlay" placeholder="播放量" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="revLike" placeholder="点赞" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="revComment" placeholder="评论" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="revShare" placeholder="转发" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="revRate" placeholder="完播率 %" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        </div>
+        <select id="revSource" class="w-full md:w-auto px-3 py-2 rounded-lg border border-gray-200 text-sm mb-3">
+          <option value="自然推荐">流量来源：自然推荐</option>
+          <option value="关注页">流量来源：关注页</option>
+          <option value="搜索">流量来源：搜索</option>
+          <option value="付费">流量来源：付费</option>
+        </select>
+        <button onclick="addReview()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">生成复盘</button>
+      </div>
+
+      <div id="reviewOutput" class="space-y-3"></div>
+    </section>
+    <!-- 备忘录 -->
+    <section id="memo" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">📝 备忘录</h2>
+        <span class="text-xs text-gray-500">随手记 · 不丢</span>
+      </div>
+      <div class="flex gap-2 mb-4">
+        <input type="text" id="newMemo" placeholder="记点什么…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addMemo()">
+        <button onclick="addMemo()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">记下</button>
+      </div>
+      <div id="memoList" class="space-y-2"></div>
+    </section>
+    <!-- 旅游计划 -->
+    <section id="travel" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h2 class="font-bold text-lg flex items-center gap-2">✈️ 旅游计划</h2>
+        <div class="flex gap-2">
+          <select id="travelPlanSelect" class="text-sm px-3 py-1.5 rounded-lg border border-gray-200" onchange="switchTravelPlan()"></select>
+          <button onclick="newTravelPlan()" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm">+ 新建</button>
+          <button onclick="delTravelPlan()" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-sm">删除</button>
+        </div>
+      </div>
+
+      <!-- 目的地信息 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <input type="text" id="tpDestination" placeholder="目的地（如三亚）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="tpDays" placeholder="几天几晚（如 4天3晚）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="tpPeople" placeholder="人数（如 2大1小）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="tpSeason" placeholder="季节/月份" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        </div>
+        <button onclick="saveTravelInfo()" class="mt-3 bg-green-700 text-white px-4 py-2 rounded-lg text-sm">保存基本信息</button>
+      </div>
+
+      <!-- 五大类攻略 -->
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <!-- 吃 -->
+        <div class="bg-orange-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-orange-700 mb-2 flex items-center gap-2">🍜 吃什么</div>
+          <textarea id="tpEat" rows="3" placeholder="推荐美食、必吃店、人均价位…&#10;如：第一市场海鲜人均150，椰子鸡人均80" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
+        </div>
+        <!-- 喝 -->
+        <div class="bg-yellow-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-yellow-700 mb-2 flex items-center gap-2">🥤 喝什么</div>
+          <textarea id="tpDrink" rows="3" placeholder="奶茶/咖啡/当地饮品…&#10;如：清补凉15元，老爸茶10元" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
+        </div>
+        <!-- 玩 -->
+        <div class="bg-green-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-green-700 mb-2 flex items-center gap-2">🎢 玩什么</div>
+          <textarea id="tpPlay" rows="3" placeholder="景点、体验、门票…&#10;如：蜈支洲岛门票144，潜水300" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
+        </div>
+        <!-- 乐 -->
+        <div class="bg-pink-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-pink-700 mb-2 flex items-center gap-2">🎉 乐什么</div>
+          <textarea id="tpFun" rows="3" placeholder="夜生活、演出、亲子项目…&#10;如：千古情演出280，夜市免费逛" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
+        </div>
+        <!-- 住 -->
+        <div class="bg-blue-50 rounded-xl p-4 md:col-span-2">
+          <div class="text-sm font-semibold text-blue-700 mb-2 flex items-center gap-2">🏨 住哪里</div>
+          <textarea id="tpStay" rows="2" placeholder="酒店/民宿推荐、价位、位置…&#10;如：亚龙湾民宿400/晚，近海边含早" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
+        </div>
+      </div>
+
+      <!-- 车费 & 总预算 -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🚗 车费 & 交通</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+          <input type="number" id="tpTransFlight" placeholder="机票/高铁（往返）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="tpTransLocal" placeholder="当地交通（打车/租车）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="tpBudgetEat" placeholder="吃喝预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="tpBudgetPlay" placeholder="玩乐预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="tpBudgetStay" placeholder="住宿预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="number" id="tpBudgetOther" placeholder="其他预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
+        </div>
+        <button onclick="saveTravelBudget()" class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">保存车费预算</button>
+      </div>
+
+      <!-- 懒人总览 -->
+      <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border border-green-100">
+        <div class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">📌 懒人一图看懂（自动计算）</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-xs text-gray-500">交通合计</div>
+            <div class="text-lg font-bold text-gray-800" id="tpSumTrans">¥0</div>
+          </div>
+          <div class="bg-white rounded-lg p-3">
+            <div class="text-xs text-gray-500">吃喝玩乐住</div>
+            <div class="text-lg font-bold text-gray-800" id="tpSumBudget">¥0</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 md:col-span-2">
+            <div class="text-xs text-gray-500">总预算（人均自动 ÷ 人数）</div>
+            <div class="text-lg font-bold text-green-700" id="tpSumTotal">¥0</div>
+            <div class="text-xs text-gray-400 mt-1" id="tpSumPerPerson">人均 ¥0</div>
+          </div>
+        </div>
+        <div class="mt-3 text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-100" id="tpSummary">
+          填好上面五项 + 车费，这里自动生成一段一看就懂的攻略摘要。
+        </div>
+      </div>
+
+      <div class="mt-3 text-xs text-gray-400 bg-yellow-50 border border-yellow-100 rounded-lg p-3">
+        💡 懒人用法：填好目的地和五大类（吃/喝/玩/乐/住）+ 车费预算，点保存，下面自动算出总花销和人均，一键复制就能发给家人朋友。
+      </div>
+    </section>
+
+    <!-- 自定义模块容器 -->
+    <div id="customSections" class="space-y-4"></div>
+
+  </main>
+</div>
+
+<!-- 新建/编辑模块弹窗 -->
+<div id="moduleDialog" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+  <div class="bg-white rounded-2xl p-5 w-full max-w-sm">
+    <h3 class="font-bold text-lg mb-4" id="moduleDialogTitle">新建模块</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="text-xs text-gray-500">模块名称</label>
+        <input type="text" id="modName" placeholder="如：健身打卡" class="w-full mt-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">选个图标</label>
+        <div class="flex flex-wrap gap-2 mt-1" id="iconPicker">
+          <button data-icon="⭐" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">⭐</button>
+          <button data-icon="🎯" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">🎯</button>
+          <button data-icon="🏃" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">🏃</button>
+          <button data-icon="📚" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">📚</button>
+          <button data-icon="🍳" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">🍳</button>
+          <button data-icon="💪" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">💪</button>
+          <button data-icon="🧘" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">🧘</button>
+          <button data-icon="🌱" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">🌱</button>
+          <button data-icon="🎵" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">🎵</button>
+          <button data-icon="📷" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">📷</button>
+          <button data-icon="🛒" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">🛒</button>
+          <button data-icon="❤️" class="icon-opt text-2xl w-10 h-10 rounded-lg border border-gray-200 hover:bg-gray-50">❤️</button>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">类型</label>
+        <div class="flex gap-2 mt-1">
+          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-green-600 has-[:checked]:bg-green-50">
+            <input type="radio" name="modType" value="list" checked class="hidden">📋 清单
+          </label>
+          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-green-600 has-[:checked]:bg-green-50">
+            <input type="radio" name="modType" value="note" class="hidden">📝 笔记
+          </label>
+        </div>
+        <div class="text-xs text-gray-400 mt-1" id="typeHint">清单：一条条加、可打勾；笔记：一个大文本框随便写</div>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="closeModuleDialog()" class="flex-1 px-4 py-2 rounded-lg bg-gray-100 text-sm">取消</button>
+      <button onclick="saveModule()" class="flex-1 px-4 py-2 rounded-lg bg-green-700 text-white text-sm">创建</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== iOS PWA 输入修复（必须在最前面执行）======
+// standalone 模式下输入框点不动是 iOS 已知 bug，这里强制修复
+(function() {
+  function fixInput(e) {
+    var tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+      e.stopPropagation();
+    }
+  }
+  document.addEventListener('click', fixInput, true);
+  document.addEventListener('touchstart', fixInput, true);
+  document.addEventListener('touchend', fixInput, true);
+
+  // 修复 PWA 模式下点击输入框不弹键盘
+  document.addEventListener('touchend', function(e) {
+    var t = e.target;
+    if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') {
+      setTimeout(function() { t.focus(); }, 50);
+    }
+  }, true);
+})();
+
+// ====== Toast 提示（替代 alert，PWA 模式下 alert 会卡住页面）======
+function toast(msg) {
+  var old = document.getElementById('__toast');
+  if (old) old.remove();
+  var div = document.createElement('div');
+  div.id = '__toast';
+  div.textContent = msg;
+  div.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.8);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;z-index:9999;max-width:80vw;text-align:center;';
+  document.body.appendChild(div);
+  setTimeout(function() { if (div.parentNode) div.remove(); }, 2000);
+}
+
+const today = new Date();
+document.getElementById('todayDate').textContent = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日 星期${['日','一','二','三','四','五','六'][today.getDay()]}`;
+
+// ---------- 数据存储 ----------
+const STORE = {
+  get(key, def) { try { return JSON.parse(localStorage.getItem('hcj_'+key)) || def; } catch { return def; } },
+  set(key, val) { localStorage.setItem('hcj_'+key, JSON.stringify(val)); }
+};
+
+// 初始化任务
+let tasks = STORE.get('tasks', {
+  today: [
+    { id: 't1', text: '趁娃午睡拍一条「独自带娃日常」', done: false },
+    { id: 't2', text: '看昨日热点，选 1 个宝妈话题二创', done: false },
+    { id: 't3', text: '剪辑 + 加字幕（剪映）', done: false },
+    { id: 't4', text: '发布并回复粉丝群评论', done: false }
+  ],
+  scheduled: [
+    { id: 's1', text: '周三：好物种草视频（母婴用品）', done: false },
+    { id: 's2', text: '周五：一周带娃 vlog', done: false }
+  ],
+  routine: [
+    { id: 'r1', text: '9:00 收灵感（刷宝妈对标号）', done: false },
+    { id: 'r2', text: '刷对标账号 30min', done: false },
+    { id: 'r3', text: '发完即复盘', done: false }
+  ]
+});
+
+let reviews = STORE.get('reviews', []);
+let ideas = STORE.get('ideas', [
+  { id: 'i1', text: '「独自带2岁女宝的一天」沉浸式 vlog', from: 'seed' },
+  { id: 'i2', text: '「高能量宝妈如何不崩溃」口播', from: 'seed' }
+]);
+let trendsData = { trends: [] };
+let activeCategories = new Set();
+
+// ---------- 英语学习 ----------
+let englishTasks = STORE.get('englishTasks', [
+  { id: 'e1', text: '听 BBC Learning English 10 分钟', done: false },
+  { id: 'e2', text: '背 10 个日常单词', done: false },
+  { id: 'e3', text: '跟读 1 段亲子英语对话', done: false }
+]);
+let words = STORE.get('words', [
+  { id: 'w1', word: 'toddler', meaning: '幼儿（1-3岁）', example: 'My toddler is 2 years old.' },
+  { id: 'w2', word: 'nap', meaning: '小睡', example: 'The baby is taking a nap.' },
+  { id: 'w3', word: 'patience', meaning: '耐心', example: 'Parenting requires a lot of patience.' }
+]);
+let engStreak = STORE.get('engStreak', { lastDate: '', count: 0 });
+
+// ---------- 每月收支 ----------
+let financeCurrentMonth = new Date().toISOString().slice(0,7); // YYYY-MM
+let financeData = STORE.get('finance', {}); // { '2026-07': [ {id,type,amount,category,usage,date} ] }
+
+// ---------- 导航 ----------
+function showSection(sec) {
+  // 隐藏所有 section（内置 + 自定义）
+  document.querySelectorAll('main > section, #customSections > section').forEach(s => s.classList.add('hidden-section'));
+  // 取消所有导航高亮
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  // 显示目标
+  const target = document.getElementById(sec);
+  if (target) target.classList.remove('hidden-section');
+  // 高亮对应导航按钮
+  const navBtn = document.querySelector(`[data-section="${sec}"]`);
+  if (navBtn) navBtn.classList.add('active');
+}
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => showSection(btn.dataset.section));
+});
+
+// ---------- 任务 ----------
+function renderTasks() {
+  const cols = { today: 'todayTaskList', scheduled: 'scheduledTaskList', routine: 'routineTaskList' };
+  let total = 0, done = 0;
+  for (const [col, elId] of Object.entries(cols)) {
+    const el = document.getElementById(elId);
+    el.innerHTML = '';
+    tasks[col].forEach((t, idx) => {
+      total++;
+      if (t.done) done++;
+      const li = document.createElement('li');
+      li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
+      li.innerHTML = `
+        <input type="checkbox" class="checkbox w-4 h-4 accent-green-700" ${t.done?'checked':''} onchange="toggleTask('${col}',${idx})">
+        <span class="text-sm flex-1 ${t.done?'line-through text-gray-400':''}">${t.text}</span>
+        <button onclick="delTask('${col}',${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+      `;
+      el.appendChild(li);
+    });
+  }
+  document.getElementById('taskProgress').textContent = `${done}/${total}`;
+}
+
+function toggleTask(col, idx) { tasks[col][idx].done = !tasks[col][idx].done; saveTasks(); }
+function delTask(col, idx) { tasks[col].splice(idx,1); saveTasks(); }
+function addTask(col) {
+  const input = document.getElementById(col==='today'?'newTodayTask':'newScheduledTask');
+  const text = input.value.trim();
+  if (!text) return;
+  tasks[col].push({ id: Date.now().toString(), text, done: false });
+  input.value = '';
+  saveTasks();
+}
+function saveTasks() { STORE.set('tasks', tasks); renderTasks(); }
+
+// ---------- 爆款热点 ----------
+async function loadTrends() {
+  try {
+    const res = await fetch('data/trends.json');
+    trendsData = await res.json();
+    document.getElementById('trendsUpdated').textContent = trendsData.updated_at?.slice(0,16).replace('T',' ') || '未知';
+    renderCategoryFilters();
+    renderTrends();
+  } catch (e) {
+    document.getElementById('trendsList').innerHTML = '<div class="text-sm text-red-500">加载失败，请确认 data/trends.json 存在。</div>';
+  }
+}
+
+function renderCategoryFilters() {
+  const cats = new Set();
+  trendsData.trends.forEach(t => t.category.forEach(c => cats.add(c)));
+  const el = document.getElementById('categoryFilters');
+  el.innerHTML = '';
+  cats.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = `text-xs px-3 py-1.5 rounded-full border transition ${activeCategories.has(c) ? 'bg-green-700 text-white border-green-700' : 'bg-white text-gray-600 border-gray-200'}`;
+    btn.textContent = c;
+    btn.onclick = () => {
+      if (activeCategories.has(c)) activeCategories.delete(c); else activeCategories.add(c);
+      renderCategoryFilters(); renderTrends();
+    };
+    el.appendChild(btn);
+  });
+}
+
+function renderTrends() {
+  const el = document.getElementById('trendsList');
+  el.innerHTML = '';
+  const filtered = trendsData.trends.filter(t => activeCategories.size===0 || t.category.some(c => activeCategories.has(c)));
+  if (filtered.length===0) { el.innerHTML = '<div class="text-sm text-gray-500">暂无匹配热点。</div>'; return; }
+
+  filtered.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'bg-gray-50 rounded-xl p-4 border border-gray-100';
+    div.innerHTML = `
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="font-semibold text-sm">${t.title}</div>
+          <div class="text-xs text-gray-500 mt-1">🔥 ${formatHeat(t.heat)} · 适配分 <span class="text-green-700 font-bold">${t.fit_score}</span></div>
+        </div>
+        <button onclick='saveTrendIdea(${JSON.stringify(t).replace(/'/g,"&#39;")})' class="shrink-0 bg-green-700 text-white text-xs px-3 py-1.5 rounded-lg">存灵感</button>
+      </div>
+      <div class="flex flex-wrap gap-1.5 mt-2">${t.category.map(c=>`<span class="tag">${c}</span>`).join('')}</div>
+      <div class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100">
+        <div class="font-medium text-gray-800 mb-1">为什么适合我</div>
+        ${t.why_fit}
+      </div>
+      <div class="mt-2 text-xs text-green-800 bg-green-50 rounded-lg p-2">
+        💡 二创思路：${t.idea}
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function formatHeat(n) {
+  if (n>=10000) return (n/10000).toFixed(1)+'万';
+  return n;
+}
+
+function saveTrendIdea(trend) {
+  ideas.unshift({ id: 'i'+Date.now(), text: `【热点】${trend.title}：${trend.idea}`, from: 'trend' });
+  STORE.set('ideas', ideas);
+  toast('已保存到「每日灵感」');
+  renderIdeas();
+}
+
+// ---------- 复盘 ----------
+function addReview() {
+  const title = document.getElementById('revTitle').value.trim();
+  const play = +document.getElementById('revPlay').value || 0;
+  const like = +document.getElementById('revLike').value || 0;
+  const comment = +document.getElementById('revComment').value || 0;
+  const share = +document.getElementById('revShare').value || 0;
+  const rate = +document.getElementById('revRate').value || 0;
+  const source = document.getElementById('revSource').value;
+  if (!title) return toast('请填写内容标题');
+
+  const likeRate = play ? (like/play*100).toFixed(2) : 0;
+  const commentRate = play ? (comment/play*100).toFixed(2) : 0;
+  const shareRate = play ? (share/play*100).toFixed(2) : 0;
+
+  const suggestions = [];
+  if (rate < 30) suggestions.push('完播率偏低：前3秒加一个强钩子，直接抛冲突或结果。');
+  else if (rate < 50) suggestions.push('完播率有提升空间：中间加一句「看到最后有彩蛋/反转」。');
+  else suggestions.push('完播率优秀：保持当前节奏，可复制到下一期。');
+
+  if (comment < like*0.05) suggestions.push('评论率低：结尾抛一个具体问题，让观众有话可说。');
+  if (share < like*0.02) suggestions.push('转发率低：增加「值得收藏」的干货密度或金句。');
+  if (source === '自然推荐' && play < 5000) suggestions.push('自然流量少：标题/封面需要更情绪化，或蹭近期热点。');
+
+  const nextAction = suggestions.length > 0
+    ? '下次重点优化：' + suggestions[0].split('：')[0] + '，具体动作是「' + suggestions[0].split('：')[1] + '」'
+    : '整体表现健康，建议沿同选题方向继续产出。';
+
+  const review = {
+    id: 'r'+Date.now(), title, play, like, comment, share, rate, source,
+    metrics: { likeRate, commentRate, shareRate },
+    suggestions, nextAction,
+    date: new Date().toISOString()
+  };
+  reviews.unshift(review);
+  STORE.set('reviews', reviews);
+  renderReviews();
+
+  // 清空输入
+  ['revTitle','revPlay','revLike','revComment','revShare','revRate'].forEach(id=>document.getElementById(id).value='');
+}
+
+function renderReviews() {
+  const el = document.getElementById('reviewOutput');
+  el.innerHTML = '';
+  if (reviews.length===0) { el.innerHTML = '<div class="text-sm text-gray-500">还没有复盘记录。</div>'; return; }
+  reviews.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'bg-gray-50 rounded-xl p-4 border border-gray-100';
+    div.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-semibold text-sm">${r.title}</div>
+        <div class="text-xs text-gray-400">${r.date.slice(0,16).replace('T',' ')}</div>
+      </div>
+      <div class="grid grid-cols-3 gap-2 text-xs text-gray-600 mb-3">
+        <div class="bg-white rounded p-2">播放<br><strong>${formatHeat(r.play)}</strong></div>
+        <div class="bg-white rounded p-2">赞播比<br><strong>${r.metrics.likeRate}%</strong></div>
+        <div class="bg-white rounded p-2">完播率<br><strong>${r.rate}%</strong></div>
+      </div>
+      <ul class="text-xs text-gray-700 space-y-1 mb-2">
+        ${r.suggestions.map(s=>`<li>• ${s}</li>`).join('')}
+      </ul>
+      <div class="text-xs font-medium text-green-800 bg-green-50 rounded-lg p-2">🎯 ${r.nextAction}</div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+// ---------- 灵感 ----------
+function renderIdeas() {
+  const el = document.getElementById('ideasList');
+  el.innerHTML = '';
+  if (ideas.length===0) { el.innerHTML = '<div class="text-sm text-gray-500">暂无灵感。</div>'; return; }
+  ideas.forEach((idea, idx) => {
+    const div = document.createElement('div');
+    div.className = 'flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100';
+    div.innerHTML = `
+      <span class="text-sm flex-1">${idea.text}</span>
+      <button onclick="delIdea(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function addIdea() {
+  const input = document.getElementById('newIdea');
+  const text = input.value.trim();
+  if (!text) return;
+  ideas.unshift({ id: 'i'+Date.now(), text, from: 'manual' });
+  input.value = '';
+  STORE.set('ideas', ideas);
+  renderIdeas();
+}
+
+function delIdea(idx) {
+  ideas.splice(idx, 1);
+  STORE.set('ideas', ideas);
+  renderIdeas();
+}
+
+// ---------- 英语学习 ----------
+function renderEnglishTasks() {
+  const el = document.getElementById('englishTaskList');
+  el.innerHTML = '';
+  let done = 0;
+  englishTasks.forEach((t, idx) => {
+    if (t.done) done++;
+    const li = document.createElement('li');
+    li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
+    li.innerHTML = `
+      <input type="checkbox" class="w-4 h-4 accent-green-700" ${t.done?'checked':''} onchange="toggleEnglishTask(${idx})">
+      <span class="text-sm flex-1 ${t.done?'line-through text-gray-400':''}">${t.text}</span>
+      <button onclick="delEnglishTask(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+    `;
+    el.appendChild(li);
+  });
+  document.getElementById('engDoneCount').textContent = done;
+  // 连续天数逻辑：今天第一次完成任意任务时 +1
+  const todayStr = new Date().toISOString().slice(0,10);
+  if (done > 0 && engStreak.lastDate !== todayStr) {
+    const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+    engStreak.count = engStreak.lastDate === yesterday ? engStreak.count + 1 : 1;
+    engStreak.lastDate = todayStr;
+    STORE.set('engStreak', engStreak);
+  }
+  document.getElementById('engStreak').textContent = engStreak.count;
+}
+
+function toggleEnglishTask(idx) { englishTasks[idx].done = !englishTasks[idx].done; STORE.set('englishTasks', englishTasks); renderEnglishTasks(); }
+function delEnglishTask(idx) { englishTasks.splice(idx,1); STORE.set('englishTasks', englishTasks); renderEnglishTasks(); }
+function addEnglishTask() {
+  const input = document.getElementById('newEnglishTask');
+  const text = input.value.trim();
+  if (!text) return;
+  englishTasks.push({ id: 'e'+Date.now(), text, done: false });
+  input.value = '';
+  STORE.set('englishTasks', englishTasks);
+  renderEnglishTasks();
+}
+
+function renderWords() {
+  const el = document.getElementById('wordList');
+  el.innerHTML = '';
+  if (words.length===0) { el.innerHTML = '<div class="text-xs text-gray-400">还没有单词。</div>'; return; }
+  words.forEach((w, idx) => {
+    const div = document.createElement('div');
+    div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100';
+    div.innerHTML = `
+      <div class="flex items-center justify-between">
+        <div class="flex-1 min-w-0">
+          <span class="font-semibold text-sm text-green-800">${w.word}</span>
+          <span class="text-sm text-gray-600 ml-2">${w.meaning}</span>
+          ${w.example ? `<div class="text-xs text-gray-400 mt-1">📝 ${w.example}</div>` : ''}
+        </div>
+        <button onclick="delWord(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+  document.getElementById('engWordCount').textContent = words.length;
+}
+
+function addWord() {
+  const word = document.getElementById('newWord').value.trim();
+  const meaning = document.getElementById('newMeaning').value.trim();
+  const example = document.getElementById('newExample').value.trim();
+  if (!word || !meaning) return toast('请填写单词和释义');
+  words.unshift({ id: 'w'+Date.now(), word, meaning, example });
+  ['newWord','newMeaning','newExample'].forEach(id=>document.getElementById(id).value='');
+  STORE.set('words', words);
+  renderWords();
+}
+
+function delWord(idx) { words.splice(idx,1); STORE.set('words', words); renderWords(); }
+
+// ---------- 每月收支 ----------
+function getCurrentFinanceList() {
+  if (!financeData[financeCurrentMonth]) financeData[financeCurrentMonth] = [];
+  return financeData[financeCurrentMonth];
+}
+
+function renderFinance() {
+  const list = getCurrentFinanceList();
+  let income = 0, expense = 0;
+  list.forEach(item => {
+    if (item.type === 'income') income += item.amount;
+    else expense += item.amount;
+  });
+  document.getElementById('totalIncome').textContent = '¥' + income.toLocaleString();
+  document.getElementById('totalExpense').textContent = '¥' + expense.toLocaleString();
+  const balance = income - expense;
+  const balEl = document.getElementById('totalBalance');
+  balEl.textContent = '¥' + balance.toLocaleString();
+  balEl.className = 'text-xl font-bold mt-1 ' + (balance >= 0 ? 'text-blue-700' : 'text-red-600');
+
+  const el = document.getElementById('financeList');
+  el.innerHTML = '';
+  if (list.length === 0) { el.innerHTML = '<div class="text-xs text-gray-400">本月还没有记录。</div>'; return; }
+  // 按日期倒序
+  const sorted = [...list].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  sorted.forEach((item, idx) => {
+    const realIdx = list.indexOf(item);
+    const div = document.createElement('div');
+    div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-3';
+    div.innerHTML = `
+      <div class="w-2 h-2 rounded-full ${item.type==='income'?'bg-green-500':'bg-red-500'}"></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-sm font-medium ${item.type==='income'?'text-green-700':'text-red-600'}">${item.type==='income'?'+':'-'}¥${item.amount.toLocaleString()}</span>
+          <span class="text-xs text-gray-500">[${item.category}]</span>
+          <span class="text-xs text-gray-400">${item.date||'未填日期'}</span>
+        </div>
+        <div class="text-xs text-gray-600 mt-0.5">用途：${item.usage||'未标注'}</div>
+      </div>
+      <button onclick="delFinance(${realIdx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function addFinance() {
+  const type = document.getElementById('finType').value;
+  const amount = +document.getElementById('finAmount').value;
+  const category = document.getElementById('finCategory').value.trim();
+  const usage = document.getElementById('finUsage').value.trim();
+  const dateRaw = document.getElementById('finDate').value.trim();
+  if (!amount || amount <= 0) return toast('请填写有效金额');
+  if (!usage) return toast('请标注这笔钱的用途');
+  const list = getCurrentFinanceList();
+  const today = new Date();
+  const date = dateRaw || `${today.getMonth()+1}-${today.getDate()}`;
+  list.push({ id: 'f'+Date.now(), type, amount, category: category||'未分类', usage, date });
+  STORE.set('finance', financeData);
+  ['finAmount','finCategory','finUsage','finDate'].forEach(id=>document.getElementById(id).value='');
+  renderFinance();
+}
+
+function delFinance(idx) {
+  const list = getCurrentFinanceList();
+  list.splice(idx, 1);
+  STORE.set('finance', financeData);
+  renderFinance();
+}
+
+function switchFinanceMonth() {
+  financeCurrentMonth = document.getElementById('financeMonth').value || financeCurrentMonth;
+  renderFinance();
+}
+
+// ---------- 备忘录 ----------
+let memos = STORE.get('memos', [
+  { id: 'm1', text: '下次拍视频前先检查收音麦', time: 'seed' },
+  { id: 'm2', text: '娃的疫苗本要复印一份备用', time: 'seed' }
+]);
+
+function renderMemos() {
+  const el = document.getElementById('memoList');
+  el.innerHTML = '';
+  if (memos.length === 0) { el.innerHTML = '<div class="text-sm text-gray-500">还没有备忘。</div>'; return; }
+  memos.forEach((m, idx) => {
+    const div = document.createElement('div');
+    div.className = 'flex items-start gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100';
+    div.innerHTML = `
+      <span class="text-gray-400 mt-0.5">•</span>
+      <span class="text-sm flex-1 break-all">${escapeHtml(m.text)}</span>
+      <span class="text-xs text-gray-400 shrink-0">${m.time && m.time!=='seed' ? m.time.slice(5,10) : ''}</span>
+      <button onclick="delMemo(${idx})" class="text-gray-400 hover:text-red-500 text-xs shrink-0">✕</button>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function addMemo() {
+  const input = document.getElementById('newMemo');
+  const text = input.value.trim();
+  if (!text) return;
+  memos.unshift({ id: 'm'+Date.now(), text, time: new Date().toISOString().slice(0,10) });
+  input.value = '';
+  STORE.set('memos', memos);
+  renderMemos();
+}
+
+function delMemo(idx) {
+  memos.splice(idx, 1);
+  STORE.set('memos', memos);
+  renderMemos();
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ---------- 旅游计划 ----------
+let travelPlans = STORE.get('travelPlans', {});
+let travelCurrentId = STORE.get('travelCurrentId', '');
+// 初始化一个示例计划
+if (Object.keys(travelPlans).length === 0) {
+  const sampleId = 'tp1';
+  travelPlans[sampleId] = {
+    id: sampleId, name: '三亚亲子游',
+    destination: '三亚', days: '4天3晚', people: '2大1小', season: '11月（淡季）',
+    eat: '第一市场海鲜加工 人均150\n椰子鸡 人均80\n海南粉 15/碗',
+    drink: '清补凉 15元\n椰子 10元\n老爸茶 10元',
+    play: '蜈支洲岛 门票144+船票60\n亚龙湾沙滩 免费\n热带天堂森林公园 150',
+    fun: '千古情演出 280\n夜市逛吃 免费\n亲子挖沙 免费',
+    stay: '亚龙湾民宿 400/晚 含早 近海边',
+    transFlight: 2400, transLocal: 500,
+    budgetEat: 1200, budgetPlay: 1500, budgetStay: 1200, budgetOther: 300
+  };
+  travelCurrentId = sampleId;
+  STORE.set('travelPlans', travelPlans);
+  STORE.set('travelCurrentId', travelCurrentId);
+}
+
+function renderTravelSelect() {
+  const sel = document.getElementById('travelPlanSelect');
+  sel.innerHTML = '';
+  Object.values(travelPlans).forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name || (p.destination || '未命名');
+    if (p.id === travelCurrentId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function renderTravelPlan() {
+  const p = travelPlans[travelCurrentId] || {};
+  document.getElementById('tpDestination').value = p.destination || '';
+  document.getElementById('tpDays').value = p.days || '';
+  document.getElementById('tpPeople').value = p.people || '';
+  document.getElementById('tpSeason').value = p.season || '';
+  document.getElementById('tpEat').value = p.eat || '';
+  document.getElementById('tpDrink').value = p.drink || '';
+  document.getElementById('tpPlay').value = p.play || '';
+  document.getElementById('tpFun').value = p.fun || '';
+  document.getElementById('tpStay').value = p.stay || '';
+  document.getElementById('tpTransFlight').value = p.transFlight || '';
+  document.getElementById('tpTransLocal').value = p.transLocal || '';
+  document.getElementById('tpBudgetEat').value = p.budgetEat || '';
+  document.getElementById('tpBudgetPlay').value = p.budgetPlay || '';
+  document.getElementById('tpBudgetStay').value = p.budgetStay || '';
+  document.getElementById('tpBudgetOther').value = p.budgetOther || '';
+  updateTravelSummary();
+}
+
+function updateTravelSummary() {
+  const p = travelPlans[travelCurrentId] || {};
+  const trans = (+p.transFlight||0) + (+p.transLocal||0);
+  const budget = (+p.budgetEat||0) + (+p.budgetPlay||0) + (+p.budgetStay||0) + (+p.budgetOther||0);
+  const total = trans + budget;
+  document.getElementById('tpSumTrans').textContent = '¥' + trans.toLocaleString();
+  document.getElementById('tpSumBudget').textContent = '¥' + budget.toLocaleString();
+  document.getElementById('tpSumTotal').textContent = '¥' + total.toLocaleString();
+  // 人数解析
+  const peopleMatch = (p.people||'').match(/(\d+)/);
+  const peopleCount = peopleMatch ? +peopleMatch[1] : 1;
+  const perPerson = peopleCount > 0 ? Math.round(total / peopleCount) : total;
+  document.getElementById('tpSumPerPerson').textContent = `人均 ¥${perPerson.toLocaleString()}（按 ${p.people||'1人'} 算）`;
+
+  // 懒人摘要
+  if (p.destination) {
+    let summary = `【${p.name||p.destination}攻略】${p.days||''}，${p.people||''}，${p.season||''}出发。\n`;
+    summary += `🍜 吃：${(p.eat||'未填').replace(/\n/g,'；')}\n`;
+    summary += `🥤 喝：${(p.drink||'未填').replace(/\n/g,'；')}\n`;
+    summary += `🎢 玩：${(p.play||'未填').replace(/\n/g,'；')}\n`;
+    summary += `🎉 乐：${(p.fun||'未填').replace(/\n/g,'；')}\n`;
+    summary += `🏨 住：${(p.stay||'未填').replace(/\n/g,'；')}\n`;
+    summary += `🚗 车费：机票/高铁 ¥${(+p.transFlight||0).toLocaleString()} + 当地 ¥${(+p.transLocal||0).toLocaleString()}\n`;
+    summary += `💰 总预算 ¥${total.toLocaleString()}，人均 ¥${perPerson.toLocaleString()}。`;
+    document.getElementById('tpSummary').textContent = summary;
+    document.getElementById('tpSummary').style.whiteSpace = 'pre-line';
+  }
+}
+
+function saveTravelInfo() {
+  if (!travelCurrentId) return toast('请先新建一个计划');
+  const p = travelPlans[travelCurrentId];
+  p.destination = document.getElementById('tpDestination').value.trim();
+  p.days = document.getElementById('tpDays').value.trim();
+  p.people = document.getElementById('tpPeople').value.trim();
+  p.season = document.getElementById('tpSeason').value.trim();
+  p.name = p.destination || p.name || '未命名计划';
+  STORE.set('travelPlans', travelPlans);
+  renderTravelSelect();
+  updateTravelSummary();
+  toast('基本信息已保存');
+}
+
+function saveTravelBudget() {
+  if (!travelCurrentId) return toast('请先新建一个计划');
+  const p = travelPlans[travelCurrentId];
+  p.eat = document.getElementById('tpEat').value;
+  p.drink = document.getElementById('tpDrink').value;
+  p.play = document.getElementById('tpPlay').value;
+  p.fun = document.getElementById('tpFun').value;
+  p.stay = document.getElementById('tpStay').value;
+  p.transFlight = +document.getElementById('tpTransFlight').value || 0;
+  p.transLocal = +document.getElementById('tpTransLocal').value || 0;
+  p.budgetEat = +document.getElementById('tpBudgetEat').value || 0;
+  p.budgetPlay = +document.getElementById('tpBudgetPlay').value || 0;
+  p.budgetStay = +document.getElementById('tpBudgetStay').value || 0;
+  p.budgetOther = +document.getElementById('tpBudgetOther').value || 0;
+  STORE.set('travelPlans', travelPlans);
+  updateTravelSummary();
+  toast('攻略和车费已保存，下方已自动算出总花销');
+}
+
+function newTravelPlan() {
+  const name = prompt('给新计划起个名（如：暑假北京游）');
+  if (!name) return;
+  const id = 'tp' + Date.now();
+  travelPlans[id] = { id, name, destination:'', days:'', people:'', season:'', eat:'', drink:'', play:'', fun:'', stay:'', transFlight:0, transLocal:0, budgetEat:0, budgetPlay:0, budgetStay:0, budgetOther:0 };
+  travelCurrentId = id;
+  STORE.set('travelPlans', travelPlans);
+  STORE.set('travelCurrentId', travelCurrentId);
+  renderTravelSelect();
+  renderTravelPlan();
+}
+
+function switchTravelPlan() {
+  travelCurrentId = document.getElementById('travelPlanSelect').value;
+  STORE.set('travelCurrentId', travelCurrentId);
+  renderTravelPlan();
+}
+
+function delTravelPlan() {
+  if (!travelCurrentId) return;
+  if (!confirm('确定删除这个旅游计划吗？')) return;
+  delete travelPlans[travelCurrentId];
+  travelCurrentId = Object.keys(travelPlans)[0] || '';
+  STORE.set('travelPlans', travelPlans);
+  STORE.set('travelCurrentId', travelCurrentId);
+  renderTravelSelect();
+  if (travelCurrentId) renderTravelPlan();
+}
+
+// ---------- 自定义模块 ----------
+let customModules = STORE.get('customModules', []);
+let selectedIcon = '⭐';
+let editingModuleId = null;
+
+function openNewModuleDialog() {
+  editingModuleId = null;
+  document.getElementById('moduleDialogTitle').textContent = '新建模块';
+  document.getElementById('modName').value = '';
+  selectedIcon = '⭐';
+  document.querySelector('input[name="modType"][value="list"]').checked = true;
+  highlightIcon();
+  const dlg = document.getElementById('moduleDialog');
+  dlg.classList.remove('hidden');
+  dlg.classList.add('flex');
+}
+
+function closeModuleDialog() {
+  const dlg = document.getElementById('moduleDialog');
+  dlg.classList.add('hidden');
+  dlg.classList.remove('flex');
+}
+
+function highlightIcon() {
+  document.querySelectorAll('.icon-opt').forEach(b => {
+    if (b.dataset.icon === selectedIcon) {
+      b.classList.add('border-green-600','bg-green-50');
+    } else {
+      b.classList.remove('border-green-600','bg-green-50');
+    }
+  });
+}
+
+document.querySelectorAll('.icon-opt').forEach(b => {
+  b.addEventListener('click', () => { selectedIcon = b.dataset.icon; highlightIcon(); });
+});
+
+function saveModule() {
+  const name = document.getElementById('modName').value.trim();
+  if (!name) return toast('请填模块名称');
+  const type = document.querySelector('input[name="modType"]:checked').value;
+  if (editingModuleId) {
+    // 编辑现有
+    const m = customModules.find(x => x.id === editingModuleId);
+    if (m) { m.name = name; m.icon = selectedIcon; m.type = type; }
+  } else {
+    // 新建
+    const id = 'cm' + Date.now();
+    customModules.push({ id, name, icon: selectedIcon, type, items: [], note: '' });
+  }
+  STORE.set('customModules', customModules);
+  closeModuleDialog();
+  renderCustomNav();
+  renderCustomSections();
+  // 自动切到新模块
+  if (!editingModuleId) {
+    const newId = customModules[customModules.length-1].id;
+    showCustomModule(newId);
+  }
+}
+
+function renderCustomNav() {
+  const nav = document.getElementById('nav');
+  // 移除旧的自定义导航按钮
+  nav.querySelectorAll('.custom-nav').forEach(b => b.remove());
+  customModules.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-item custom-nav w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3';
+    btn.dataset.section = 'custom_' + m.id;
+    btn.innerHTML = `<span>${m.icon}</span><span class="hidden md:inline">${escapeHtml(m.name)}</span>`;
+    btn.addEventListener('click', () => showCustomModule(m.id));
+    nav.insertBefore(btn, nav.lastElementChild); // 插在「新建模块」按钮前面
+  });
+}
+
+function renderCustomSections() {
+  const container = document.getElementById('customSections');
+  container.innerHTML = '';
+  customModules.forEach(m => {
+    const sec = document.createElement('section');
+    sec.id = 'custom_' + m.id;
+    sec.className = 'hidden-section card p-5 fade-in';
+
+    let inner = `
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">${m.icon} ${escapeHtml(m.name)}</h2>
+        <div class="flex gap-2">
+          <button onclick="editModule('${m.id}')" class="text-xs text-gray-500 hover:text-green-700 bg-gray-100 px-2 py-1 rounded">编辑</button>
+          <button onclick="delModule('${m.id}')" class="text-xs text-gray-500 hover:text-red-600 bg-gray-100 px-2 py-1 rounded">删除</button>
+        </div>
+      </div>
+    `;
+    if (m.type === 'list') {
+      inner += `
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="cmInput_${m.id}" placeholder="加一项…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addCustomItem('${m.id}')">
+          <button onclick="addCustomItem('${m.id}')" class="bg-green-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
+        </div>
+        <ul class="space-y-2" id="cmList_${m.id}"></ul>
+      `;
+    } else {
+      inner += `
+        <textarea id="cmNote_${m.id}" rows="10" placeholder="在这里随便写…" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm" oninput="updateCustomNote('${m.id}', this.value)"></textarea>
+        <div class="text-xs text-gray-400 mt-2">自动保存</div>
+      `;
+    }
+    sec.innerHTML = inner;
+    container.appendChild(sec);
+    renderCustomItems(m.id);
+  });
+}
+
+function renderCustomItems(modId) {
+  const m = customModules.find(x => x.id === modId);
+  if (!m || m.type !== 'list') return;
+  const ul = document.getElementById('cmList_' + modId);
+  if (!ul) return;
+  ul.innerHTML = '';
+  if (m.items.length === 0) {
+    ul.innerHTML = '<li class="text-xs text-gray-400 px-1">还没有内容，加一项吧～</li>';
+    return;
+  }
+  m.items.forEach((item, idx) => {
+    const li = document.createElement('li');
+    li.className = 'flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100';
+    li.innerHTML = `
+      <input type="checkbox" class="w-4 h-4 accent-green-700" ${item.done?'checked':''} onchange="toggleCustomItem('${modId}',${idx})">
+      <span class="text-sm flex-1 ${item.done?'line-through text-gray-400':''}">${escapeHtml(item.text)}</span>
+      <button onclick="delCustomItem('${modId}',${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+function addCustomItem(modId) {
+  const input = document.getElementById('cmInput_' + modId);
+  const text = input.value.trim();
+  if (!text) return;
+  const m = customModules.find(x => x.id === modId);
+  if (!m) return;
+  m.items.push({ id: 'ci'+Date.now(), text, done: false });
+  STORE.set('customModules', customModules);
+  input.value = '';
+  renderCustomItems(modId);
+}
+
+function toggleCustomItem(modId, idx) {
+  const m = customModules.find(x => x.id === modId);
+  if (!m) return;
+  m.items[idx].done = !m.items[idx].done;
+  STORE.set('customModules', customModules);
+  renderCustomItems(modId);
+}
+
+function delCustomItem(modId, idx) {
+  const m = customModules.find(x => x.id === modId);
+  if (!m) return;
+  m.items.splice(idx, 1);
+  STORE.set('customModules', customModules);
+  renderCustomItems(modId);
+}
+
+function updateCustomNote(modId, val) {
+  const m = customModules.find(x => x.id === modId);
+  if (!m) return;
+  m.note = val;
+  STORE.set('customModules', customModules);
+}
+
+function editModule(modId) {
+  const m = customModules.find(x => x.id === modId);
+  if (!m) return;
+  editingModuleId = modId;
+  document.getElementById('moduleDialogTitle').textContent = '编辑模块';
+  document.getElementById('modName').value = m.name;
+  selectedIcon = m.icon;
+  document.querySelector(`input[name="modType"][value="${m.type}"]`).checked = true;
+  highlightIcon();
+  const dlg = document.getElementById('moduleDialog');
+  dlg.classList.remove('hidden');
+  dlg.classList.add('flex');
+}
+
+function delModule(modId) {
+  if (!confirm('确定删除整个模块吗？模块里的内容也会一起删除。')) return;
+  customModules = customModules.filter(x => x.id !== modId);
+  STORE.set('customModules', customModules);
+  renderCustomNav();
+  renderCustomSections();
+  // 如果当前显示的是被删的模块，切回每日任务
+  const deleted = document.getElementById('custom_' + modId);
+  if (deleted && !deleted.classList.contains('hidden-section')) {
+    showSection('tasks');
+  }
+}
+
+function showCustomModule(modId) {
+  // 隐藏所有 section（内置 + 自定义）
+  document.querySelectorAll('main > section, #customSections > section').forEach(s => s.classList.add('hidden-section'));
+  // 取消所有导航高亮
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  // 显示目标
+  const target = document.getElementById('custom_' + modId);
+  if (target) target.classList.remove('hidden-section');
+  // 高亮对应导航
+  const navBtn = document.querySelector(`[data-section="custom_${modId}"]`);
+  if (navBtn) navBtn.classList.add('active');
+}
+
+// ---------- 初始化 ----------
+renderTasks();
+loadTrends();
+renderReviews();
+renderIdeas();
+renderEnglishTasks();
+renderWords();
+document.getElementById('financeMonth').value = financeCurrentMonth;
+renderFinance();
+renderMemos();
+renderTravelSelect();
+renderTravelPlan();
+renderCustomNav();
+renderCustomSections();
+// 首次访问预置一个示例自定义模块，让用户秒懂
+if (customModules.length === 0 && !localStorage.getItem('hcj_customInited')) {
+  customModules.push({
+    id: 'cm_demo', name: '健身打卡', icon: '🏃', type: 'list',
+    items: [
+      { id: 'ci1', text: '帕梅拉 20 分钟', done: false },
+      { id: 'ci2', text: '深蹲 50 个', done: true }
+    ],
+    note: ''
+  });
+  STORE.set('customModules', customModules);
+  localStorage.setItem('hcj_customInited', '1');
+  renderCustomNav();
+  renderCustomSections();
+}
+</script>
+</body>
+</html>

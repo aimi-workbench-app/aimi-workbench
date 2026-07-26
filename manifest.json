@@ -1,0 +1,24 @@
+{
+  "name": "艾米的工作台",
+  "short_name": "艾米工作台",
+  "description": "宝妈创作者的每日工作台：任务、收支、英语、灵感、爆款、复盘、备忘、旅游",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f6f4",
+  "theme_color": "#5e7a3a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
