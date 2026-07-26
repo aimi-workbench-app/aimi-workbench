@@ -2094,15 +2094,16 @@ function saveModule() {
 
 function renderCustomNav() {
   const nav = document.getElementById('nav');
+  if (!nav) return;
   // 移除旧的自定义导航按钮
   nav.querySelectorAll('.custom-nav').forEach(b => b.remove());
   customModules.forEach(m => {
     const btn = document.createElement('button');
-    btn.className = 'bottom-nav-item custom-nav px-2 py-1 rounded-xl text-xs';
+    btn.className = 'bottom-nav-item custom-nav px-2 py-1 rounded-xl text-xs flex-shrink-0';
+    btn.setAttribute('onclick', "showCustomModule('" + m.id + "')");
     btn.dataset.section = 'custom_' + m.id;
-    btn.innerHTML = `<span class="text-xl">${m.icon}</span><span>${escapeHtml(m.name)}</span>`;
-    btn.addEventListener('click', () => showCustomModule(m.id));
-    nav.insertBefore(btn, nav.lastElementChild); // 插在「新建模块」按钮前面
+    btn.innerHTML = '<span class="text-xl">' + m.icon + '</span><span>' + escapeHtml(m.name) + '</span>';
+    nav.appendChild(btn);
   });
 }
 
@@ -2228,16 +2229,13 @@ function delModule(modId) {
 }
 
 function showCustomModule(modId) {
-  // 隐藏所有 section（内置 + 自定义）
   document.querySelectorAll('main > section, #customSections > section').forEach(s => s.classList.add('hidden-section'));
-  // 取消所有导航高亮
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  // 显示目标
+  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
   const target = document.getElementById('custom_' + modId);
   if (target) target.classList.remove('hidden-section');
-  // 高亮对应导航
-  const navBtn = document.querySelector(`[data-section="custom_${modId}"]`);
+  const navBtn = document.querySelector('[data-section="custom_' + modId + '"]');
   if (navBtn) navBtn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ---------- 初始化 ----------
@@ -2277,48 +2275,46 @@ if (customModules.length === 0 && !localStorage.getItem('hcj_customInited')) {
 
 <!-- 底部导航 -->
 <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-t border-pink-100" style="padding-bottom: env(safe-area-inset-bottom);">
-  <div class="flex overflow-x-auto" style="-webkit-overflow-scrolling: touch;">
-    <div class="flex items-center gap-0.5 px-1 py-2 min-w-max" id="nav">
-      <button onclick="showSection('tasks')" class="bottom-nav-item active px-2 py-1 rounded-xl text-xs" data-section="tasks">
+  <div class="flex items-center gap-0.5 px-1 py-2 overflow-x-auto" style="-webkit-overflow-scrolling: touch;" id="nav">
+      <button onclick="showSection('tasks')" class="bottom-nav-item active px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="tasks">
         <span class="text-xl">📋</span><span>每日任务</span>
       </button>
-      <button onclick="showSection('diet')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="diet">
+      <button onclick="showSection('diet')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="diet">
         <span class="text-xl">⚖️</span><span>减肥</span>
       </button>
-      <button onclick="showSection('english')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="english">
+      <button onclick="showSection('english')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="english">
         <span class="text-xl">🌍</span><span>英语</span>
       </button>
-      <button onclick="showSection('finance')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="finance">
+      <button onclick="showSection('finance')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="finance">
         <span class="text-xl">💰</span><span>收支</span>
       </button>
-      <button onclick="showSection('savings')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="savings">
+      <button onclick="showSection('savings')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="savings">
         <span class="text-xl">🐷</span><span>存钱</span>
       </button>
-      <button onclick="showSection('mood')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="mood">
+      <button onclick="showSection('mood')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="mood">
         <span class="text-xl">😊</span><span>情绪</span>
       </button>
-      <button onclick="showSection('ideas')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="ideas">
+      <button onclick="showSection('ideas')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="ideas">
         <span class="text-xl">💡</span><span>灵感</span>
       </button>
-      <button onclick="showSection('trends')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="trends">
+      <button onclick="showSection('trends')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="trends">
         <span class="text-xl">🔥</span><span>热点</span>
       </button>
-      <button onclick="showSection('parenting')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="parenting">
+      <button onclick="showSection('parenting')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="parenting">
         <span class="text-xl">👶</span><span>育儿</span>
       </button>
-      <button onclick="showSection('memo')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="memo">
+      <button onclick="showSection('memo')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="memo">
         <span class="text-xl">📝</span><span>备忘</span>
       </button>
-      <button onclick="showSection('travel')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="travel">
+      <button onclick="showSection('travel')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="travel">
         <span class="text-xl">✈️</span><span>旅游</span>
       </button>
-      <button onclick="showSection('review')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="review">
+      <button onclick="showSection('review')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="review">
         <span class="text-xl">🌙</span><span>复盘</span>
       </button>
-      <button onclick="openNewModuleDialog()" class="bottom-nav-item px-2 py-1 rounded-xl text-xs text-gray-400">
+      <button onclick="openNewModuleDialog()" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0 text-gray-400">
         <span class="text-xl">➕</span><span>新建</span>
       </button>
-    </div>
   </div>
 </nav>
 
