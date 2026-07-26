@@ -10,7 +10,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="艾米工作台">
-  <meta name="theme-color" content="#5e7a3a">
+  <meta name="theme-color" content="#f472b6">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="icon-192.png">
@@ -18,7 +18,7 @@
   <style>
     :root { --brand: #f472b6; --brand-light: #fce7f3; --accent: #c084fc; }
     html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 100%); -webkit-text-size-adjust: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 100%); -webkit-text-size-adjust: 100%; padding-bottom: 80px; }
     /* iOS PWA 输入修复：确保输入框可聚焦可输入 */
     input, textarea, select {
       -webkit-user-select: text;
@@ -33,6 +33,9 @@
     .nav-item.active { background: linear-gradient(135deg, #f472b6, #ec4899); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(236,72,153,0.25); }
     .nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; }
     .nav-item:hover:not(.active) { background: #f0f0f0; }
+    .bottom-nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 56px; }
+    .bottom-nav-item.active { color: #f472b6; }
+    .bottom-nav-item:not(.active) { color: #9ca3af; }
     .checkbox:checked + span { text-decoration: line-through; color: #9ca3af; }
     .heat-bar { background: linear-gradient(90deg, #fde68a, #f59e0b); }
     .hidden-section { display: none; }
@@ -41,6 +44,9 @@
     .tag { @apply text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600; }
     /* 弹窗在 PWA 模式下必须用 fixed + 顶层 z-index */
     #moduleDialog:not(.hidden) { display: flex !important; }
+    /* 底部导航滚动隐藏滚动条 */
+    #bottomNav::-webkit-scrollbar { display: none; }
+    #bottomNav { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
   <script>
     // Service Worker：让 App 离线也能用
@@ -62,51 +68,9 @@
   </div>
 </header>
 
-<div class="max-w-4xl mx-auto px-4 py-4 flex gap-4">
-  <!-- 侧边导航 -->
-  <aside class="w-16 md:w-52 shrink-0">
-    <nav class="card p-2 sticky top-20 space-y-1" id="nav">
-      <button class="nav-item active w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="tasks">
-        <span>📋</span><span class="hidden md:inline">每日任务</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="diet">
-        <span>⚖️</span><span class="hidden md:inline">减肥目标</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="english">
-        <span>🌍</span><span class="hidden md:inline">英语学习</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="finance">
-        <span>💰</span><span class="hidden md:inline">每月收支</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="savings">
-        <span>🐷</span><span class="hidden md:inline">存钱计划</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="ideas">
-        <span>💡</span><span class="hidden md:inline">每日灵感</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="trends">
-        <span>🔥</span><span class="hidden md:inline">爆款热点/二创</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="parenting">
-        <span>👶</span><span class="hidden md:inline">育儿宝典</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="memo">
-        <span>📝</span><span class="hidden md:inline">备忘录</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="travel">
-        <span>✈️</span><span class="hidden md:inline">旅游计划</span>
-      </button>
-      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="review">
-        <span>🌙</span><span class="hidden md:inline">每日复盘</span>
-      </button>
-<button onclick="openNewModuleDialog()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 border-2 border-dashed border-gray-300 text-gray-500 hover:border-pink-400 hover:text-pink-500 transition">
-        <span>➕</span><span class="hidden md:inline">新建模块</span>
-      </button>
-    </nav>
-  </aside>
-
+<div class="max-w-4xl mx-auto px-4 py-4">
   <!-- 主内容 -->
-  <main class="flex-1 min-w-0 space-y-4">
+  <main class="min-w-0 space-y-4">
 
     <!-- 每日任务 -->
     <section id="tasks" class="card p-5 fade-in">
@@ -350,11 +314,19 @@
             <div class="text-sm font-semibold text-pink-600">💖 给自己存</div>
             <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-pink-500" id="selfGoalDisplay">¥300</span></div>
           </div>
-          <button onclick="toggleSavings('self')" id="savingsSelfBtn" class="px-5 py-2.5 rounded-xl text-sm font-medium bg-white text-pink-500 border border-pink-200">打卡</button>
+          <div class="flex gap-2">
+            <button onclick="quickSaveSavings('self', null)" id="savingsSelfBtn" class="px-4 py-2 rounded-xl text-xs font-medium bg-white text-pink-500 border border-pink-200">存月目标</button>
+          </div>
+        </div>
+        <!-- 自定义金额存入 -->
+        <div class="flex gap-2 mb-3">
+          <input type="number" id="selfAmount" placeholder="本次存多少" class="flex-1 px-3 py-2 rounded-xl border border-pink-200 text-sm">
+          <input type="text" id="selfNote" placeholder="备注" class="w-24 px-3 py-2 rounded-xl border border-pink-200 text-sm">
+          <button onclick="addSavingsRecord('self')" class="bg-pink-500 text-white px-3 py-2 rounded-xl text-sm">存入</button>
         </div>
         <div class="bg-white rounded-xl p-3">
           <div class="flex justify-between text-xs text-gray-500 mb-1">
-            <span>已存</span><span>目标</span>
+            <span>本月已存</span><span>月目标</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-3">
             <div class="bg-pink-500 rounded-full h-3 transition-all" id="selfProgressBar" style="width:0%"></div>
@@ -373,11 +345,18 @@
             <div class="text-sm font-semibold text-purple-600">👶 给宝宝存</div>
             <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-purple-500" id="babyGoalDisplay">¥200</span></div>
           </div>
-          <button onclick="toggleSavings('baby')" id="savingsBabyBtn" class="px-5 py-2.5 rounded-xl text-sm font-medium bg-white text-purple-500 border border-purple-200">打卡</button>
+          <div class="flex gap-2">
+            <button onclick="quickSaveSavings('baby', null)" id="savingsBabyBtn" class="px-4 py-2 rounded-xl text-xs font-medium bg-white text-purple-500 border border-purple-200">存月目标</button>
+          </div>
+        </div>
+        <div class="flex gap-2 mb-3">
+          <input type="number" id="babyAmount" placeholder="本次存多少" class="flex-1 px-3 py-2 rounded-xl border border-purple-200 text-sm">
+          <input type="text" id="babyNote" placeholder="备注" class="w-24 px-3 py-2 rounded-xl border border-purple-200 text-sm">
+          <button onclick="addSavingsRecord('baby')" class="bg-purple-500 text-white px-3 py-2 rounded-xl text-sm">存入</button>
         </div>
         <div class="bg-white rounded-xl p-3">
           <div class="flex justify-between text-xs text-gray-500 mb-1">
-            <span>已存</span><span>目标</span>
+            <span>本月已存</span><span>月目标</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-3">
             <div class="bg-purple-500 rounded-full h-3 transition-all" id="babyProgressBar" style="width:0%"></div>
@@ -404,6 +383,12 @@
         </div>
       </div>
 
+      <!-- 存钱流水 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📋 存钱记录</div>
+        <div id="savingsRecords" class="space-y-2"></div>
+      </div>
+
       <!-- 累计总结 -->
       <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-5 border border-pink-100">
         <div class="text-sm font-semibold text-gray-700 mb-3">📊 累计总结</div>
@@ -423,6 +408,66 @@
         </div>
         <div class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100" id="savingsSummary">
           还没有存钱记录。
+        </div>
+      </div>
+    </section>
+    <!-- 每日情绪 -->
+    <section id="mood" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">😊 每日情绪</h2>
+        <span class="text-xs text-gray-500" id="moodMonthLabel"></span>
+      </div>
+
+      <!-- 今日情绪 -->
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mb-4 border border-pink-100">
+        <div class="text-sm font-semibold text-gray-700 mb-3">🎯 今天心情怎么样？</div>
+        <div class="flex justify-around" id="moodSelector">
+          <button onclick="setTodayMood(1)" data-level="1" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
+            <span class="text-3xl">😢</span><span>很差</span>
+          </button>
+          <button onclick="setTodayMood(2)" data-level="2" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
+            <span class="text-3xl">😔</span><span>不好</span>
+          </button>
+          <button onclick="setTodayMood(3)" data-level="3" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
+            <span class="text-3xl">😐</span><span>一般</span>
+          </button>
+          <button onclick="setTodayMood(4)" data-level="4" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
+            <span class="text-3xl">🙂</span><span>还行</span>
+          </button>
+          <button onclick="setTodayMood(5)" data-level="5" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
+            <span class="text-3xl">😄</span><span>很好</span>
+          </button>
+        </div>
+        <div id="moodSelected" class="mt-3 text-sm text-center text-pink-600 font-medium"></div>
+      </div>
+
+      <!-- 本月情绪日历 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📅 本月情绪日历</div>
+        <div class="grid grid-cols-7 gap-1 text-center mb-2">
+          <span class="text-xs text-gray-400">一</span><span class="text-xs text-gray-400">二</span><span class="text-xs text-gray-400">三</span><span class="text-xs text-gray-400">四</span><span class="text-xs text-gray-400">五</span><span class="text-xs text-gray-400">六</span><span class="text-xs text-gray-400">日</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1" id="moodCalendar"></div>
+        <div class="flex justify-center gap-4 mt-3 text-xs text-gray-500">
+          <span>😢</span><span>😔</span><span>😐</span><span>🙂</span><span>😄</span>
+          <span class="ml-2">← 心情由低到高 →</span>
+        </div>
+      </div>
+
+      <!-- 本周趋势 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📈 本周心情趋势</div>
+        <div class="flex items-end gap-2 h-24 px-2" id="moodChart"></div>
+        <div class="flex justify-between px-2 mt-2 text-xs text-gray-400" id="moodChartLabels"></div>
+      </div>
+
+      <!-- 能量语录 -->
+      <div class="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-5 border border-pink-200 text-center">
+        <div class="text-sm font-semibold text-pink-600 mb-2">💪 今日能量</div>
+        <div class="text-base text-gray-700 font-medium italic" id="energyQuote">"做一个很棒的妈妈，也做一个很棒的自己。"</div>
+        <div class="flex justify-center gap-4 mt-3">
+          <button onclick="prevQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500 hover:bg-pink-50">◀ 上一条</button>
+          <button onclick="nextQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500 hover:bg-pink-50">下一条 ▶</button>
         </div>
       </div>
     </section>
@@ -778,8 +823,8 @@ let financeData = STORE.get('finance', {}); // { '2026-07': [ {id,type,amount,ca
 function showSection(sec) {
   // 隐藏所有 section（内置 + 自定义）
   document.querySelectorAll('main > section, #customSections > section').forEach(s => s.classList.add('hidden-section'));
-  // 取消所有导航高亮
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  // 取消所有导航高亮（旧的侧边栏 + 新的底部导航）
+  document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(b => b.classList.remove('active'));
   // 显示目标
   const target = document.getElementById(sec);
   if (target) target.classList.remove('hidden-section');
@@ -788,8 +833,10 @@ function showSection(sec) {
   if (navBtn) navBtn.classList.add('active');
 }
 
-document.querySelectorAll('.nav-item').forEach(btn => {
-  btn.addEventListener('click', () => showSection(btn.dataset.section));
+document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.section) showSection(btn.dataset.section);
+  });
 });
 
 // ---------- 任务 ----------
@@ -1344,20 +1391,49 @@ function switchFinanceMonth() {
 }
 
 // ---------- 存钱计划 ----------
-let savingsData = STORE.get('savingsData', {}); // { '2026-07': { self: true, baby: false } }
+let savingsRecords = STORE.get('savingsRecords', []); // [{id, type:'self'|'baby', amount, note, date, month}]
 let savingsGoals = STORE.get('savingsGoals', { self: 300, baby: 200 });
 
-function getCurrentSavings() {
-  const month = new Date().toISOString().slice(0,7);
-  if (!savingsData[month]) savingsData[month] = { self: false, baby: false };
-  return savingsData[month];
+function quickSaveSavings(type, customAmount) {
+  const amount = customAmount || (type === 'self' ? savingsGoals.self : savingsGoals.baby);
+  const now = new Date();
+  const month = now.toISOString().slice(0,7);
+  savingsRecords.unshift({
+    id: 'sr'+Date.now(),
+    type,
+    amount,
+    note: type==='self' ? '月目标存款' : '宝宝月目标存款',
+    date: `${now.getMonth()+1}-${now.getDate()}`,
+    month
+  });
+  STORE.set('savingsRecords', savingsRecords);
+  renderSavings();
 }
 
-function toggleSavings(type) {
-  const month = new Date().toISOString().slice(0,7);
-  if (!savingsData[month]) savingsData[month] = { self: false, baby: false };
-  savingsData[month][type] = !savingsData[month][type];
-  STORE.set('savingsData', savingsData);
+function addSavingsRecord(type) {
+  const amtEl = document.getElementById(type+'Amount');
+  const noteEl = document.getElementById(type+'Note');
+  const amount = +amtEl.value;
+  if (!amount || amount <= 0) return toast('请填写金额');
+  const now = new Date();
+  const month = now.toISOString().slice(0,7);
+  savingsRecords.unshift({
+    id: 'sr'+Date.now(),
+    type,
+    amount,
+    note: noteEl.value.trim() || '手动存入',
+    date: `${now.getMonth()+1}-${now.getDate()}`,
+    month
+  });
+  amtEl.value = '';
+  noteEl.value = '';
+  STORE.set('savingsRecords', savingsRecords);
+  renderSavings();
+}
+
+function delSavingsRecord(idx) {
+  savingsRecords.splice(idx, 1);
+  STORE.set('savingsRecords', savingsRecords);
   renderSavings();
 }
 
@@ -1369,8 +1445,8 @@ function saveSavingsGoal() {
 }
 
 function renderSavings() {
-  const month = new Date().toISOString().slice(0,7);
-  const s = getCurrentSavings();
+  const now = new Date();
+  const month = now.toISOString().slice(0,7);
   document.getElementById('savingsMonthLabel').textContent = month.replace('-','年')+'月';
 
   // 目标显示
@@ -1379,46 +1455,68 @@ function renderSavings() {
   document.getElementById('selfGoalInput').value = savingsGoals.self;
   document.getElementById('babyGoalInput').value = savingsGoals.baby;
 
+  // 计算本月已存
+  const monthRecords = savingsRecords.filter(r => r.month === month);
+  const selfMonthTotal = monthRecords.filter(r => r.type === 'self').reduce((s, r) => s + r.amount, 0);
+  const babyMonthTotal = monthRecords.filter(r => r.type === 'baby').reduce((s, r) => s + r.amount, 0);
+
+  // 进度条
+  const selfPct = Math.min(100, Math.round(selfMonthTotal / savingsGoals.self * 100));
+  const babyPct = Math.min(100, Math.round(babyMonthTotal / savingsGoals.baby * 100));
+  document.getElementById('selfProgressBar').style.width = selfPct + '%';
+  document.getElementById('babyProgressBar').style.width = babyPct + '%';
+  document.getElementById('selfSaved').textContent = '¥' + selfMonthTotal.toLocaleString();
+  document.getElementById('selfGoalBar').textContent = '¥' + savingsGoals.self;
+  document.getElementById('babySaved').textContent = '¥' + babyMonthTotal.toLocaleString();
+  document.getElementById('babyGoalBar').textContent = '¥' + savingsGoals.baby;
+
   // 打卡按钮
   const selfBtn = document.getElementById('savingsSelfBtn');
   if (selfBtn) {
-    selfBtn.textContent = s.self ? '✅ 已打卡' : '打卡';
-    selfBtn.className = 'px-5 py-2.5 rounded-xl text-sm font-medium ' + (s.self ? 'bg-pink-500 text-white' : 'bg-white text-pink-500 border border-pink-200');
+    selfBtn.textContent = selfMonthTotal >= savingsGoals.self ? '✅ 已达标' : '存月目标';
+    selfBtn.className = 'px-4 py-2 rounded-xl text-xs font-medium ' + (selfMonthTotal >= savingsGoals.self ? 'bg-pink-500 text-white' : 'bg-white text-pink-500 border border-pink-200');
   }
   const babyBtn = document.getElementById('savingsBabyBtn');
   if (babyBtn) {
-    babyBtn.textContent = s.baby ? '✅ 已打卡' : '打卡';
-    babyBtn.className = 'px-5 py-2.5 rounded-xl text-sm font-medium ' + (s.baby ? 'bg-purple-500 text-white' : 'bg-white text-purple-500 border border-purple-200');
+    babyBtn.textContent = babyMonthTotal >= savingsGoals.baby ? '✅ 已达标' : '存月目标';
+    babyBtn.className = 'px-4 py-2 rounded-xl text-xs font-medium ' + (babyMonthTotal >= savingsGoals.baby ? 'bg-purple-500 text-white' : 'bg-white text-purple-500 border border-purple-200');
   }
 
-  // 进度条
-  const selfProgress = document.getElementById('selfProgressBar');
-  if (selfProgress) selfProgress.style.width = s.self ? '100%' : '0%';
-  const babyProgress = document.getElementById('babyProgressBar');
-  if (babyProgress) babyProgress.style.width = s.baby ? '100%' : '0%';
+  // 流水记录
+  const recordsEl = document.getElementById('savingsRecords');
+  if (recordsEl) {
+    const recent = savingsRecords.slice(0, 20);
+    if (recent.length === 0) {
+      recordsEl.innerHTML = '<div class="text-xs text-gray-400 text-center py-4">还没有存钱记录，开始存钱吧～</div>';
+    } else {
+      recordsEl.innerHTML = recent.map((r, idx) => {
+        const realIdx = savingsRecords.indexOf(r);
+        const isSelf = r.type === 'self';
+        return `<div class="bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-3">
+          <span class="text-lg">${isSelf ? '💖' : '👶'}</span>
+          <div class="flex-1 min-w-0">
+            <span class="text-sm font-bold ${isSelf ? 'text-pink-500' : 'text-purple-500'}">+¥${r.amount.toLocaleString()}</span>
+            <span class="text-xs text-gray-400 ml-2">${r.note||''} · ${r.date}</span>
+          </div>
+          <button onclick="delSavingsRecord(${realIdx})" class="text-gray-400 hover:text-red-500 text-xs shrink-0">✕</button>
+        </div>`;
+      }).join('');
+    }
+  }
 
-  document.getElementById('selfSaved').textContent = s.self ? '¥'+savingsGoals.self : '¥0';
-  document.getElementById('selfGoalBar').textContent = '¥'+savingsGoals.self;
-  document.getElementById('babySaved').textContent = s.baby ? '¥'+savingsGoals.baby : '¥0';
-  document.getElementById('babyGoalBar').textContent = '¥'+savingsGoals.baby;
+  // 累计
+  const selfTotal = savingsRecords.filter(r => r.type === 'self').reduce((s, r) => s + r.amount, 0);
+  const babyTotal = savingsRecords.filter(r => r.type === 'baby').reduce((s, r) => s + r.amount, 0);
+  document.getElementById('selfTotal').textContent = '¥' + selfTotal.toLocaleString();
+  document.getElementById('babyTotal').textContent = '¥' + babyTotal.toLocaleString();
+  document.getElementById('savingsGrandTotal').textContent = '¥' + (selfTotal + babyTotal).toLocaleString();
 
-  // 累计计算
-  const months = Object.keys(savingsData).sort();
-  let totalSelf = 0, totalBaby = 0;
-  months.forEach(m => {
-    if (savingsData[m].self) totalSelf += savingsGoals.self;
-    if (savingsData[m].baby) totalBaby += savingsGoals.baby;
-  });
-  document.getElementById('selfTotal').textContent = '¥' + totalSelf.toLocaleString();
-  document.getElementById('babyTotal').textContent = '¥' + totalBaby.toLocaleString();
-  document.getElementById('savingsGrandTotal').textContent = '¥' + (totalSelf + totalBaby).toLocaleString();
-
-  const completedMonths = months.filter(m => savingsData[m].self || savingsData[m].baby).length;
+  const months = [...new Set(savingsRecords.map(r => r.month))].sort();
   document.getElementById('savingsSummary').textContent =
-    `已坚持 ${completedMonths} 个月 💪\n` +
-    `自己：累计 ¥${totalSelf.toLocaleString()}（每月 ¥${savingsGoals.self}）\n` +
-    `宝宝：累计 ¥${totalBaby.toLocaleString()}（每月 ¥${savingsGoals.baby}）\n` +
-    `总计存了 ¥${(totalSelf+totalBaby).toLocaleString()}，继续加油！`;
+    `已坚持 ${months.length} 个月 💪\n` +
+    `自己：累计 ¥${selfTotal.toLocaleString()}（月目标 ¥${savingsGoals.self}）\n` +
+    `宝宝：累计 ¥${babyTotal.toLocaleString()}（月目标 ¥${savingsGoals.baby}）\n` +
+    `总计存了 ¥${(selfTotal+babyTotal).toLocaleString()}，继续加油！`;
   document.getElementById('savingsSummary').style.whiteSpace = 'pre-line';
 }
 
@@ -1608,6 +1706,129 @@ function delTravelPlan() {
   STORE.set('travelCurrentId', travelCurrentId);
   renderTravelSelect();
   if (travelCurrentId) renderTravelPlan();
+}
+
+// ---------- 每日情绪 ----------
+let moodData = STORE.get('moodData', {}); // { '2026-07-26': 4, '2026-07-25': 3, ... }
+let moodQuoteIdx = STORE.get('moodQuoteIdx', 0);
+const moodQuotes = [
+  '"做一个很棒的妈妈，也做一个很棒的自己。"',
+  '"你今天的努力，是未来自己的底气。"',
+  '"带娃很累，但你很美。"',
+  '"先照顾好自己，才能照顾好全世界。"',
+  '"每一个独自带娃的日子，你都是超人。"',
+  '"累了就歇一歇，没有人要求你完美。"',
+  '"你是孩子的全部，但不是只有孩子。"',
+  '"今天的一小步，是未来的一大步。"',
+  '"爱自己，是终身浪漫的开始。"',
+  '"当妈是一场修行，也是一次重生。"'
+];
+const moodEmojis = ['', '😢', '😔', '😐', '🙂', '😄'];
+const moodColors = ['', '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
+const moodBgColors = ['', '#fef2f2', '#fff7ed', '#fefce8', '#f0fdf4', '#f0fdf4'];
+const moodLabels = ['', '很差', '不好', '一般', '还行', '很好'];
+
+function setTodayMood(level) {
+  const todayStr = new Date().toISOString().slice(0,10);
+  moodData[todayStr] = level;
+  STORE.set('moodData', moodData);
+  renderMoodModule();
+}
+
+function renderMoodModule() {
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0,10);
+  document.getElementById('moodMonthLabel').textContent = `${now.getFullYear()}年${now.getMonth()+1}月`;
+
+  // 今日选中
+  const todayLevel = moodData[todayStr] || 0;
+  document.querySelectorAll('.mood-opt').forEach(b => {
+    const lv = parseInt(b.dataset.level);
+    if (lv === todayLevel) {
+      b.classList.add('bg-pink-100', 'rounded-2xl', 'border', 'border-pink-300');
+    } else {
+      b.classList.remove('bg-pink-100', 'rounded-2xl', 'border', 'border-pink-300');
+    }
+  });
+  const selEl = document.getElementById('moodSelected');
+  selEl.textContent = todayLevel ? `今天的心情：${moodEmojis[todayLevel]} ${moodLabels[todayLevel]}` : '';
+
+  // 日历
+  renderMoodCalendar();
+
+  // 本周趋势
+  renderMoodChart();
+
+  // 能量语录
+  document.getElementById('energyQuote').textContent = moodQuotes[moodQuoteIdx];
+}
+
+function renderMoodCalendar() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay(); // 0=日
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const today = now.getDate();
+
+  const el = document.getElementById('moodCalendar');
+  el.innerHTML = '';
+
+  // 填充第一周前面的空白
+  const startDay = firstDay === 0 ? 6 : firstDay - 1; // 转成周一=0
+  for (let i = 0; i < startDay; i++) {
+    el.appendChild(document.createElement('div'));
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const level = moodData[dateStr] || 0;
+    const isToday = d === today;
+    const div = document.createElement('div');
+    div.className = `text-center py-1 rounded-lg text-xs ${isToday ? 'ring-2 ring-pink-400 font-bold' : ''}`;
+    div.style.background = level ? moodBgColors[level] : '#f9fafb';
+    div.innerHTML = `<div>${d}</div><div class="text-sm">${level ? moodEmojis[level] : ''}</div>`;
+    div.title = level ? moodLabels[level] : '';
+    el.appendChild(div);
+  }
+}
+
+function renderMoodChart() {
+  const now = new Date();
+  const days = [];
+  const labels = [];
+  // 最近7天
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0,10);
+    days.push(moodData[ds] || 0);
+    labels.push(`${d.getMonth()+1}/${d.getDate()}`);
+  }
+
+  const el = document.getElementById('moodChart');
+  el.innerHTML = days.map((lv, i) => {
+    const h = lv ? (lv / 5 * 100) : 8;
+    return `<div class="flex-1 flex flex-col items-center">
+      <div class="w-full rounded-t-md transition-all" style="height:${h}%;min-height:${lv?h:4}%;background:${lv ? moodColors[lv] : '#e5e7eb'};"></div>
+      <span class="text-xs mt-1">${lv ? moodEmojis[lv] : ''}</span>
+    </div>`;
+  }).join('');
+
+  const lbEl = document.getElementById('moodChartLabels');
+  lbEl.innerHTML = labels.map(l => `<span class="flex-1 text-center">${l}</span>`).join('');
+}
+
+function nextQuote() {
+  moodQuoteIdx = (moodQuoteIdx + 1) % moodQuotes.length;
+  STORE.set('moodQuoteIdx', moodQuoteIdx);
+  document.getElementById('energyQuote').textContent = moodQuotes[moodQuoteIdx];
+}
+
+function prevQuote() {
+  moodQuoteIdx = (moodQuoteIdx - 1 + moodQuotes.length) % moodQuotes.length;
+  STORE.set('moodQuoteIdx', moodQuoteIdx);
+  document.getElementById('energyQuote').textContent = moodQuotes[moodQuoteIdx];
 }
 
 // ---------- 育儿宝典 ----------
@@ -1880,9 +2101,9 @@ function renderCustomNav() {
   nav.querySelectorAll('.custom-nav').forEach(b => b.remove());
   customModules.forEach(m => {
     const btn = document.createElement('button');
-    btn.className = 'nav-item custom-nav w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3';
+    btn.className = 'bottom-nav-item custom-nav px-2 py-1 rounded-xl text-xs';
     btn.dataset.section = 'custom_' + m.id;
-    btn.innerHTML = `<span>${m.icon}</span><span class="hidden md:inline">${escapeHtml(m.name)}</span>`;
+    btn.innerHTML = `<span class="text-xl">${m.icon}</span><span>${escapeHtml(m.name)}</span>`;
     btn.addEventListener('click', () => showCustomModule(m.id));
     nav.insertBefore(btn, nav.lastElementChild); // 插在「新建模块」按钮前面
   });
@@ -2037,6 +2258,7 @@ renderTravelSelect();
 renderTravelPlan();
 initDiet();
 renderWorkouts();
+renderMoodModule();
 renderParenting();
 renderReview();
 setInterval(checkWorkoutReminder, 60000);
@@ -2055,5 +2277,53 @@ if (customModules.length === 0 && !localStorage.getItem('hcj_customInited')) {
   renderCustomSections();
 }
 </script>
+
+<!-- 底部导航 -->
+<nav id="bottomNav" class="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-pink-100 pb-safe" style="padding-bottom: env(safe-area-inset-bottom);">
+  <div class="max-w-4xl mx-auto overflow-x-auto">
+    <div class="flex items-center justify-start min-w-full px-2 py-2" id="nav">
+      <button class="bottom-nav-item active px-2 py-1 rounded-xl text-xs" data-section="tasks">
+        <span class="text-xl">📋</span><span>每日任务</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="diet">
+        <span class="text-xl">⚖️</span><span>减肥</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="english">
+        <span class="text-xl">🌍</span><span>英语</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="finance">
+        <span class="text-xl">💰</span><span>收支</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="savings">
+        <span class="text-xl">🐷</span><span>存钱</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="mood">
+        <span class="text-xl">😊</span><span>情绪</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="ideas">
+        <span class="text-xl">💡</span><span>灵感</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="trends">
+        <span class="text-xl">🔥</span><span>热点</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="parenting">
+        <span class="text-xl">👶</span><span>育儿</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="memo">
+        <span class="text-xl">📝</span><span>备忘</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="travel">
+        <span class="text-xl">✈️</span><span>旅游</span>
+      </button>
+      <button class="bottom-nav-item px-2 py-1 rounded-xl text-xs" data-section="review">
+        <span class="text-xl">🌙</span><span>复盘</span>
+      </button>
+      <button onclick="openNewModuleDialog()" class="bottom-nav-item px-2 py-1 rounded-xl text-xs text-gray-400">
+        <span class="text-xl">➕</span><span>新建</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
 </body>
 </html>
