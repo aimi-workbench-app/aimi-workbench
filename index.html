@@ -78,17 +78,26 @@
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="finance">
         <span>💰</span><span class="hidden md:inline">每月收支</span>
       </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="savings">
+        <span>🐷</span><span class="hidden md:inline">存钱计划</span>
+      </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="ideas">
         <span>💡</span><span class="hidden md:inline">每日灵感</span>
       </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="trends">
         <span>🔥</span><span class="hidden md:inline">爆款热点/二创</span>
       </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="parenting">
+        <span>👶</span><span class="hidden md:inline">育儿宝典</span>
+      </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="memo">
         <span>📝</span><span class="hidden md:inline">备忘录</span>
       </button>
       <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="travel">
         <span>✈️</span><span class="hidden md:inline">旅游计划</span>
+      </button>
+      <button class="nav-item w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3" data-section="review">
+        <span>🌙</span><span class="hidden md:inline">每日复盘</span>
       </button>
 <button onclick="openNewModuleDialog()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm flex items-center gap-3 border-2 border-dashed border-gray-300 text-gray-500 hover:border-pink-400 hover:text-pink-500 transition">
         <span>➕</span><span class="hidden md:inline">新建模块</span>
@@ -104,6 +113,24 @@
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-bold text-lg flex items-center gap-2">📋 每日任务</h2>
         <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded-full" id="taskProgress">0/0</span>
+      </div>
+
+      <!-- 日历日期 -->
+      <div class="bg-gradient-to-br from-pink-100 via-pink-50 to-purple-100 rounded-2xl p-4 mb-4 border border-pink-200">
+        <div class="flex items-center gap-4">
+          <div class="bg-white rounded-xl px-4 py-3 text-center shadow-sm border border-pink-100">
+            <div class="text-xs text-gray-500" id="calMonth">7月</div>
+            <div class="text-3xl font-bold text-pink-500" id="calDay">26</div>
+            <div class="text-xs text-gray-400" id="calWeekday">周六</div>
+          </div>
+          <div class="flex-1">
+            <div class="text-sm font-semibold text-gray-700" id="calFullDate">2026年7月26日</div>
+            <div class="text-xs text-gray-500 mt-1" id="calGreeting">又是元气满满的一天！</div>
+            <div class="flex gap-2 mt-2">
+              <span class="text-xs bg-pink-200 text-pink-700 px-2 py-0.5 rounded-full" id="calTaskHint">今日待办</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="grid md:grid-cols-2 gap-4">
@@ -233,10 +260,16 @@
 
       <!-- 跟读练习 -->
       <div class="bg-gray-50 rounded-xl p-4 mt-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习</div>
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习 <span class="text-xs text-pink-500 bg-pink-50 px-2 py-0.5 rounded-full">👩‍🏫 老师带读</span></div>
         <div class="flex gap-2 mb-3">
-          <input type="text" id="newReadSentence" placeholder="要跟读的句子…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
+          <input type="text" id="newReadSentence" placeholder="输入要跟读的英语句子…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addReadSentence()">
           <button onclick="addReadSentence()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">添加</button>
+        </div>
+        <div class="flex gap-2 mb-3 items-center">
+          <span class="text-xs text-gray-500">语速：</span>
+          <input type="range" id="readSpeed" min="0.5" max="1.5" step="0.1" value="0.8" class="accent-pink-500" oninput="document.getElementById('readSpeedVal').textContent=this.value" style="width:80px;">
+          <span class="text-xs text-gray-500" id="readSpeedVal">0.8</span>
+          <button onclick="readAllSentences()" class="text-xs bg-purple-100 text-purple-600 px-3 py-1 rounded-full hover:bg-purple-200">📢 全部朗读</button>
         </div>
         <div id="readList" class="space-y-2"></div>
         <div class="flex gap-4 mt-3 text-xs text-gray-500">
@@ -251,67 +284,144 @@
       <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
         <h2 class="font-bold text-lg flex items-center gap-2">💰 每月收支</h2>
         <div class="flex items-center gap-2">
-          <input type="month" id="financeMonth" class="text-sm px-3 py-1.5 rounded-lg border border-gray-200">
-          <button onclick="switchFinanceMonth()" class="bg-gray-100 px-3 py-1.5 rounded-lg text-sm">切换</button>
+          <input type="month" id="financeMonth" class="text-sm px-3 py-1.5 rounded-lg border border-gray-200" onchange="switchFinanceMonth()">
         </div>
       </div>
 
       <!-- 汇总卡片 -->
       <div class="grid grid-cols-3 gap-3 mb-4">
-        <div class="bg-pink-50 rounded-xl p-4">
-          <div class="text-xs text-gray-600">收入</div>
-          <div class="text-xl font-bold text-pink-500 mt-1" id="totalIncome">¥0</div>
+        <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-4 text-center border border-pink-200">
+          <div class="text-xs text-gray-500 mb-1">💰 收入</div>
+          <div class="text-xl font-bold text-pink-500" id="totalIncome">¥0</div>
         </div>
-        <div class="bg-red-50 rounded-xl p-4">
-          <div class="text-xs text-gray-600">支出</div>
-          <div class="text-xl font-bold text-red-600 mt-1" id="totalExpense">¥0</div>
+        <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-4 text-center border border-red-200">
+          <div class="text-xs text-gray-500 mb-1">💸 支出</div>
+          <div class="text-xl font-bold text-red-500" id="totalExpense">¥0</div>
         </div>
-        <div class="bg-blue-50 rounded-xl p-4">
-          <div class="text-xs text-gray-600">结余</div>
-          <div class="text-xl font-bold text-blue-700 mt-1" id="totalBalance">¥0</div>
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4 text-center border border-purple-200">
+          <div class="text-xs text-gray-500 mb-1">🏦 结余</div>
+          <div class="text-xl font-bold text-purple-600" id="totalBalance">¥0</div>
         </div>
       </div>
 
-      <!-- 记账输入 -->
-      <div class="bg-gray-50 rounded-xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3">✍️ 记一笔</div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-          <select id="finType" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-            <option value="income">收入</option>
-            <option value="expense">支出</option>
+      <!-- 快捷记账 -->
+      <div class="bg-gradient-to-br from-pink-50 to-white rounded-2xl p-4 mb-4 border border-pink-100">
+        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">✍️ 记一笔</div>
+        <div class="flex gap-2 mb-3">
+          <button onclick="setFinType('expense')" id="finBtnExpense" class="flex-1 py-2 rounded-xl text-sm font-medium bg-red-500 text-white">💸 支出</button>
+          <button onclick="setFinType('income')" id="finBtnIncome" class="flex-1 py-2 rounded-xl text-sm font-medium bg-gray-100 text-gray-500">💰 收入</button>
+        </div>
+        <input type="hidden" id="finType" value="expense">
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <input type="number" id="finAmount" placeholder="金额" class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm">
+          <select id="finCategory" class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm">
+            <option value="">分类</option>
+            <option value="餐饮">🍜 餐饮</option>
+            <option value="购物">🛍️ 购物</option>
+            <option value="交通">🚗 交通</option>
+            <option value="宝宝">👶 宝宝</option>
+            <option value="居家">🏠 居家</option>
+            <option value="娱乐">🎉 娱乐</option>
+            <option value="医疗">🏥 医疗</option>
+            <option value="其他">📦 其他</option>
           </select>
-          <input type="number" id="finAmount" placeholder="金额" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="text" id="finCategory" placeholder="分类（如工资/奶粉/尿不湿）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <input type="text" id="finUsage" placeholder="用途说明（必填）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
         </div>
-        <div class="flex gap-2">
-          <input type="text" id="finDate" placeholder="日期（如 7-24，留空为今天）" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-          <button onclick="addFinance()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">记一笔</button>
-        </div>
+        <input type="text" id="finNote" placeholder="备注（如：给宝宝买尿不湿）" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm mb-3">
+        <button onclick="addFinance()" class="w-full bg-pink-500 text-white py-2.5 rounded-xl text-sm font-medium">💾 记一笔</button>
       </div>
 
       <!-- 流水列表 -->
-      <div class="bg-gray-50 rounded-xl p-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3">📋 本月流水（每笔用途已标注）</div>
+      <div class="bg-gray-50 rounded-2xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📋 本月流水</div>
         <div id="financeList" class="space-y-2"></div>
       </div>
+    </section>
+    <!-- 存钱计划 -->
+    <section id="savings" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">🐷 存钱计划</h2>
+        <span class="text-xs text-gray-500" id="savingsMonthLabel"></span>
+      </div>
 
-      <!-- 存钱计划 -->
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 mt-4 border border-pink-100">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🐷 存钱计划（每月打卡）</div>
-        <div class="grid grid-cols-2 gap-3 mb-3">
-          <div class="bg-white rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">给自己存</div>
-            <div class="text-lg font-bold text-pink-500">¥300/月</div>
-            <button onclick="toggleSavings('self')" id="savingsSelfBtn" class="mt-2 text-xs px-3 py-1 rounded-full">未打卡</button>
+      <!-- 自己存钱 -->
+      <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-5 mb-4 border border-pink-200">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="text-sm font-semibold text-pink-600">💖 给自己存</div>
+            <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-pink-500" id="selfGoalDisplay">¥300</span></div>
           </div>
-          <div class="bg-white rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-500">给宝宝存</div>
-            <div class="text-lg font-bold text-purple-500">¥200/月</div>
-            <button onclick="toggleSavings('baby')" id="savingsBabyBtn" class="mt-2 text-xs px-3 py-1 rounded-full">未打卡</button>
+          <button onclick="toggleSavings('self')" id="savingsSelfBtn" class="px-5 py-2.5 rounded-xl text-sm font-medium bg-white text-pink-500 border border-pink-200">打卡</button>
+        </div>
+        <div class="bg-white rounded-xl p-3">
+          <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span>已存</span><span>目标</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-3">
+            <div class="bg-pink-500 rounded-full h-3 transition-all" id="selfProgressBar" style="width:0%"></div>
+          </div>
+          <div class="flex justify-between text-xs mt-1">
+            <span class="text-pink-500 font-bold" id="selfSaved">¥0</span>
+            <span class="text-gray-400" id="selfGoalBar">¥0</span>
           </div>
         </div>
-        <div class="text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100" id="savingsSummary">
+      </div>
+
+      <!-- 宝宝存钱 -->
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-5 mb-4 border border-purple-200">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="text-sm font-semibold text-purple-600">👶 给宝宝存</div>
+            <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-purple-500" id="babyGoalDisplay">¥200</span></div>
+          </div>
+          <button onclick="toggleSavings('baby')" id="savingsBabyBtn" class="px-5 py-2.5 rounded-xl text-sm font-medium bg-white text-purple-500 border border-purple-200">打卡</button>
+        </div>
+        <div class="bg-white rounded-xl p-3">
+          <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span>已存</span><span>目标</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-3">
+            <div class="bg-purple-500 rounded-full h-3 transition-all" id="babyProgressBar" style="width:0%"></div>
+          </div>
+          <div class="flex justify-between text-xs mt-1">
+            <span class="text-purple-500 font-bold" id="babySaved">¥0</span>
+            <span class="text-gray-400" id="babyGoalBar">¥0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 设置目标 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">⚙️ 调整目标</div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-gray-500">自己每月存</label>
+            <input type="number" id="selfGoalInput" value="300" class="w-full mt-1 px-3 py-2 rounded-xl border border-gray-200 text-sm" onchange="saveSavingsGoal()">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500">宝宝每月存</label>
+            <input type="number" id="babyGoalInput" value="200" class="w-full mt-1 px-3 py-2 rounded-xl border border-gray-200 text-sm" onchange="saveSavingsGoal()">
+          </div>
+        </div>
+      </div>
+
+      <!-- 累计总结 -->
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-5 border border-pink-100">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📊 累计总结</div>
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="bg-white rounded-xl p-3">
+            <div class="text-xs text-gray-500">自己累计</div>
+            <div class="text-lg font-bold text-pink-500" id="selfTotal">¥0</div>
+          </div>
+          <div class="bg-white rounded-xl p-3">
+            <div class="text-xs text-gray-500">宝宝累计</div>
+            <div class="text-lg font-bold text-purple-500" id="babyTotal">¥0</div>
+          </div>
+          <div class="bg-white rounded-xl p-3">
+            <div class="text-xs text-gray-500">总计</div>
+            <div class="text-lg font-bold text-pink-600" id="savingsGrandTotal">¥0</div>
+          </div>
+        </div>
+        <div class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100" id="savingsSummary">
           还没有存钱记录。
         </div>
       </div>
@@ -342,6 +452,28 @@
       <div class="mt-4 text-xs text-gray-500 bg-blue-50 border border-blue-100 rounded-lg p-3">
         💡 想接入真实抖音数据？运行 <code>python3 refresh_trends.py</code> 并替换其中的 API token。
       </div>
+    </section>
+    <!-- 育儿宝典 -->
+    <section id="parenting" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">👶 育儿宝典</h2>
+        <span class="text-xs text-gray-500">科学育儿，轻松带娃</span>
+      </div>
+
+      <!-- 搜索和筛选 -->
+      <div class="flex gap-2 mb-4">
+        <input type="text" id="parentingSearch" placeholder="搜索育儿知识…" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-sm" oninput="filterParenting()">
+        <select id="parentingAge" class="px-3 py-2 rounded-xl border border-gray-200 text-sm" onchange="filterParenting()">
+          <option value="all">全部月龄</option>
+          <option value="0-6">0-6个月</option>
+          <option value="6-12">6-12个月</option>
+          <option value="12-24">1-2岁</option>
+          <option value="24-36">2-3岁</option>
+        </select>
+      </div>
+
+      <!-- 知识卡片列表 -->
+      <div id="parentingList" class="space-y-3"></div>
     </section>
     <!-- 备忘录 -->
     <section id="memo" class="hidden-section card p-5 fade-in">
@@ -441,25 +573,59 @@
         <div class="mt-3 text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-100" id="tpSummary">
           填好上面五项 + 车费，这里自动生成一段一看就懂的攻略摘要。
         </div>
-
-        <!-- 路线图 -->
-        <div class="mt-3">
-          <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">🗺️ 路线图（一眼看懂）</div>
-          <textarea id="tpRoute" rows="5" placeholder="每一天的路线，一行一天…&#10;如：&#10;Day1 杭州东站→西湖（步行）→断桥→苏堤→河坊街夜市&#10;Day2 灵隐寺→法喜寺→龙井村（打车15元）→返程" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
-          <button onclick="saveTravelRoute()" class="mt-2 bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">保存路线</button>
-        </div>
-        <div id="tpRouteView" class="mt-3 text-xs text-gray-700 bg-white rounded-lg p-3 border border-gray-100" style="white-space:pre-line;line-height:1.8;"></div>
-
-        <!-- 路线图片 -->
-        <div class="mt-3">
-          <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">📸 路线图片（截图/手绘都行）</div>
-          <input type="file" accept="image/*" onchange="uploadRouteImage(event)" class="text-xs text-gray-500">
-          <div id="tpImages" class="mt-2 grid grid-cols-2 gap-2"></div>
-        </div>
       </div>
 
       <div class="mt-3 text-xs text-gray-400 bg-yellow-50 border border-yellow-100 rounded-lg p-3">
         💡 懒人用法：填好目的地和五大类（吃/喝/玩/乐/住）+ 车费预算，点保存，下面自动算出总花销和人均，一键复制就能发给家人朋友。
+      </div>
+    </section>
+
+    <!-- 每日复盘 -->
+    <section id="review" class="hidden-section card p-5 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">🌙 每日复盘</h2>
+        <span class="text-xs text-gray-500" id="reviewDate"></span>
+      </div>
+
+      <!-- 今日数据概览 -->
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mb-4 border border-pink-100">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📊 今日概览</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center" id="reviewSummary"></div>
+      </div>
+
+      <!-- 心情记录 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">😊 今天心情</div>
+        <div class="flex gap-2 mb-3" id="moodPicker">
+          <button onclick="setMood('😄','开心')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😄</button>
+          <button onclick="setMood('🙂','还行')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">🙂</button>
+          <button onclick="setMood('😐','一般')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😐</button>
+          <button onclick="setMood('😔','不好')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😔</button>
+          <button onclick="setMood('😢','难过')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😢</button>
+        </div>
+        <div id="moodDisplay" class="text-sm text-gray-500"></div>
+      </div>
+
+      <!-- 今日总结 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">✏️ 今日总结</div>
+        <textarea id="reviewToday" rows="3" placeholder="今天完成了什么？有什么收获和感悟？" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm" oninput="autoSaveReview()"></textarea>
+      </div>
+
+      <!-- 明日计划 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">🎯 明日计划</div>
+        <div class="flex gap-2 mb-3">
+          <input type="text" id="newReviewPlan" placeholder="加一项明日计划…" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addReviewPlan()">
+          <button onclick="addReviewPlan()" class="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm">+</button>
+        </div>
+        <ul id="reviewPlanList" class="space-y-2"></ul>
+      </div>
+
+      <!-- 复盘历史 -->
+      <div class="bg-gray-50 rounded-2xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📅 历史复盘</div>
+        <div id="reviewHistory" class="space-y-2 text-xs"></div>
       </div>
     </section>
 
@@ -551,7 +717,23 @@ function toast(msg) {
 }
 
 const today = new Date();
-document.getElementById('todayDate').textContent = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日 星期${['日','一','二','三','四','五','六'][today.getDay()]}`;
+const weekdays = ['日','一','二','三','四','五','六'];
+document.getElementById('todayDate').textContent = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日 星期${weekdays[today.getDay()]}`;
+// 日历日期
+document.getElementById('calMonth').textContent = (today.getMonth()+1) + '月';
+document.getElementById('calDay').textContent = today.getDate();
+document.getElementById('calWeekday').textContent = '周' + weekdays[today.getDay()];
+document.getElementById('calFullDate').textContent = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+const hour = today.getHours();
+let greeting = '又是元气满满的一天！';
+if (hour < 6) greeting = '夜深了，早点休息～';
+else if (hour < 9) greeting = '早安，新的一天开始啦！';
+else if (hour < 12) greeting = '上午好，高效时光！';
+else if (hour < 14) greeting = '中午好，别忘了午休～';
+else if (hour < 18) greeting = '下午好，继续加油！';
+else if (hour < 22) greeting = '晚上好，放松一下吧～';
+else greeting = '夜深了，早点休息～';
+document.getElementById('calGreeting').textContent = greeting;
 
 // ---------- 数据存储 ----------
 const STORE = {
@@ -643,7 +825,7 @@ function addTask(col) {
   input.value = '';
   saveTasks();
 }
-function saveTasks() { STORE.set('tasks', tasks); renderTasks(); }
+function saveTasks() { STORE.set('tasks', tasks); renderTasks(); updateReviewSummary(); }
 
 // ---------- 爆款热点 ----------
 async function loadTrends() {
@@ -777,7 +959,7 @@ function renderEnglishTasks() {
   document.getElementById('engStreak').textContent = engStreak.count;
 }
 
-function toggleEnglishTask(idx) { englishTasks[idx].done = !englishTasks[idx].done; STORE.set('englishTasks', englishTasks); renderEnglishTasks(); }
+function toggleEnglishTask(idx) { englishTasks[idx].done = !englishTasks[idx].done; STORE.set('englishTasks', englishTasks); renderEnglishTasks(); updateReviewSummary(); }
 function delEnglishTask(idx) { englishTasks.splice(idx,1); STORE.set('englishTasks', englishTasks); renderEnglishTasks(); }
 function addEnglishTask() {
   const input = document.getElementById('newEnglishTask');
@@ -806,10 +988,11 @@ function renderReadList() {
     const colors = { ok: 'border-green-300 bg-pink-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
     const labels = { ok: '🟢 会读', bad: '🟡 不会读', unknown: '🔴 不认识' };
     const div = document.createElement('div');
-    div.className = `flex items-center gap-2 px-3 py-2 rounded-lg border ${colors[rs.status]}`;
+    div.className = `flex items-center gap-2 px-3 py-2 rounded-lg border ${colors[rs.status]} flex-wrap`;
     div.innerHTML = `
-      <span class="text-sm flex-1">${escapeHtml(rs.text)}</span>
-      <span class="text-xs text-gray-500">${labels[rs.status]}</span>
+      <span class="text-sm flex-1 min-w-0 break-all">${escapeHtml(rs.text)}</span>
+      <button onclick="readSentence(${idx})" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 shrink-0" title="老师带读">🔊</button>
+      <span class="text-xs text-gray-500 shrink-0">${labels[rs.status]}</span>
       <button onclick="setReadStatus(${idx},'ok')" class="text-xs px-2 py-1 rounded ${rs.status==='ok'?'bg-pink-500 text-white':'bg-gray-200'}">会读</button>
       <button onclick="setReadStatus(${idx},'bad')" class="text-xs px-2 py-1 rounded ${rs.status==='bad'?'bg-yellow-500 text-white':'bg-gray-200'}">不会读</button>
       <button onclick="setReadStatus(${idx},'unknown')" class="text-xs px-2 py-1 rounded ${rs.status==='unknown'?'bg-red-500 text-white':'bg-gray-200'}">不认识</button>
@@ -822,6 +1005,48 @@ function renderReadList() {
   document.getElementById('readUnknownCount').textContent = unknown;
   const el2 = document.getElementById('engReadCount');
   if (el2) el2.textContent = readSentences.length;
+}
+
+// TTS 老师带读
+function readSentence(idx) {
+  const text = readSentences[idx].text;
+  if (!text) return;
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = parseFloat(document.getElementById('readSpeed').value) || 0.8;
+    utterance.pitch = 1.1;
+    // 选择女声
+    const voices = window.speechSynthesis.getVoices();
+    const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+    if (enVoice) utterance.voice = enVoice;
+    window.speechSynthesis.speak(utterance);
+  } else {
+    toast('你的浏览器不支持语音朗读');
+  }
+}
+
+function readAllSentences() {
+  if (!('speechSynthesis' in window)) { toast('你的浏览器不支持语音朗读'); return; }
+  window.speechSynthesis.cancel();
+  const rate = parseFloat(document.getElementById('readSpeed').value) || 0.8;
+  const voices = window.speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || voices.find(v => v.lang.startsWith('en'));
+  readSentences.forEach((rs, i) => {
+    const utterance = new SpeechSynthesisUtterance(rs.text);
+    utterance.lang = 'en-US';
+    utterance.rate = rate;
+    utterance.pitch = 1.1;
+    if (enVoice) utterance.voice = enVoice;
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
+// 预加载语音列表（部分浏览器需要异步加载）
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
 }
 
 function addReadSentence() {
@@ -838,6 +1063,7 @@ function setReadStatus(idx, status) {
   readSentences[idx].status = status;
   STORE.set('readSentences', readSentences);
   renderReadList();
+  updateReviewSummary();
 }
 
 function delReadSentence(idx) {
@@ -1003,9 +1229,10 @@ function addWorkout() {
   input.value = '';
   STORE.set('workouts', workouts);
   renderWorkouts();
+  updateReviewSummary();
 }
 
-function toggleWorkout(idx) { workouts[idx].done = !workouts[idx].done; STORE.set('workouts', workouts); renderWorkouts(); }
+function toggleWorkout(idx) { workouts[idx].done = !workouts[idx].done; STORE.set('workouts', workouts); renderWorkouts(); updateReviewSummary(); }
 function delWorkout(idx) { workouts.splice(idx,1); STORE.set('workouts', workouts); renderWorkouts(); }
 
 // 晚上10点自动提醒更新健身内容
@@ -1022,6 +1249,26 @@ function checkWorkoutReminder() {
 }
 
 // ---------- 每月收支 ----------
+let finType = 'expense'; // 默认支出
+
+function setFinType(type) {
+  finType = type;
+  document.getElementById('finType').value = type;
+  document.getElementById('finBtnExpense').className = 'flex-1 py-2 rounded-xl text-sm font-medium ' + (type==='expense' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500');
+  document.getElementById('finBtnIncome').className = 'flex-1 py-2 rounded-xl text-sm font-medium ' + (type==='income' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500');
+  // 切换支出/收入时更新分类下拉
+  updateFinCategory();
+}
+
+function updateFinCategory() {
+  const sel = document.getElementById('finCategory');
+  if (finType === 'expense') {
+    sel.innerHTML = '<option value="">分类</option><option value="餐饮">🍜 餐饮</option><option value="购物">🛍️ 购物</option><option value="交通">🚗 交通</option><option value="宝宝">👶 宝宝</option><option value="居家">🏠 居家</option><option value="娱乐">🎉 娱乐</option><option value="医疗">🏥 医疗</option><option value="其他">📦 其他</option>';
+  } else {
+    sel.innerHTML = '<option value="">分类</option><option value="工资">💼 工资</option><option value="兼职">💻 兼职</option><option value="理财">📈 理财</option><option value="红包">🧧 红包</option><option value="其他">📦 其他</option>';
+  }
+}
+
 function getCurrentFinanceList() {
   if (!financeData[financeCurrentMonth]) financeData[financeCurrentMonth] = [];
   return financeData[financeCurrentMonth];
@@ -1039,48 +1286,48 @@ function renderFinance() {
   const balance = income - expense;
   const balEl = document.getElementById('totalBalance');
   balEl.textContent = '¥' + balance.toLocaleString();
-  balEl.className = 'text-xl font-bold mt-1 ' + (balance >= 0 ? 'text-blue-700' : 'text-red-600');
+  balEl.className = 'text-xl font-bold ' + (balance >= 0 ? 'text-purple-600' : 'text-red-600');
 
   const el = document.getElementById('financeList');
   el.innerHTML = '';
-  if (list.length === 0) { el.innerHTML = '<div class="text-xs text-gray-400">本月还没有记录。</div>'; return; }
-  // 按日期倒序
+  if (list.length === 0) { el.innerHTML = '<div class="text-xs text-gray-400 text-center py-4">本月还没有记录，记一笔吧～</div>'; return; }
   const sorted = [...list].sort((a,b) => (b.date||'').localeCompare(a.date||''));
-  sorted.forEach((item, idx) => {
+  sorted.forEach((item) => {
     const realIdx = list.indexOf(item);
+    const isIncome = item.type === 'income';
     const div = document.createElement('div');
-    div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-3';
+    div.className = 'bg-white px-4 py-3 rounded-xl border border-gray-100 flex items-center gap-3';
     div.innerHTML = `
-      <div class="w-2 h-2 rounded-full ${item.type==='income'?'bg-pink-500':'bg-red-500'}"></div>
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg ${isIncome ? 'bg-pink-100' : 'bg-red-100'}">${isIncome ? '💰' : '💸'}</div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-sm font-medium ${item.type==='income'?'text-pink-500':'text-red-600'}">${item.type==='income'?'+':'-'}¥${item.amount.toLocaleString()}</span>
-          <span class="text-xs text-gray-500">[${item.category}]</span>
-          <span class="text-xs text-gray-400">${item.date||'未填日期'}</span>
+          <span class="text-sm font-bold ${isIncome ? 'text-pink-500' : 'text-red-500'}">${isIncome?'+':'-'}¥${item.amount.toLocaleString()}</span>
+          <span class="text-xs px-2 py-0.5 rounded-full ${isIncome?'bg-pink-50 text-pink-600':'bg-red-50 text-red-600'}">${item.category||'未分类'}</span>
         </div>
-        <div class="text-xs text-gray-600 mt-0.5">用途：${item.usage||'未标注'}</div>
+        <div class="text-xs text-gray-500 mt-1">${item.note||item.usage||''} · ${item.date||''}</div>
       </div>
-      <button onclick="delFinance(${realIdx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+      <button onclick="delFinance(${realIdx})" class="text-gray-400 hover:text-red-500 text-sm shrink-0">✕</button>
     `;
     el.appendChild(div);
   });
 }
 
 function addFinance() {
-  const type = document.getElementById('finType').value;
+  const type = finType;
   const amount = +document.getElementById('finAmount').value;
-  const category = document.getElementById('finCategory').value.trim();
-  const usage = document.getElementById('finUsage').value.trim();
-  const dateRaw = document.getElementById('finDate').value.trim();
+  const category = document.getElementById('finCategory').value;
+  const note = document.getElementById('finNote').value.trim();
   if (!amount || amount <= 0) return toast('请填写有效金额');
-  if (!usage) return toast('请标注这笔钱的用途');
+  if (!category) return toast('请选择分类');
   const list = getCurrentFinanceList();
-  const today = new Date();
-  const date = dateRaw || `${today.getMonth()+1}-${today.getDate()}`;
-  list.push({ id: 'f'+Date.now(), type, amount, category: category||'未分类', usage, date });
+  const now = new Date();
+  const date = `${now.getMonth()+1}-${now.getDate()}`;
+  list.push({ id: 'f'+Date.now(), type, amount, category, usage: note||category, note: note||'', date });
   STORE.set('finance', financeData);
-  ['finAmount','finCategory','finUsage','finDate'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('finAmount').value = '';
+  document.getElementById('finNote').value = '';
   renderFinance();
+  updateReviewSummary();
 }
 
 function delFinance(idx) {
@@ -1088,54 +1335,91 @@ function delFinance(idx) {
   list.splice(idx, 1);
   STORE.set('finance', financeData);
   renderFinance();
+  updateReviewSummary();
 }
 
 function switchFinanceMonth() {
   financeCurrentMonth = document.getElementById('financeMonth').value || financeCurrentMonth;
   renderFinance();
-  renderSavings();
 }
 
 // ---------- 存钱计划 ----------
-let savings = STORE.get('savings', {});
+let savingsData = STORE.get('savingsData', {}); // { '2026-07': { self: true, baby: false } }
+let savingsGoals = STORE.get('savingsGoals', { self: 300, baby: 200 });
 
 function getCurrentSavings() {
-  if (!savings[financeCurrentMonth]) savings[financeCurrentMonth] = { self: false, baby: false };
-  return savings[financeCurrentMonth];
+  const month = new Date().toISOString().slice(0,7);
+  if (!savingsData[month]) savingsData[month] = { self: false, baby: false };
+  return savingsData[month];
 }
 
 function toggleSavings(type) {
-  const s = getCurrentSavings();
-  s[type] = !s[type];
-  STORE.set('savings', savings);
+  const month = new Date().toISOString().slice(0,7);
+  if (!savingsData[month]) savingsData[month] = { self: false, baby: false };
+  savingsData[month][type] = !savingsData[month][type];
+  STORE.set('savingsData', savingsData);
+  renderSavings();
+}
+
+function saveSavingsGoal() {
+  savingsGoals.self = +document.getElementById('selfGoalInput').value || 300;
+  savingsGoals.baby = +document.getElementById('babyGoalInput').value || 200;
+  STORE.set('savingsGoals', savingsGoals);
   renderSavings();
 }
 
 function renderSavings() {
+  const month = new Date().toISOString().slice(0,7);
   const s = getCurrentSavings();
+  document.getElementById('savingsMonthLabel').textContent = month.replace('-','年')+'月';
+
+  // 目标显示
+  document.getElementById('selfGoalDisplay').textContent = '¥' + savingsGoals.self;
+  document.getElementById('babyGoalDisplay').textContent = '¥' + savingsGoals.baby;
+  document.getElementById('selfGoalInput').value = savingsGoals.self;
+  document.getElementById('babyGoalInput').value = savingsGoals.baby;
+
+  // 打卡按钮
   const selfBtn = document.getElementById('savingsSelfBtn');
-  const babyBtn = document.getElementById('savingsBabyBtn');
   if (selfBtn) {
-    selfBtn.textContent = s.self ? '✅ 已打卡' : '未打卡';
-    selfBtn.className = 'mt-2 text-xs px-3 py-1 rounded-full ' + (s.self ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500');
+    selfBtn.textContent = s.self ? '✅ 已打卡' : '打卡';
+    selfBtn.className = 'px-5 py-2.5 rounded-xl text-sm font-medium ' + (s.self ? 'bg-pink-500 text-white' : 'bg-white text-pink-500 border border-pink-200');
   }
+  const babyBtn = document.getElementById('savingsBabyBtn');
   if (babyBtn) {
-    babyBtn.textContent = s.baby ? '✅ 已打卡' : '未打卡';
-    babyBtn.className = 'mt-2 text-xs px-3 py-1 rounded-full ' + (s.baby ? 'bg-purple-500 text-white' : 'bg-gray-100 text-gray-500');
+    babyBtn.textContent = s.baby ? '✅ 已打卡' : '打卡';
+    babyBtn.className = 'px-5 py-2.5 rounded-xl text-sm font-medium ' + (s.baby ? 'bg-purple-500 text-white' : 'bg-white text-purple-500 border border-purple-200');
   }
-  const sum = document.getElementById('savingsSummary');
-  if (sum) {
-    const total = (s.self ? 300 : 0) + (s.baby ? 200 : 0);
-    const months = Object.keys(savings).sort();
-    let totalSelf = 0, totalBaby = 0, totalAll = 0;
-    months.forEach(m => {
-      if (savings[m].self) totalSelf += 300;
-      if (savings[m].baby) totalBaby += 200;
-    });
-    totalAll = totalSelf + totalBaby;
-    sum.textContent = `本月已存 ¥${total}（自己 ${s.self?'✅':'⬜'} 宝宝 ${s.baby?'✅':'⬜'}）\n累计：自己 ¥${totalSelf} + 宝宝 ¥${totalBaby} = ¥${totalAll}（共 ${months.filter(m=>savings[m].self||savings[m].baby).length} 个月）`;
-    sum.style.whiteSpace = 'pre-line';
-  }
+
+  // 进度条
+  const selfProgress = document.getElementById('selfProgressBar');
+  if (selfProgress) selfProgress.style.width = s.self ? '100%' : '0%';
+  const babyProgress = document.getElementById('babyProgressBar');
+  if (babyProgress) babyProgress.style.width = s.baby ? '100%' : '0%';
+
+  document.getElementById('selfSaved').textContent = s.self ? '¥'+savingsGoals.self : '¥0';
+  document.getElementById('selfGoalBar').textContent = '¥'+savingsGoals.self;
+  document.getElementById('babySaved').textContent = s.baby ? '¥'+savingsGoals.baby : '¥0';
+  document.getElementById('babyGoalBar').textContent = '¥'+savingsGoals.baby;
+
+  // 累计计算
+  const months = Object.keys(savingsData).sort();
+  let totalSelf = 0, totalBaby = 0;
+  months.forEach(m => {
+    if (savingsData[m].self) totalSelf += savingsGoals.self;
+    if (savingsData[m].baby) totalBaby += savingsGoals.baby;
+  });
+  document.getElementById('selfTotal').textContent = '¥' + totalSelf.toLocaleString();
+  document.getElementById('babyTotal').textContent = '¥' + totalBaby.toLocaleString();
+  document.getElementById('savingsGrandTotal').textContent = '¥' + (totalSelf + totalBaby).toLocaleString();
+
+  const completedMonths = months.filter(m => savingsData[m].self || savingsData[m].baby).length;
+  document.getElementById('savingsSummary').textContent =
+    `已坚持 ${completedMonths} 个月 💪\n` +
+    `自己：累计 ¥${totalSelf.toLocaleString()}（每月 ¥${savingsGoals.self}）\n` +
+    `宝宝：累计 ¥${totalBaby.toLocaleString()}（每月 ¥${savingsGoals.baby}）\n` +
+    `总计存了 ¥${(totalSelf+totalBaby).toLocaleString()}，继续加油！`;
+  document.getElementById('savingsSummary').style.whiteSpace = 'pre-line';
 }
 
 // ---------- 备忘录 ----------
@@ -1232,9 +1516,7 @@ function renderTravelPlan() {
   document.getElementById('tpBudgetPlay').value = p.budgetPlay || '';
   document.getElementById('tpBudgetStay').value = p.budgetStay || '';
   document.getElementById('tpBudgetOther').value = p.budgetOther || '';
-  document.getElementById('tpRoute').value = p.route || '';
   updateTravelSummary();
-  updateTravelRouteView();
 }
 
 function updateTravelSummary() {
@@ -1299,69 +1581,6 @@ function saveTravelBudget() {
   toast('攻略和车费已保存，下方已自动算出总花销');
 }
 
-function saveTravelRoute() {
-  if (!travelCurrentId) return toast('请先新建一个计划');
-  const p = travelPlans[travelCurrentId];
-  p.route = document.getElementById('tpRoute').value;
-  STORE.set('travelPlans', travelPlans);
-  updateTravelRouteView();
-  toast('路��已保存');
-}
-
-function updateTravelRouteView() {
-  const p = travelPlans[travelCurrentId] || {};
-  const el = document.getElementById('tpRouteView');
-  if (p.route) {
-    const lines = p.route.split('\n').filter(l => l.trim());
-    el.innerHTML = lines.map((line) => {
-      const trimmed = line.trim();
-      if (trimmed.startsWith('Day') || trimmed.startsWith('第')) {
-        return `<div style="margin-bottom:6px;font-weight:bold;color:#db2777;">📍 ${trimmed}</div>`;
-      }
-      return `<div style="margin-left:16px;margin-bottom:4px;color:#6b7280;">→ ${trimmed}</div>`;
-    }).join('');
-    if (lines.length === 0) el.textContent = '填好路线后这里会一目了然。';
-  } else {
-    el.textContent = '填好路线后这里会一目了然。';
-  }
-  // 渲染路线图片
-  const imgEl = document.getElementById('tpImages');
-  if (imgEl) {
-    const imgs = p.images || [];
-    imgEl.innerHTML = imgs.map((src, i) => `
-      <div class="relative">
-        <img src="${src}" class="w-full rounded-lg border border-pink-100" style="max-height:150px;object-fit:cover;">
-        <button onclick="delRouteImage(${i})" class="absolute top-1 right-1 bg-white/80 rounded-full w-6 h-6 text-xs text-red-500">✕</button>
-      </div>
-    `).join('');
-  }
-}
-
-function uploadRouteImage(event) {
-  if (!travelCurrentId) return toast('请先新建一个计划');
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const p = travelPlans[travelCurrentId];
-    if (!p.images) p.images = [];
-    p.images.push(e.target.result);
-    STORE.set('travelPlans', travelPlans);
-    updateTravelRouteView();
-    toast('图片已添加');
-  };
-  reader.readAsDataURL(file);
-  event.target.value = '';
-}
-
-function delRouteImage(idx) {
-  if (!travelCurrentId) return;
-  const p = travelPlans[travelCurrentId];
-  p.images.splice(idx, 1);
-  STORE.set('travelPlans', travelPlans);
-  updateTravelRouteView();
-}
-
 function newTravelPlan() {
   const name = prompt('给新计划起个名（如：暑假北京游）');
   if (!name) return;
@@ -1391,7 +1610,210 @@ function delTravelPlan() {
   if (travelCurrentId) renderTravelPlan();
 }
 
-// ---------- 自定义模块 ----------
+// ---------- 育儿宝典 ----------
+const parentingData = [
+  { id:'p1', title:'新生儿抚触操', age:'0-6', cat:'护理', content:'每天洗澡后做抚触操，促进宝宝感统发育。步骤：1) 脸部 2) 胸部 3) 腹部（顺时针）4) 手臂 5) 腿部 6) 背部。每次10-15分钟，室温保持26-28℃。', tags:['抚触','护理','新生儿'] },
+  { id:'p2', title:'二月闹/肠绞痛缓解', age:'0-6', cat:'护理', content:'肠绞痛通常在傍晚发作，宝宝哭闹不止。试试：飞机抱、顺时针揉肚子、白噪音、襁褓包裹。母乳妈妈注意饮食：少吃豆类、洋葱、奶制品。', tags:['肠绞痛','二月闹','安抚'] },
+  { id:'p3', title:'辅食添加顺序', age:'6-12', cat:'喂养', content:'6个月开始添加辅食：先高铁米粉→根茎类（南瓜/胡萝卜）→蔬菜泥→水果泥→蛋黄→肉泥。每种新食物观察3天，无过敏再加下一种。', tags:['辅食','喂养','6个月'] },
+  { id:'p4', title:'宝宝睡眠训练', age:'6-12', cat:'睡眠', content:'建立固定睡前仪式：洗澡→抚触→喂奶→讲故事→关灯。白天小睡规律化，晚上固定入睡时间。哭闹时先观察2-3分钟再回应，逐步延长等待时间。', tags:['睡眠','作息','训练'] },
+  { id:'p5', title:'1岁宝宝语言发育', age:'12-24', cat:'发育', content:'12-18个月会说10-20个单词，18-24个月进入语言爆发期。多和宝宝说话、读绘本、唱儿歌。不要纠正发音，多鼓励多回应。每天亲子阅读15分钟。', tags:['语言','发育','1岁'] },
+  { id:'p6', title:'如厕训练全攻略', age:'12-24', cat:'护理', content:'18-24个月是如厕训练黄金期。信号：能听懂指令、尿不湿干爽2小时以上、对马桶感兴趣。先坐小马桶熟悉→定时带宝宝坐→成功如厕后大力表扬。', tags:['如厕','训练','自理'] },
+  { id:'p7', title:'Terrible Two 应对指南', age:'24-36', cat:'心理', content:'2岁宝宝进入第一个叛逆期，爱说"不"。应对：给选择而非命令（"穿红色还是蓝色？"）、共情情绪、转移注意力、建立规则但保持弹性。记住：这不是针对你，是发育必经阶段。', tags:['叛逆期','2岁','心理'] },
+  { id:'p8', title:'宝宝发烧护理', age:'0-6', cat:'健康', content:'38.5℃以下物理降温：温水擦身、减少衣物、多喝水。38.5℃以上用退烧药（对乙酰氨基酚/布洛芬）。以下情况立即就医：3个月以下发烧、持续高热、精神差、抽搐。', tags:['发烧','护理','健康'] },
+  { id:'p9', title:'亲子游戏推荐', age:'12-24', cat:'早教', content:'1-2岁经典游戏：躲猫猫（认知物体恒存）、积木叠高（精细动作）、模仿动物叫（语言）、追泡泡（大运动）、撕纸贴画（创造力）。每天高质量陪伴30分钟。', tags:['游戏','早教','亲子'] },
+  { id:'p10', title:'断奶与转奶技巧', age:'6-12', cat:'喂养', content:'断奶循序渐进：先减白天→再减晨奶→最后断夜奶。转奶粉：旧奶粉:新奶粉=3:1→2:2→1:3→全换，每阶段3天。不要选在宝宝生病或打疫苗时。', tags:['断奶','喂养','转奶'] },
+  { id:'p11', title:'2-3岁社交能力培养', age:'24-36', cat:'早教', content:'多创造和同龄人玩耍机会，教宝宝轮流、分享、说"对不起"。不要强迫社交，尊重宝宝节奏。通过绘本讲解情绪（开心/生气/难过），帮助宝宝表达感受。', tags:['社交','早教','情绪'] },
+  { id:'p12', title:'宝宝疫苗接种时间表', age:'0-6', cat:'健康', content:'出生：卡介苗+乙肝① → 1月：乙肝② → 2月：脊灰① → 3月：百白破①+脊灰② → 4月：百白破②+脊灰③ → 6月：乙肝③+流脑A① → 8月：麻风+乙脑① → 18月：百白破④+麻腮风+甲肝① → 2岁：乙脑②+甲肝②', tags:['疫苗','健康','时间表'] }
+];
+
+function renderParenting() {
+  const searchText = (document.getElementById('parentingSearch').value || '').toLowerCase();
+  const ageFilter = document.getElementById('parentingAge').value;
+  const filtered = parentingData.filter(p => {
+    const matchSearch = !searchText || p.title.includes(searchText) || p.content.includes(searchText) || p.tags.some(t => t.includes(searchText));
+    const matchAge = ageFilter === 'all' || p.age === ageFilter;
+    return matchSearch && matchAge;
+  });
+
+  const el = document.getElementById('parentingList');
+  el.innerHTML = '';
+  if (filtered.length === 0) { el.innerHTML = '<div class="text-sm text-gray-400 text-center py-8">没有找到匹配的育儿知识～</div>'; return; }
+
+  const ageColors = { '0-6': 'bg-pink-100 text-pink-600', '6-12': 'bg-purple-100 text-purple-600', '12-24': 'bg-blue-100 text-blue-600', '24-36': 'bg-green-100 text-green-600' };
+
+  filtered.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'bg-gradient-to-br from-pink-50 to-white rounded-2xl p-4 border border-pink-100 hover:shadow-md transition';
+    div.innerHTML = `
+      <div class="flex items-start justify-between gap-2 mb-2">
+        <div class="flex-1">
+          <div class="font-semibold text-sm text-gray-800">${escapeHtml(p.title)}</div>
+          <div class="flex gap-1.5 mt-1">
+            <span class="text-xs px-2 py-0.5 rounded-full ${ageColors[p.age]||'bg-gray-100'}">${p.age}个月</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">${p.cat}</span>
+          </div>
+        </div>
+      </div>
+      <div class="text-xs text-gray-600 leading-relaxed bg-white rounded-xl p-3 border border-gray-50" style="white-space:pre-line;">${escapeHtml(p.content)}</div>
+      <div class="flex flex-wrap gap-1 mt-2">
+        ${p.tags.map(t => `<span class="text-xs px-1.5 py-0.5 rounded-full bg-pink-50 text-pink-500">#${t}</span>`).join('')}
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function filterParenting() { renderParenting(); }
+
+// ---------- 每日复盘 ----------
+let reviewData = STORE.get('reviewData', {}); // { '2026-07-26': { mood:'', moodLabel:'', summary:'', plans:[] } }
+
+function getTodayReview() {
+  const todayStr = new Date().toISOString().slice(0,10);
+  if (!reviewData[todayStr]) reviewData[todayStr] = { mood:'', moodLabel:'', summary:'', plans:[] };
+  return reviewData[todayStr];
+}
+
+function renderReview() {
+  const todayStr = new Date().toISOString().slice(0,10);
+  document.getElementById('reviewDate').textContent = todayStr;
+  const r = getTodayReview();
+
+  // 心情显示
+  if (r.mood) {
+    document.getElementById('moodDisplay').innerHTML = `<span class="text-2xl mr-2">${r.mood}</span><span class="text-gray-700">${r.moodLabel}</span>`;
+  } else {
+    document.getElementById('moodDisplay').textContent = '今天心情怎么样？选一个吧～';
+  }
+
+  // 总结
+  document.getElementById('reviewToday').value = r.summary || '';
+
+  // 计划
+  renderReviewPlans();
+
+  // 历史
+  renderReviewHistory();
+
+  // 概览
+  updateReviewSummary();
+}
+
+function setMood(mood, label) {
+  const r = getTodayReview();
+  r.mood = mood;
+  r.moodLabel = label;
+  STORE.set('reviewData', reviewData);
+  document.getElementById('moodDisplay').innerHTML = `<span class="text-2xl mr-2">${mood}</span><span class="text-gray-700">${label}</span>`;
+  // 高亮选中
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    if (b.textContent === mood) { b.classList.add('bg-pink-100','border-pink-400'); }
+    else { b.classList.remove('bg-pink-100','border-pink-400'); }
+  });
+}
+
+function autoSaveReview() {
+  const r = getTodayReview();
+  r.summary = document.getElementById('reviewToday').value;
+  STORE.set('reviewData', reviewData);
+}
+
+function addReviewPlan() {
+  const input = document.getElementById('newReviewPlan');
+  const text = input.value.trim();
+  if (!text) return;
+  const r = getTodayReview();
+  r.plans.push({ id: 'rp'+Date.now(), text, done: false });
+  STORE.set('reviewData', reviewData);
+  input.value = '';
+  renderReviewPlans();
+}
+
+function toggleReviewPlan(idx) {
+  const r = getTodayReview();
+  r.plans[idx].done = !r.plans[idx].done;
+  STORE.set('reviewData', reviewData);
+  renderReviewPlans();
+}
+
+function delReviewPlan(idx) {
+  const r = getTodayReview();
+  r.plans.splice(idx, 1);
+  STORE.set('reviewData', reviewData);
+  renderReviewPlans();
+}
+
+function renderReviewPlans() {
+  const r = getTodayReview();
+  const el = document.getElementById('reviewPlanList');
+  el.innerHTML = '';
+  if (r.plans.length === 0) { el.innerHTML = '<li class="text-xs text-gray-400 px-1">还没有明日计划。</li>'; return; }
+  r.plans.forEach((p, idx) => {
+    const li = document.createElement('li');
+    li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
+    li.innerHTML = `
+      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${p.done?'checked':''} onchange="toggleReviewPlan(${idx})">
+      <span class="text-sm flex-1 ${p.done?'line-through text-gray-400':''}">${escapeHtml(p.text)}</span>
+      <button onclick="delReviewPlan(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+    `;
+    el.appendChild(li);
+  });
+}
+
+function renderReviewHistory() {
+  const el = document.getElementById('reviewHistory');
+  const dates = Object.keys(reviewData).sort().reverse().slice(0, 7);
+  if (dates.length === 0) { el.innerHTML = '<div class="text-gray-400">还没有复盘记录。</div>'; return; }
+  el.innerHTML = dates.map(d => {
+    const r = reviewData[d];
+    const hasContent = r.mood || r.summary;
+    if (!hasContent) return '';
+    return `<div class="bg-white rounded-lg p-3 border border-gray-100">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-xs font-medium text-gray-500">${d}</span>
+        ${r.mood ? `<span>${r.mood}</span><span class="text-xs text-gray-500">${r.moodLabel}</span>` : ''}
+      </div>
+      ${r.summary ? `<div class="text-xs text-gray-600">${escapeHtml(r.summary).substring(0,80)}${r.summary.length>80?'…':''}</div>` : ''}
+    </div>`;
+  }).filter(Boolean).join('');
+}
+
+function updateReviewSummary() {
+  const el = document.getElementById('reviewSummary');
+  if (!el) return;
+  const todayStr = new Date().toISOString().slice(0,10);
+  // 计算今日数据
+  const todayTasks = tasks.today.filter(t => t.done).length + tasks.scheduled.filter(t => t.done).length;
+  const totalTasks = tasks.today.length + tasks.scheduled.length;
+  const doneEnglish = englishTasks.filter(t => t.done).length;
+  const doneWorkouts = workouts.filter(w => w.date === todayStr && w.done).length;
+  const readOk = readSentences.filter(rs => rs.status === 'ok').length;
+  const reviewR = getTodayReview();
+  const moodText = reviewR.mood || '🤔';
+
+  el.innerHTML = `
+    <div class="bg-white rounded-xl p-3">
+      <div class="text-xs text-gray-500">任务完成</div>
+      <div class="text-lg font-bold text-pink-500">${todayTasks}/${totalTasks}</div>
+    </div>
+    <div class="bg-white rounded-xl p-3">
+      <div class="text-xs text-gray-500">英语完成</div>
+      <div class="text-lg font-bold text-purple-500">${doneEnglish}/${englishTasks.length}</div>
+    </div>
+    <div class="bg-white rounded-xl p-3">
+      <div class="text-xs text-gray-500">健身打卡</div>
+      <div class="text-lg font-bold text-pink-500">${doneWorkouts}</div>
+    </div>
+    <div class="bg-white rounded-xl p-3">
+      <div class="text-xs text-gray-500">跟读会读</div>
+      <div class="text-lg font-bold text-purple-500">${readOk}</div>
+    </div>
+    <div class="bg-white rounded-xl p-3">
+      <div class="text-xs text-gray-500">今日心情</div>
+      <div class="text-lg">${moodText}</div>
+    </div>
+  `;
+}
 let customModules = STORE.get('customModules', []);
 let selectedIcon = '⭐';
 let editingModuleId = null;
@@ -1607,6 +2029,7 @@ renderIdeas();
 renderEnglishTasks();
 renderReadList();
 document.getElementById('financeMonth').value = financeCurrentMonth;
+updateFinCategory();
 renderFinance();
 renderSavings();
 renderMemos();
@@ -1614,6 +2037,8 @@ renderTravelSelect();
 renderTravelPlan();
 initDiet();
 renderWorkouts();
+renderParenting();
+renderReview();
 setInterval(checkWorkoutReminder, 60000);
 renderCustomNav();
 renderCustomSections();
