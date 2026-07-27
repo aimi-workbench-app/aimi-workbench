@@ -1567,28 +1567,29 @@ function renderReadList() {
     div.className = 'px-3 py-3 rounded-lg border ' + colors[rs.status];
     div.dataset.rsIdx = idx;
     
-    // 第一行：句子 + 朗读
+    // 中文原文（如果有，显示在英文上方）
+    if (rs.cn) {
+      const rowCn = document.createElement('div');
+      rowCn.className = 'text-xs text-gray-400 mb-1';
+      rowCn.textContent = rs.cn;
+      div.appendChild(rowCn);
+    }
+    
+    // 英文句子 + 朗读
     const row1 = document.createElement('div');
     row1.className = 'flex items-center gap-2 mb-2';
     const span = document.createElement('span');
-    span.className = 'text-sm flex-1 min-w-0 break-all';
+    span.className = 'text-sm flex-1 min-w-0 break-all text-purple-700 font-medium';
     span.textContent = rs.text;
-    // 如果有中文原文，显示在英文上方
-    if (rs.cn) {
-      var cnLabel = document.createElement('span');
-      cnLabel.className = 'text-xs text-gray-400 mr-1';
-      cnLabel.textContent = rs.cn;
-      row1.insertBefore(cnLabel, span);
-      span.textContent = ' → ' + rs.text;
-    }
     const speakBtn = document.createElement('button');
     speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 shrink-0';
     speakBtn.textContent = '🔊';
     speakBtn.onclick = function() { readSentence(idx); };
     row1.appendChild(span);
     row1.appendChild(speakBtn);
+    div.appendChild(row1);
     
-    // 第二行：状态 + 三个按钮 + 删��
+    // 状态 + 三个按钮 + 删除
     const row2 = document.createElement('div');
     row2.className = 'flex items-center gap-1.5 flex-wrap';
     const labelSpan = document.createElement('span');
