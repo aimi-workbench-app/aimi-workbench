@@ -1369,7 +1369,12 @@ function startRecording(idx) {
     } catch(e) {}
     
     try {
-      mediaRecorder = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm' });
+      // iOS 优先用 mp4，Android/Chrome 用 webm
+      var mimeType = 'audio/webm';
+      if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+      else if (MediaRecorder.isTypeSupported('audio/mp4;codecs=mp4a')) mimeType = 'audio/mp4;codecs=mp4a';
+      else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
+      mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
     } catch(e) {
       mediaRecorder = new MediaRecorder(stream);
     }
@@ -1396,7 +1401,8 @@ function startRecording(idx) {
       }
       
       // 有声音：保存录音 + 打分
-      var blob = new Blob(chunks, { type: 'audio/webm' });
+      var mime = mediaRecorder.mimeType || 'audio/webm';
+      var blob = new Blob(chunks, { type: mime });
       recordedAudios[savedIdx] = blob;
       
       var score = Math.floor(Math.random() * 3) + 3;
