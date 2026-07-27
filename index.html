@@ -1101,28 +1101,25 @@ function showEnDictResult(result) {
     '</div>';
 }
 
-// Google 免费翻译 API
+// 翻译 API（优先用国内可访问的接口）
 function translateText(text, from, to, callback) {
-  var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' + from + '&tl=' + to + '&dt=t&q=' + encodeURIComponent(text);
+  var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + from + '|' + to;
   try {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
+    xhr.timeout = 8000;
     xhr.onreadystatechange = function() {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           try {
             var data = JSON.parse(xhr.responseText);
-            var translated = '';
-            if (data && data[0]) {
-              for (var i = 0; i < data[0].length; i++) {
-                if (data[0][i] && data[0][i][0]) translated += data[0][i][0];
-              }
-            }
+            var translated = data.responseData && data.responseData.translatedText;
             callback(translated || null);
           } catch(e) { callback(null); }
         } else { callback(null); }
       }
     };
+    xhr.ontimeout = function() { callback(null); };
     xhr.onerror = function() { callback(null); };
     xhr.send();
   } catch(e) { callback(null); }
