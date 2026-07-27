@@ -18,7 +18,7 @@
   <style>
     :root { --brand: #f472b6; --brand-light: #fce7f3; --accent: #c084fc; }
     html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 100%); -webkit-text-size-adjust: 100%; padding-bottom: 80px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 100%); -webkit-text-size-adjust: 100%; }
     /* iOS PWA 输入修复：确保输入框可聚焦可输入 */
     input, textarea, select {
       -webkit-user-select: text;
@@ -33,10 +33,6 @@
     .nav-item.active { background: linear-gradient(135deg, #f472b6, #ec4899); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(236,72,153,0.25); }
     .nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; }
     .nav-item:hover:not(.active) { background: #f0f0f0; }
-    .bottom-nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 56px; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
-    .bottom-nav-item.active { color: #f472b6; }
-    .bottom-nav-item:not(.active) { color: #9ca3af; }
-    .bottom-nav-item:active { opacity: 0.7; }
     .checkbox:checked + span { text-decoration: line-through; color: #9ca3af; }
     .heat-bar { background: linear-gradient(90deg, #fde68a, #f59e0b); }
     .hidden-section { display: none; }
@@ -45,9 +41,27 @@
     .tag { @apply text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600; }
     /* 弹窗在 PWA 模式下必须用 fixed + 顶层 z-index */
     #moduleDialog:not(.hidden) { display: flex !important; }
-    /* 底部导航滚动隐藏滚动条 */
-    #bottomNav::-webkit-scrollbar { display: none; }
-    #bottomNav { -ms-overflow-style: none; scrollbar-width: none; }
+    /* 左侧抽屉导航 */
+    #drawerOverlay {
+      transition: opacity 0.25s ease;
+      backdrop-filter: blur(2px);
+    }
+    #drawerOverlay.hidden { opacity: 0; pointer-events: none; }
+    #drawerOverlay:not(.hidden) { opacity: 1; pointer-events: auto; }
+    #drawerMenu {
+      transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+      transform: translateX(-100%);
+      background: linear-gradient(180deg, rgba(192,132,252,0.95) 0%, rgba(244,114,182,0.93) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    #drawerMenu.open { transform: translateX(0); }
+    .drawer-item {
+      transition: all .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .drawer-item:active { opacity: 0.7; }
+    .drawer-item.active { background: rgba(255,255,255,0.28); font-weight: 600; }
   </style>
   <script>
     // Service Worker：让 App 离线也能用
@@ -61,7 +75,8 @@
 <!-- 顶部 -->
 <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-200">
   <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleDrawer(true)" class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-lg active:scale-95 transition" aria-label="菜单">☰</button>
       <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-rose-400 flex items-center justify-center text-white text-sm">米</div>
       <h1 class="font-bold text-lg">艾米的工作台</h1>
     </div>
@@ -73,6 +88,81 @@
 <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 text-white text-center py-2.5 px-4 shadow-sm">
   <p class="text-sm font-medium tracking-wide">今天的你也很好，要开心、开心、再开心 🥳</p>
 </div>
+
+<!-- 左侧抽屉导航 -->
+<div id="drawerOverlay" class="fixed inset-0 z-[60] bg-black/25 hidden" onclick="toggleDrawer(false)"></div>
+<aside id="drawerMenu" class="fixed top-0 left-0 bottom-0 z-[70] w-[260px] shadow-2xl overflow-y-auto" style="padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);">
+  <div class="p-5 pb-4">
+    <div class="flex items-center gap-3 mb-1">
+      <div class="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center text-2xl shadow-sm">🧀</div>
+      <h2 class="text-xl font-bold text-white">艾米的工作台</h2>
+    </div>
+  </div>
+  <nav class="px-3 pb-6 space-y-5" id="drawerNav">
+    <!-- 学习成长 -->
+    <div>
+      <div class="px-3 mb-2 text-xs font-semibold text-white/70 uppercase tracking-wider flex items-center gap-2">📚 学习成长</div>
+      <div class="space-y-1">
+        <button onclick="showSection('english')" data-section="english" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">🌍</span><span class="text-[15px]">英语</span>
+        </button>
+        <button onclick="showSection('memo')" data-section="memo" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">📝</span><span class="text-[15px]">备忘</span>
+        </button>
+        <button onclick="showSection('review')" data-section="review" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">🌙</span><span class="text-[15px]">复盘</span>
+        </button>
+      </div>
+    </div>
+    <!-- 生活管理 -->
+    <div>
+      <div class="px-3 mb-2 text-xs font-semibold text-white/70 uppercase tracking-wider flex items-center gap-2">🏠 生活管理</div>
+      <div class="space-y-1">
+        <button onclick="showSection('tasks')" data-section="tasks" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3 active">
+          <span class="text-xl">📋</span><span class="text-[15px]">每日任务</span>
+        </button>
+        <button onclick="showSection('diet')" data-section="diet" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">⚖️</span><span class="text-[15px]">减肥</span>
+        </button>
+        <button onclick="showSection('finance')" data-section="finance" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">💰</span><span class="text-[15px]">收支</span>
+        </button>
+        <button onclick="showSection('savings')" data-section="savings" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">🐷</span><span class="text-[15px]">存钱</span>
+        </button>
+        <button onclick="showSection('parenting')" data-section="parenting" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">👶</span><span class="text-[15px]">育儿</span>
+        </button>
+        <button onclick="showSection('travel')" data-section="travel" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">✈️</span><span class="text-[15px]">旅游</span>
+        </button>
+        <button onclick="showSection('ideas')" data-section="ideas" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">💡</span><span class="text-[15px]">灵感</span>
+        </button>
+      </div>
+    </div>
+    <!-- 资讯热点 -->
+    <div>
+      <div class="px-3 mb-2 text-xs font-semibold text-white/70 uppercase tracking-wider flex items-center gap-2">📰 资讯热点</div>
+      <div class="space-y-1">
+        <button onclick="showSection('trends')" data-section="trends" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3">
+          <span class="text-xl">🔥</span><span class="text-[15px]">热点</span>
+        </button>
+      </div>
+    </div>
+    <!-- 自定义模块 -->
+    <div id="drawerCustomGroup" class="hidden">
+      <div class="px-3 mb-2 text-xs font-semibold text-white/70 uppercase tracking-wider flex items-center gap-2">⭐ 自定义</div>
+      <div class="space-y-1" id="drawerCustomList"></div>
+    </div>
+    <!-- 新建 -->
+    <div class="pt-2 border-t border-white/20">
+      <button onclick="openNewModuleDialog()" class="drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white/90 flex items-center gap-3">
+        <span class="text-xl">➕</span><span class="text-[15px]">新建模块</span>
+      </button>
+    </div>
+  </nav>
+</aside>
 
 <div class="max-w-4xl mx-auto px-4 py-4">
   <!-- 主内容 -->
@@ -1524,18 +1614,35 @@ let financeCurrentMonth = new Date().toISOString().slice(0,7); // YYYY-MM
 let financeData = STORE.get('finance', {}); // { '2026-07': [ {id,type,amount,category,usage,date} ] }
 
 // ---------- 导航 ----------
+function toggleDrawer(open) {
+  const menu = document.getElementById('drawerMenu');
+  const overlay = document.getElementById('drawerOverlay');
+  if (!menu || !overlay) return;
+  if (open) {
+    overlay.classList.remove('hidden');
+    menu.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  } else {
+    overlay.classList.add('hidden');
+    menu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
 function showSection(sec) {
   // 隐藏所有 section（内置 + 自定义）
   document.querySelectorAll('main > section, #customSections > section').forEach(s => s.classList.add('hidden-section'));
-  // 取消所有导航高亮
-  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  // 取消所有抽屉导航高亮
+  document.querySelectorAll('.drawer-item').forEach(b => b.classList.remove('active'));
   // 显示目标
   const target = document.getElementById(sec);
   if (target) target.classList.remove('hidden-section');
   // 高亮对应导航按钮
-  const navBtn = document.querySelector(`[data-section="${sec}"]`);
+  const navBtn = document.querySelector(`#drawerNav [data-section="${sec}"]`);
   if (navBtn) navBtn.classList.add('active');
-  // 滚动到底部可见
+  // 关闭抽屉
+  toggleDrawer(false);
+  // 回到顶部
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -2866,17 +2973,22 @@ function saveModule() {
 }
 
 function renderCustomNav() {
-  const nav = document.getElementById('nav');
-  if (!nav) return;
-  // 移除旧的自定义导航按钮
-  nav.querySelectorAll('.custom-nav').forEach(b => b.remove());
+  const list = document.getElementById('drawerCustomList');
+  const group = document.getElementById('drawerCustomGroup');
+  if (!list || !group) return;
+  list.innerHTML = '';
+  if (customModules.length === 0) {
+    group.classList.add('hidden');
+    return;
+  }
+  group.classList.remove('hidden');
   customModules.forEach(m => {
     const btn = document.createElement('button');
-    btn.className = 'bottom-nav-item custom-nav px-2 py-1 rounded-xl text-xs flex-shrink-0';
+    btn.className = 'drawer-item w-full text-left px-3 py-2.5 rounded-xl text-white flex items-center gap-3 custom-nav';
     btn.setAttribute('onclick', "showCustomModule('" + m.id + "')");
     btn.dataset.section = 'custom_' + m.id;
-    btn.innerHTML = '<span class="text-xl">' + m.icon + '</span><span>' + escapeHtml(m.name) + '</span>';
-    nav.appendChild(btn);
+    btn.innerHTML = '<span class="text-xl">' + m.icon + '</span><span class="text-[15px]">' + escapeHtml(m.name) + '</span>';
+    list.appendChild(btn);
   });
 }
 
@@ -3003,11 +3115,12 @@ function delModule(modId) {
 
 function showCustomModule(modId) {
   document.querySelectorAll('main > section, #customSections > section').forEach(s => s.classList.add('hidden-section'));
-  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.drawer-item').forEach(b => b.classList.remove('active'));
   const target = document.getElementById('custom_' + modId);
   if (target) target.classList.remove('hidden-section');
-  const navBtn = document.querySelector('[data-section="custom_' + modId + '"]');
+  const navBtn = document.querySelector('#drawerNav [data-section="custom_' + modId + '"]');
   if (navBtn) navBtn.classList.add('active');
+  toggleDrawer(false);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -3046,47 +3159,7 @@ if (customModules.length === 0 && !localStorage.getItem('hcj_customInited')) {
 }
 </script>
 
-<!-- 底部导航 -->
-<nav id="bottomNav" class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur border-t border-pink-100" style="padding-bottom: env(safe-area-inset-bottom);">
-  <div class="flex items-center gap-0.5 px-1 py-2 overflow-x-auto" style="-webkit-overflow-scrolling: touch;" id="nav">
-      <button onclick="showSection('tasks')" class="bottom-nav-item active px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="tasks">
-        <span class="text-xl">📋</span><span>每日任务</span>
-      </button>
-      <button onclick="showSection('diet')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="diet">
-        <span class="text-xl">⚖️</span><span>减肥</span>
-      </button>
-      <button onclick="showSection('english')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="english">
-        <span class="text-xl">🌍</span><span>英语</span>
-      </button>
-      <button onclick="showSection('finance')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="finance">
-        <span class="text-xl">💰</span><span>收支</span>
-      </button>
-      <button onclick="showSection('savings')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="savings">
-        <span class="text-xl">🐷</span><span>存钱</span>
-      </button>
-      <button onclick="showSection('ideas')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="ideas">
-        <span class="text-xl">💡</span><span>灵感</span>
-      </button>
-      <button onclick="showSection('trends')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="trends">
-        <span class="text-xl">🔥</span><span>热点</span>
-      </button>
-      <button onclick="showSection('parenting')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="parenting">
-        <span class="text-xl">👶</span><span>育儿</span>
-      </button>
-      <button onclick="showSection('memo')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="memo">
-        <span class="text-xl">📝</span><span>备忘</span>
-      </button>
-      <button onclick="showSection('travel')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="travel">
-        <span class="text-xl">✈️</span><span>旅游</span>
-      </button>
-      <button onclick="showSection('review')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="review">
-        <span class="text-xl">🌙</span><span>复盘</span>
-      </button>
-      <button onclick="openNewModuleDialog()" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0 text-gray-400">
-        <span class="text-xl">➕</span><span>新建</span>
-      </button>
-  </div>
-</nav>
+<!-- 底部导航已改为左侧抽屉导航 -->
 
 </body>
 </html>
