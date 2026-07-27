@@ -1211,7 +1211,7 @@ function getTodayScores() {
 
 var mediaRecorder = null;
 var recordingIdx = -1;
-var recordedAudios = {}; // { idx: blobUrl }
+var recordedAudios = {}; // { idx: blob }
 
 function renderDailyWords() {
   var words = getTodayDailyWords();
@@ -1254,14 +1254,24 @@ function renderDailyWords() {
     recBtn.addEventListener('touchcancel', (function() { return function(e) { stopRecording(); }; })());
     div.appendChild(recBtn);
     
-    // 回放按钮（有录音时才显示）
+    // 回放按钮
     if (recordedAudios[idx]) {
       var playBtn = document.createElement('button');
       playBtn.className = 'text-xs px-2 py-1 rounded-full bg-pink-100 text-pink-600 shrink-0';
       playBtn.textContent = '▶️ 回放';
       playBtn.onclick = (function(i) { return function() {
-        var audio = new Audio(recordedAudios[i]);
-        audio.play();
+        var blob = recordedAudios[i];
+        if (!blob) return;
+        // 每次创建新的 URL 确保能播放
+        var url = URL.createObjectURL(blob);
+        var audio = new Audio();
+        audio.src = url;
+        audio.onended = function() { URL.revokeObjectURL(url); };
+        audio.onerror = function() {
+          toast('播放失败，请重试');
+          URL.revokeObjectURL(url);
+        };
+        audio.play().catch(function() { toast('播放失败'); });
       }; })(idx);
       div.appendChild(playBtn);
     }
@@ -1312,10 +1322,9 @@ function startRecording(idx) {
     
     mediaRecorder.onstop = function() {
       stream.getTracks().forEach(function(t) { t.stop(); });
-      // 保存录音供回放
+      // 保存录音 blob 供回放
       var blob = new Blob(chunks, { type: 'audio/webm' });
-      var url = URL.createObjectURL(blob);
-      recordedAudios[recordingIdx] = url;
+      recordedAudios[recordingIdx] = blob;
       
       // 智能打分
       var score = Math.floor(Math.random() * 3) + 3;
