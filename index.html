@@ -1075,30 +1075,75 @@ function lookupWord() {
 
 function showDictResult(cn, en, phonetic, pos) {
   var el = document.getElementById('dictResult');
-  el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
-    '<div class="flex items-center gap-3 mb-2">' +
-    '<span class="text-xs text-gray-400">' + escapeHtml(cn) + '</span>' +
-    '<span class="text-gray-400">→</span>' +
-    '<span class="text-lg font-bold text-purple-600">' + escapeHtml(en) + '</span>' +
-    '<button onclick="speakWord(\'' + escapeHtml(en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
-    '</div>' +
-    (phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(phonetic) + '</div>' : '') +
-    '<button onclick="addWordToRead(\'' + escapeHtml(en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
-    '</div>';
+  el.innerHTML = '';
+  
+  var card = document.createElement('div');
+  card.className = 'bg-white rounded-xl p-4 border border-purple-100';
+  
+  var row1 = document.createElement('div');
+  row1.className = 'flex items-center gap-3 mb-2 flex-wrap';
+  row1.innerHTML = '<span class="text-xs text-gray-400">' + escapeHtml(cn) + '</span><span class="text-gray-400">→</span><span class="text-lg font-bold text-purple-600">' + escapeHtml(en) + '</span>';
+  
+  var speakBtn = document.createElement('button');
+  speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600';
+  speakBtn.textContent = '🔊';
+  speakBtn.onclick = function() { speakWord(en); };
+  row1.appendChild(speakBtn);
+  card.appendChild(row1);
+  
+  if (phonetic) {
+    var ph = document.createElement('div');
+    ph.className = 'text-xs text-gray-500';
+    ph.textContent = '音标：' + phonetic;
+    card.appendChild(ph);
+  }
+  
+  var addBtn = document.createElement('button');
+  addBtn.className = 'mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full';
+  addBtn.textContent = '➕ 加入跟读';
+  addBtn.onclick = function() { addWordToRead(en); };
+  card.appendChild(addBtn);
+  
+  el.appendChild(card);
 }
 
 function showEnDictResult(result) {
   var el = document.getElementById('dictResult');
-  el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
-    '<div class="flex items-center gap-3 mb-2">' +
-    '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span>' +
-    '<span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">' + (result.pos || '') + '</span>' +
-    '<button onclick="speakWord(\'' + escapeHtml(result.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
-    '</div>' +
-    (result.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(result.phonetic) + '</div>' : '') +
-    '<div class="text-xs text-gray-600 mt-1">释义：' + escapeHtml(result.meaning || '') + '</div>' +
-    '<button onclick="addWordToRead(\'' + escapeHtml(result.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
-    '</div>';
+  el.innerHTML = '';
+  
+  var card = document.createElement('div');
+  card.className = 'bg-white rounded-xl p-4 border border-purple-100';
+  
+  var row1 = document.createElement('div');
+  row1.className = 'flex items-center gap-3 mb-2 flex-wrap';
+  row1.innerHTML = '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span><span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">' + (result.pos || '') + '</span>';
+  
+  var speakBtn = document.createElement('button');
+  speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600';
+  speakBtn.textContent = '🔊';
+  speakBtn.onclick = function() { speakWord(result.en); };
+  row1.appendChild(speakBtn);
+  card.appendChild(row1);
+  
+  if (result.phonetic) {
+    var ph = document.createElement('div');
+    ph.className = 'text-xs text-gray-500';
+    ph.textContent = '音标：' + result.phonetic;
+    card.appendChild(ph);
+  }
+  
+  var meaning = document.createElement('div');
+  meaning.className = 'text-xs text-gray-600 mt-1';
+  meaning.textContent = '释义：' + (result.meaning || '');
+  card.appendChild(meaning);
+  
+  var addBtn = document.createElement('button');
+  addBtn.className = 'mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full';
+  addBtn.textContent = '➕ 加入跟读';
+  addBtn.onclick = function() { addWordToRead(result.en); };
+  card.appendChild(addBtn);
+  
+  el.appendChild(card);
 }
 
 // 翻译 API（使用国内可访问的接口）
@@ -1322,6 +1367,7 @@ function startRecording(idx) {
     
     mediaRecorder.onstop = function() {
       stream.getTracks().forEach(function(t) { t.stop(); });
+      var savedIdx = recordingIdx;
       
       // 检测录音内容：如果没有声音数据，不给分
       if (chunks.length === 0 || (chunks.length === 1 && chunks[0].size < 100)) {
@@ -1333,12 +1379,12 @@ function startRecording(idx) {
       
       // 保存录音 blob 供回放
       var blob = new Blob(chunks, { type: 'audio/webm' });
-      recordedAudios[recordingIdx] = blob;
+      recordedAudios[savedIdx] = blob;
       
       // 智能打分
       var score = Math.floor(Math.random() * 3) + 3;
       var sc = getTodayScores();
-      sc[recordingIdx] = score;
+      sc[savedIdx] = score;
       STORE.set('dailyWordScores', dailyWordScores);
       recordingIdx = -1;
       renderDailyWords();
