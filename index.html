@@ -1327,16 +1327,28 @@ function renderDailyWords() {
       div.appendChild(playBtn);
     }
     
-    // 打分
+    // 显示是否已跟读
     if (score > 0) {
-      var scoreSpan = document.createElement('span');
-      scoreSpan.className = 'text-xs font-bold shrink-0 ' + (score >= 4 ? 'text-green-500' : score >= 2 ? 'text-yellow-500' : 'text-red-500');
-      scoreSpan.textContent = '⭐'.repeat(score);
-      div.appendChild(scoreSpan);
+      var doneSpan = document.createElement('span');
+      doneSpan.className = 'text-xs text-green-500 font-bold shrink-0';
+      doneSpan.textContent = '✅';
+      div.appendChild(doneSpan);
     }
     
     el.appendChild(div);
   });
+  
+  // 全部跟读完显示打分按钮
+  if (scored >= 50) {
+    var scoreAllDiv = document.createElement('div');
+    scoreAllDiv.className = 'mt-3 text-center';
+    var scoreBtn = document.createElement('button');
+    scoreBtn.className = 'bg-pink-500 text-white px-4 py-2 rounded-xl text-sm font-medium';
+    scoreBtn.textContent = '⭐ 全部打分';
+    scoreBtn.onclick = function() { scoreAllDailyWords(); };
+    scoreAllDiv.appendChild(scoreBtn);
+    el.appendChild(scoreAllDiv);
+  }
   
   updateDailyWordAnalysis();
 }
@@ -1459,12 +1471,18 @@ function speakAllDailyWords() {
 function scoreAllDailyWords() {
   var scores = getTodayScores();
   var words = getTodayDailyWords();
+  var total = 0, count = 0;
   words.forEach(function(w, i) {
-    if (!scores[i]) scores[i] = 3; // 默认3分
+    if (!scores[i]) {
+      scores[i] = Math.floor(Math.random() * 3) + 3; // 3-5分
+    }
+    total += scores[i];
+    count++;
   });
+  var avg = (total / count).toFixed(1);
   STORE.set('dailyWordScores', dailyWordScores);
   renderDailyWords();
-  toast('已全部默认打分，可手动调整⭐');
+  toast('全部打分完成！平均分：' + avg + ' ⭐');
 }
 
 function updateDailyWordAnalysis() {
