@@ -1322,6 +1322,15 @@ function startRecording(idx) {
     
     mediaRecorder.onstop = function() {
       stream.getTracks().forEach(function(t) { t.stop(); });
+      
+      // 检测录音内容：如果没有声音数据，不给分
+      if (chunks.length === 0 || (chunks.length === 1 && chunks[0].size < 100)) {
+        recordingIdx = -1;
+        renderDailyWords();
+        toast('未检测到声音，请重新录音');
+        return;
+      }
+      
       // 保存录音 blob 供回放
       var blob = new Blob(chunks, { type: 'audio/webm' });
       recordedAudios[recordingIdx] = blob;
