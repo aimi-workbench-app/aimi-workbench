@@ -1033,85 +1033,99 @@ function lookupWord() {
   var input = document.getElementById('dictInput').value.trim();
   if (!input) return;
   var el = document.getElementById('dictResult');
+  el.innerHTML = '<div class="text-xs text-gray-400 text-center py-3">🔍 查询中…</div>';
   
-  // 判断输入语言
   var isChinese = /[\u4e00-\u9fff]/.test(input);
   
   if (isChinese) {
-    // 中文→英文翻译
+    // 中文→英文：先查词典，再查API
     var result = DICT[input];
     if (result && result.en) {
-      el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
-        '<div class="flex items-center gap-3 mb-2">' +
-        '<span class="text-xs text-gray-400">' + escapeHtml(input) + '</span>' +
-        '<span class="text-gray-400">→</span>' +
-        '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span>' +
-        '<button onclick="speakWord(\'' + escapeHtml(result.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
-        '</div>' +
-        (result.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(result.phonetic) + '</div>' : '') +
-        '<button onclick="addWordToRead(\'' + escapeHtml(result.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
-        '</div>';
+      showDictResult(input, result.en, result.phonetic || '', '');
     } else {
-      // 没有精确匹配，尝试模糊匹配
-      var found = false;
-      for (var key in DICT) {
-        if (key.indexOf(input) >= 0 || input.indexOf(key) >= 0) {
-          var r = DICT[key];
-          if (r.en) {
-            el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
-              '<div class="flex items-center gap-3 mb-2">' +
-              '<span class="text-xs text-gray-400">' + escapeHtml(key) + '</span>' +
-              '<span class="text-gray-400">→</span>' +
-              '<span class="text-lg font-bold text-purple-600">' + escapeHtml(r.en) + '</span>' +
-              '<button onclick="speakWord(\'' + escapeHtml(r.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
-              '</div>' +
-              (r.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(r.phonetic) + '</div>' : '') +
-              '<button onclick="addWordToRead(\'' + escapeHtml(r.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
-              '</div>';
-            found = true;
-            break;
-          }
+      // 词典没有，用API翻译
+      translateText(input, 'zh', 'en', function(translated) {
+        if (translated) {
+          showDictResult(input, translated, '', '');
+        } else {
+          el.innerHTML = '<div class="text-xs text-gray-400 bg-white rounded-xl p-4 border border-gray-100">未收录"'+escapeHtml(input)+'"，请确保输入正确</div>';
         }
-      }
-      if (!found) {
-        el.innerHTML = '<div class="text-xs text-gray-400 bg-white rounded-xl p-4 border border-gray-100">没有找到"'+escapeHtml(input)+'"的翻译，试试输入完整的词或换个说法～</div>';
-      }
+      });
     }
   } else {
     // 英文查词
     var key = input.toLowerCase();
     var result = DICT[key];
     if (result && result.meaning) {
-      el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
-        '<div class="flex items-center gap-3 mb-2">' +
-        '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span>' +
-        '<span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">' + (result.pos || '') + '</span>' +
-        '<button onclick="speakWord(\'' + escapeHtml(result.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
-        '</div>' +
-        (result.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(result.phonetic) + '</div>' : '') +
-        '<div class="text-xs text-gray-600 mt-1">释义：' + escapeHtml(result.meaning || '') + '</div>' +
-        '<button onclick="addWordToRead(\'' + escapeHtml(result.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
-        '</div>';
+      showEnDictResult(result);
     } else {
-      // 也查中文
+      // 反向查中文
+      var foundCn = '';
       for (var k in DICT) {
-        if (DICT[k].en && DICT[k].en.toLowerCase() === key) {
-          el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
-            '<div class="flex items-center gap-3 mb-2">' +
-            '<span class="text-xs text-gray-400">' + escapeHtml(k) + '</span>' +
-            '<span class="text-gray-400">→</span>' +
-            '<span class="text-lg font-bold text-purple-600">' + escapeHtml(DICT[k].en) + '</span>' +
-            '<button onclick="speakWord(\'' + escapeHtml(DICT[k].en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
-            '</div>' +
-            (DICT[k].phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(DICT[k].phonetic) + '</div>' : '') +
-            '<button onclick="addWordToRead(\'' + escapeHtml(DICT[k].en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
-            '</div>';
-          return;
-        }
+        if (DICT[k].en && DICT[k].en.toLowerCase() === key) { foundCn = k; break; }
       }
-      el.innerHTML = '<div class="text-xs text-gray-400 bg-white rounded-xl p-4 border border-gray-100">没有找到"'+escapeHtml(input)+'"的解释，试试其他单词～</div>';
+      if (foundCn) {
+        showDictResult(foundCn, DICT[foundCn].en, DICT[foundCn].phonetic || '', '');
+      } else {
+        el.innerHTML = '<div class="text-xs text-gray-400 bg-white rounded-xl p-4 border border-gray-100">未收录"'+escapeHtml(input)+'"，请确保输入正确</div>';
+      }
     }
   }
+}
+
+function showDictResult(cn, en, phonetic, pos) {
+  var el = document.getElementById('dictResult');
+  el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
+    '<div class="flex items-center gap-3 mb-2">' +
+    '<span class="text-xs text-gray-400">' + escapeHtml(cn) + '</span>' +
+    '<span class="text-gray-400">→</span>' +
+    '<span class="text-lg font-bold text-purple-600">' + escapeHtml(en) + '</span>' +
+    '<button onclick="speakWord(\'' + escapeHtml(en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
+    '</div>' +
+    (phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(phonetic) + '</div>' : '') +
+    '<button onclick="addWordToRead(\'' + escapeHtml(en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
+    '</div>';
+}
+
+function showEnDictResult(result) {
+  var el = document.getElementById('dictResult');
+  el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
+    '<div class="flex items-center gap-3 mb-2">' +
+    '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span>' +
+    '<span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">' + (result.pos || '') + '</span>' +
+    '<button onclick="speakWord(\'' + escapeHtml(result.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
+    '</div>' +
+    (result.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(result.phonetic) + '</div>' : '') +
+    '<div class="text-xs text-gray-600 mt-1">释义：' + escapeHtml(result.meaning || '') + '</div>' +
+    '<button onclick="addWordToRead(\'' + escapeHtml(result.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
+    '</div>';
+}
+
+// Google 免费翻译 API
+function translateText(text, from, to, callback) {
+  var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' + from + '&tl=' + to + '&dt=t&q=' + encodeURIComponent(text);
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            var data = JSON.parse(xhr.responseText);
+            var translated = '';
+            if (data && data[0]) {
+              for (var i = 0; i < data[0].length; i++) {
+                if (data[0][i] && data[0][i][0]) translated += data[0][i][0];
+              }
+            }
+            callback(translated || null);
+          } catch(e) { callback(null); }
+        } else { callback(null); }
+      }
+    };
+    xhr.onerror = function() { callback(null); };
+    xhr.send();
+  } catch(e) { callback(null); }
 }
 
 function speakWord(word) {
@@ -1593,19 +1607,32 @@ function addReadSentence() {
   var input = document.getElementById('newReadSentence');
   var text = input.value.trim();
   if (!text) return;
-  // 如果是中文，尝试翻译
+  input.value = '';
+  // 如果是中文，用API翻译
   if (/[\u4e00-\u9fff]/.test(text)) {
-    var result = DICT[text];
-    if (result && result.en) {
-      text = result.en;
-    } else {
-      // 没有精确匹配，保持原样（用户可能需要输入英文）
-      toast('词典中暂无此句翻译，请直接输入英文');
+    // 先查词典快速匹配
+    var dictResult = DICT[text];
+    if (dictResult && dictResult.en) {
+      addToReadList(dictResult.en);
       return;
     }
+    // 词典没有，用Google翻译API
+    document.getElementById('newReadSentence').placeholder = '翻译中…';
+    translateText(text, 'zh', 'en', function(translated) {
+      document.getElementById('newReadSentence').placeholder = '输入中文，自动翻成英文…';
+      if (translated) {
+        addToReadList(translated);
+      } else {
+        toast('翻译失败，请检查网络后重试');
+      }
+    });
+  } else {
+    addToReadList(text);
   }
+}
+
+function addToReadList(text) {
   readSentences.unshift({ id: 'rs'+Date.now(), text: text, status: 'bad' });
-  input.value = '';
   STORE.set('readSentences', readSentences);
   renderReadList();
 }
