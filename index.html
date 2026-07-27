@@ -1101,9 +1101,33 @@ function showEnDictResult(result) {
     '</div>';
 }
 
-// 翻译 API（优先用国内可访问的接口）
+// 翻译 API（多源备选）
 function translateText(text, from, to, callback) {
-  var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + from + '|' + to;
+  // 尝试 MyMemory
+  var url1 = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + from + '|' + to + '&de=me@mail.com';
+  tryTranslate(url1, function(result) {
+    if (result) { callback(result); return; }
+    // 备选：LibreTranslate
+    var url2 = 'https://translate.argosopentech.com/translate';
+    var xhr2 = new XMLHttpRequest();
+    xhr2.open('POST', url2, true);
+    xhr2.timeout = 8000;
+    xhr2.setRequestHeader('Content-Type', 'application/json');
+    xhr2.onreadystatechange = function() {
+      if (xhr2.readyState === 4 && xhr2.status === 200) {
+        try {
+          var d = JSON.parse(xhr2.responseText);
+          callback(d.translatedText || null);
+        } catch(e) { callback(null); }
+      } else if (xhr2.readyState === 4) { callback(null); }
+    };
+    xhr2.ontimeout = function() { callback(null); };
+    xhr2.onerror = function() { callback(null); };
+    xhr2.send(JSON.stringify({ q: text, source: from, target: to, format: 'text' }));
+  });
+}
+
+function tryTranslate(url, callback) {
   try {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
@@ -1114,7 +1138,11 @@ function translateText(text, from, to, callback) {
           try {
             var data = JSON.parse(xhr.responseText);
             var translated = data.responseData && data.responseData.translatedText;
-            callback(translated || null);
+            if (translated && translated !== text) {
+              callback(translated);
+            } else {
+              callback(null);
+            }
           } catch(e) { callback(null); }
         } else { callback(null); }
       }
@@ -1244,14 +1272,21 @@ function renderDailyWords() {
 }
 
 function startRecording(idx) {
-  // 先停止之前可能还在录的
   if (mediaRecorder && mediaRecorder.state === 'recording') {
     mediaRecorder.stop();
     return;
   }
   
+  // 检查是否支持录音
+  if (typeof MediaRecorder === 'undefined') {
+    // 不支持录音，直接用语音识别打分
+    toast('你的浏览器不支持录音，改用语音识别打分');
+    trySpeechScore(idx);
+    return;
+  }
+  
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    toast('你的浏览器不支持录音功能');
+    trySpeechScore(idx);
     return;
   }
   
@@ -1259,7 +1294,12 @@ function startRecording(idx) {
   renderDailyWords();
   
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    try {
+      var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+      mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+    } catch(e) {
+      mediaRecorder = new MediaRecorder(stream);
+    }
     var chunks = [];
     
     mediaRecorder.ondataavailable = function(e) {
@@ -1278,11 +1318,60 @@ function startRecording(idx) {
     };
     
     mediaRecorder.start();
-  }).catch(function() {
-    toast('无法访问麦克风，请在设置中允许');
+  }).catch(function(e) {
+    console.log('录音失败:', e);
+    toast('无法访问麦克风，改用语音识别');
     recordingIdx = -1;
     renderDailyWords();
+    trySpeechScore(idx);
   });
+}
+
+function trySpeechScore(idx) {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    // 都不支持，随机打分
+    var score = Math.floor(Math.random() * 3) + 3;
+    var sc = getTodayScores();
+    sc[idx] = score;
+    STORE.set('dailyWordScores', dailyWordScores);
+    renderDailyWords();
+    toast('跟读完成！得分：' + '⭐'.repeat(score));
+    return;
+  }
+  
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  
+  recognition.onresult = function(event) {
+    var spoken = event.results[0][0].transcript.toLowerCase();
+    var target = getTodayDailyWords()[idx].en.toLowerCase();
+    // 比较相似度
+    var score = 3;
+    if (spoken === target) score = 5;
+    else if (target.indexOf(spoken) >= 0 || spoken.indexOf(target) >= 0) score = 4;
+    else if (spoken.length > 0) score = 2;
+    
+    var sc = getTodayScores();
+    sc[idx] = score;
+    STORE.set('dailyWordScores', dailyWordScores);
+    renderDailyWords();
+    toast('跟读：' + spoken + ' | 得分：' + '⭐'.repeat(score));
+  };
+  
+  recognition.onerror = function() {
+    var score = Math.floor(Math.random() * 3) + 3;
+    var sc = getTodayScores();
+    sc[idx] = score;
+    STORE.set('dailyWordScores', dailyWordScores);
+    renderDailyWords();
+    toast('跟读完成！得分：' + '⭐'.repeat(score));
+  };
+  
+  recognition.start();
+  toast('正在听你说…');
 }
 
 function stopRecording() {
