@@ -193,62 +193,92 @@
       </div>
     </section>
     <!-- 英语学习 -->
-    <section id="english" class="hidden-section card p-5 fade-in">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-bold text-lg flex items-center gap-2">🌍 英语学习</h2>
-        <span class="text-xs text-gray-500">每天 20 分钟 · 持续输入</span>
-      </div>
+<section id="english" class="hidden-section card p-5 fade-in">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="font-bold text-lg flex items-center gap-2">🌍 英语学习</h2>
+    <span class="text-xs text-gray-500">每天 20 分钟 · 持续输入</span>
+  </div>
 
-      <!-- 今日学习计划 -->
-      <div class="bg-gray-50 rounded-xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📖 今日学习计划</div>
-        <ul class="space-y-2" id="englishTaskList"></ul>
-        <div class="mt-3 flex gap-2">
-          <input type="text" id="newEnglishTask" placeholder="加一项学习任务…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
-          <button onclick="addEnglishTask()" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
-        </div>
-      </div>
+  <!-- 今日学习计划 -->
+  <div class="bg-gray-50 rounded-xl p-4 mb-4">
+    <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📖 今日学习计划</div>
+    <ul class="space-y-2" id="englishTaskList"></ul>
+    <div class="mt-3 flex gap-2">
+      <input type="text" id="newEnglishTask" placeholder="加一项学习任务…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
+      <button onclick="addEnglishTask()" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+    </div>
+  </div>
 
-      <!-- 学习进度 -->
-      <div class="bg-gray-50 rounded-xl p-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 本周进度</div>
-        <div class="grid grid-cols-3 gap-3 text-center text-xs">
-          <div class="bg-white rounded-lg p-3">
-            <div class="text-2xl font-bold text-pink-500" id="engDoneCount">0</div>
-            <div class="text-gray-500 mt-1">完成任务</div>
-          </div>
-          <div class="bg-white rounded-lg p-3">
-            <div class="text-2xl font-bold text-pink-500" id="engReadCount">0</div>
-            <div class="text-gray-500 mt-1">跟读句子</div>
-          </div>
-          <div class="bg-white rounded-lg p-3">
-            <div class="text-2xl font-bold text-pink-500" id="engStreak">0</div>
-            <div class="text-gray-500 mt-1">连续天数</div>
-          </div>
-        </div>
+  <!-- 学习进度 -->
+  <div class="bg-gray-50 rounded-xl p-4">
+    <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 本周进度</div>
+    <div class="grid grid-cols-3 gap-3 text-center text-xs">
+      <div class="bg-white rounded-lg p-3">
+        <div class="text-2xl font-bold text-pink-500" id="engDoneCount">0</div>
+        <div class="text-gray-500 mt-1">完成任务</div>
       </div>
+      <div class="bg-white rounded-lg p-3">
+        <div class="text-2xl font-bold text-pink-500" id="engReadCount">0</div>
+        <div class="text-gray-500 mt-1">跟读句子</div>
+      </div>
+      <div class="bg-white rounded-lg p-3">
+        <div class="text-2xl font-bold text-pink-500" id="engStreak">0</div>
+        <div class="text-gray-500 mt-1">连续天数</div>
+      </div>
+    </div>
+  </div>
 
-      <!-- 跟读练习 -->
-      <div class="bg-gray-50 rounded-xl p-4 mt-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习 <span class="text-xs text-pink-500 bg-pink-50 px-2 py-0.5 rounded-full">👩‍🏫 老师带读</span></div>
-        <div class="flex gap-2 mb-3">
-          <input type="text" id="newReadSentence" placeholder="输入要跟读的英语句子…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addReadSentence()">
-          <button onclick="addReadSentence()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">添加</button>
-        </div>
-        <div class="flex gap-2 mb-3 items-center">
-          <span class="text-xs text-gray-500">语速：</span>
-          <input type="range" id="readSpeed" min="0.5" max="1.5" step="0.1" value="0.8" class="accent-pink-500" oninput="document.getElementById('readSpeedVal').textContent=this.value" style="width:80px;">
-          <span class="text-xs text-gray-500" id="readSpeedVal">0.8</span>
-          <button onclick="readAllSentences()" class="text-xs bg-purple-100 text-purple-600 px-3 py-1 rounded-full hover:bg-purple-200">📢 全部朗读</button>
-        </div>
-        <div id="readList" class="space-y-2"></div>
-        <div class="flex gap-4 mt-3 text-xs text-gray-500">
-          <span>🟢 会读 <span id="readOkCount">0</span></span>
-          <span>🟡 不会读 <span id="readBadCount">0</span></span>
-          <span>🔴 不认识 <span id="readUnknownCount">0</span></span>
-        </div>
+  <!-- 查单词 -->
+  <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 mt-4 border border-purple-100">
+    <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🔍 查单词 / 翻译</div>
+    <div class="flex gap-2 mb-3">
+      <input type="text" id="dictInput" placeholder="输入中文或英文…" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')lookupWord()">
+      <button onclick="lookupWord()" class="bg-purple-500 text-white px-4 py-2 rounded-xl text-sm">查询</button>
+    </div>
+    <div id="dictResult" class="text-sm"></div>
+  </div>
+
+  <!-- 跟读练习 -->
+  <div class="bg-gray-50 rounded-xl p-4 mt-4">
+    <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习 <span class="text-xs text-pink-500 bg-pink-50 px-2 py-0.5 rounded-full">👩‍🏫 老师带读</span></div>
+    <div class="text-xs text-gray-400 mb-2">💡 输入中文，自动翻译为英文跟读</div>
+    <div class="flex gap-2 mb-3">
+      <input type="text" id="newReadSentence" placeholder="输入中文，自动翻成英文…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addReadSentence()">
+      <button onclick="addReadSentence()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">添加</button>
+    </div>
+    <div class="flex gap-2 mb-3 items-center">
+      <span class="text-xs text-gray-500">语速：</span>
+      <input type="range" id="readSpeed" min="0.5" max="1.5" step="0.1" value="0.8" class="accent-pink-500" oninput="document.getElementById('readSpeedVal').textContent=this.value" style="width:80px;">
+      <span class="text-xs text-gray-500" id="readSpeedVal">0.8</span>
+      <button onclick="readAllSentences()" class="text-xs bg-purple-100 text-purple-600 px-3 py-1 rounded-full hover:bg-purple-200">📢 全部朗读</button>
+    </div>
+    <div id="readList" class="space-y-2"></div>
+    <div class="flex gap-4 mt-3 text-xs text-gray-500">
+      <span>🟢 会读 <span id="readOkCount">0</span></span>
+      <span>🟡 不会读 <span id="readBadCount">0</span></span>
+      <span>🔴 不认识 <span id="readUnknownCount">0</span></span>
+    </div>
+  </div>
+
+  <!-- 每日单词+口语打卡 -->
+  <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mt-4 border border-pink-100">
+    <div class="flex items-center justify-between mb-3">
+      <div class="text-sm font-semibold text-gray-700 flex items-center gap-2">📝 每日单词+口语打卡</div>
+      <div class="flex gap-2">
+        <span class="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full" id="dailyWordProgress">0/50</span>
+        <button onclick="shuffleDailyWords()" class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">🔄 换一组</button>
       </div>
-    </section>
+    </div>
+    <div class="text-xs text-gray-400 mb-2">每天随机50组单词/短句，跟读并打分</div>
+    <div id="dailyWordList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+    <div class="mt-3 flex gap-2">
+      <button onclick="speakAllDailyWords()" class="text-xs bg-purple-100 text-purple-600 px-3 py-1.5 rounded-full">📢 全部带读</button>
+      <button onclick="scoreAllDailyWords()" class="text-xs bg-pink-100 text-pink-600 px-3 py-1.5 rounded-full">⭐ 全部打分</button>
+    </div>
+    <div id="dailyWordAnalysis" class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100"></div>
+    <div id="dailyWordQuote" class="mt-2 text-xs text-pink-600 bg-pink-50 rounded-lg p-3 text-center italic"></div>
+  </div>
+</section>
     <!-- 每月收支 -->
     <section id="finance" class="hidden-section card p-5 fade-in">
       <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -417,66 +447,6 @@
         </div>
       </div>
     </section>
-    <!-- 每日情绪 -->
-    <section id="mood" class="hidden-section card p-5 fade-in">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-bold text-lg flex items-center gap-2">😊 每日情绪</h2>
-        <span class="text-xs text-gray-500" id="moodMonthLabel"></span>
-      </div>
-
-      <!-- 今日情绪 -->
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mb-4 border border-pink-100">
-        <div class="text-sm font-semibold text-gray-700 mb-3">🎯 今天心情怎么样？</div>
-        <div class="flex justify-around" id="moodSelector">
-          <button onclick="setTodayMood(1)" data-level="1" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
-            <span class="text-3xl">😢</span><span>很差</span>
-          </button>
-          <button onclick="setTodayMood(2)" data-level="2" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
-            <span class="text-3xl">😔</span><span>不好</span>
-          </button>
-          <button onclick="setTodayMood(3)" data-level="3" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
-            <span class="text-3xl">😐</span><span>一般</span>
-          </button>
-          <button onclick="setTodayMood(4)" data-level="4" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
-            <span class="text-3xl">🙂</span><span>还行</span>
-          </button>
-          <button onclick="setTodayMood(5)" data-level="5" class="mood-opt flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs transition">
-            <span class="text-3xl">😄</span><span>很好</span>
-          </button>
-        </div>
-        <div id="moodSelected" class="mt-3 text-sm text-center text-pink-600 font-medium"></div>
-      </div>
-
-      <!-- 本月情绪日历 -->
-      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3">📅 本月情绪日历</div>
-        <div class="grid grid-cols-7 gap-1 text-center mb-2">
-          <span class="text-xs text-gray-400">一</span><span class="text-xs text-gray-400">二</span><span class="text-xs text-gray-400">三</span><span class="text-xs text-gray-400">四</span><span class="text-xs text-gray-400">五</span><span class="text-xs text-gray-400">六</span><span class="text-xs text-gray-400">日</span>
-        </div>
-        <div class="grid grid-cols-7 gap-1" id="moodCalendar"></div>
-        <div class="flex justify-center gap-4 mt-3 text-xs text-gray-500">
-          <span>😢</span><span>😔</span><span>😐</span><span>🙂</span><span>😄</span>
-          <span class="ml-2">← 心情由低到高 →</span>
-        </div>
-      </div>
-
-      <!-- 本周趋势 -->
-      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3">📈 本周心情趋势</div>
-        <div class="flex items-end gap-2 h-24 px-2" id="moodChart"></div>
-        <div class="flex justify-between px-2 mt-2 text-xs text-gray-400" id="moodChartLabels"></div>
-      </div>
-
-      <!-- 能量语录 -->
-      <div class="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-5 border border-pink-200 text-center">
-        <div class="text-sm font-semibold text-pink-600 mb-2">💪 今日能量</div>
-        <div class="text-base text-gray-700 font-medium italic" id="energyQuote">"做一个很棒的妈妈，也做一个很棒的自己。"</div>
-        <div class="flex justify-center gap-4 mt-3">
-          <button onclick="prevQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500 hover:bg-pink-50">◀ 上一条</button>
-          <button onclick="nextQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500 hover:bg-pink-50">下一条 ▶</button>
-        </div>
-      </div>
-    </section>
     <!-- 每日灵感 -->
     <section id="ideas" class="hidden-section card p-5 fade-in">
       <div class="flex items-center justify-between mb-4">
@@ -638,23 +608,52 @@
         <span class="text-xs text-gray-500" id="reviewDate"></span>
       </div>
 
+      <!-- 今日情绪 -->
+      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mb-4 border border-pink-100">
+        <div class="text-sm font-semibold text-gray-700 mb-3">😊 今天心情</div>
+        <div class="flex justify-around mb-2" id="moodSelector2">
+          <button onclick="setTodayMood(1)" data-level="1" class="mood-opt2 flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs">
+            <span class="text-2xl">😢</span><span>很差</span>
+          </button>
+          <button onclick="setTodayMood(2)" data-level="2" class="mood-opt2 flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs">
+            <span class="text-2xl">😔</span><span>不好</span>
+          </button>
+          <button onclick="setTodayMood(3)" data-level="3" class="mood-opt2 flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs">
+            <span class="text-2xl">😐</span><span>一般</span>
+          </button>
+          <button onclick="setTodayMood(4)" data-level="4" class="mood-opt2 flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs">
+            <span class="text-2xl">🙂</span><span>还行</span>
+          </button>
+          <button onclick="setTodayMood(5)" data-level="5" class="mood-opt2 flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs">
+            <span class="text-2xl">😄</span><span>很好</span>
+          </button>
+        </div>
+        <div id="moodSelected2" class="text-sm text-center text-pink-600 font-medium"></div>
+      </div>
+
       <!-- 今日数据概览 -->
       <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mb-4 border border-pink-100">
         <div class="text-sm font-semibold text-gray-700 mb-3">📊 今日概览</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center" id="reviewSummary"></div>
       </div>
 
-      <!-- 心情记录 -->
+      <!-- 本月情绪日历 -->
       <div class="bg-gray-50 rounded-2xl p-4 mb-4">
-        <div class="text-sm font-semibold text-gray-700 mb-3">😊 今天心情</div>
-        <div class="flex gap-2 mb-3" id="moodPicker">
-          <button onclick="setMood('😄','开心')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😄</button>
-          <button onclick="setMood('🙂','还行')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">🙂</button>
-          <button onclick="setMood('😐','一般')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😐</button>
-          <button onclick="setMood('😔','不好')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😔</button>
-          <button onclick="setMood('😢','难过')" class="mood-btn text-2xl px-3 py-2 rounded-xl border border-gray-200 hover:bg-pink-50">😢</button>
+        <div class="text-sm font-semibold text-gray-700 mb-3">📅 本月情绪日历</div>
+        <div class="grid grid-cols-7 gap-1 text-center mb-2">
+          <span class="text-xs text-gray-400">一</span><span class="text-xs text-gray-400">二</span><span class="text-xs text-gray-400">三</span><span class="text-xs text-gray-400">四</span><span class="text-xs text-gray-400">五</span><span class="text-xs text-gray-400">六</span><span class="text-xs text-gray-400">日</span>
         </div>
-        <div id="moodDisplay" class="text-sm text-gray-500"></div>
+        <div class="grid grid-cols-7 gap-1" id="moodCalendar"></div>
+        <div class="flex justify-center gap-4 mt-3 text-xs text-gray-500">
+          <span>😢</span><span>😔</span><span>😐</span><span>🙂</span><span>😄</span>
+        </div>
+      </div>
+
+      <!-- 本周趋势 -->
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4">
+        <div class="text-sm font-semibold text-gray-700 mb-3">📈 本周心情趋势</div>
+        <div class="flex items-end gap-2 h-20 px-2" id="moodChart"></div>
+        <div class="flex justify-between px-2 mt-2 text-xs text-gray-400" id="moodChartLabels"></div>
       </div>
 
       <!-- 今日总结 -->
@@ -671,6 +670,16 @@
           <button onclick="addReviewPlan()" class="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm">+</button>
         </div>
         <ul id="reviewPlanList" class="space-y-2"></ul>
+      </div>
+
+      <!-- 能量语录 -->
+      <div class="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-5 border border-pink-200 text-center mb-4">
+        <div class="text-sm font-semibold text-pink-600 mb-2">💪 今日能量</div>
+        <div class="text-base text-gray-700 font-medium italic" id="energyQuote">"做一个很棒的妈妈，也做一个很棒的自己。"</div>
+        <div class="flex justify-center gap-4 mt-3">
+          <button onclick="prevQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500">◀</button>
+          <button onclick="nextQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500">▶</button>
+        </div>
       </div>
 
       <!-- 复盘历史 -->
@@ -820,6 +829,454 @@ let englishTasks = STORE.get('englishTasks', [
   { id: 'e3', text: '跟读 1 段亲子英语对话', done: false }
 ]);
 let engStreak = STORE.get('engStreak', { lastDate: '', count: 0 });
+
+// 内置中英词典
+const DICT = {
+  '你好': { en: 'Hello', phonetic: '/həˈloʊ/' },
+  '谢谢': { en: 'Thank you', phonetic: '/θæŋk juː/' },
+  '再见': { en: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/' },
+  '早上好': { en: 'Good morning', phonetic: '/ɡʊd ˈmɔːrnɪŋ/' },
+  '晚上好': { en: 'Good evening', phonetic: '/ɡʊd ˈiːvnɪŋ/' },
+  '晚安': { en: 'Good night', phonetic: '/ɡʊd naɪt/' },
+  '对不起': { en: 'I\'m sorry', phonetic: '/aɪm ˈsɑːri/' },
+  '没关系': { en: 'You\'re welcome', phonetic: '/jʊr ˈwɛlkəm/' },
+  '我爱你': { en: 'I love you', phonetic: '/aɪ lʌv juː/' },
+  '我想你': { en: 'I miss you', phonetic: '/aɪ mɪs juː/' },
+  '你好吗': { en: 'How are you?', phonetic: '/haʊ ɑːr juː/' },
+  '我很好': { en: 'I\'m fine', phonetic: '/aɪm faɪn/' },
+  '很高兴认识你': { en: 'Nice to meet you', phonetic: '/naɪs tuː miːt juː/' },
+  '今天天气很好': { en: 'It\'s a nice day today', phonetic: '/ɪts ə naɪs deɪ təˈdeɪ/' },
+  '你叫什么名字': { en: 'What\'s your name?', phonetic: '/wɑːts jʊr neɪm/' },
+  '我叫艾米': { en: 'My name is Amy', phonetic: '/maɪ neɪm ɪz ˈeɪmi/' },
+  '你多大了': { en: 'How old are you?', phonetic: '/haʊ oʊld ɑːr juː/' },
+  '我两岁了': { en: 'I\'m two years old', phonetic: '/aɪm tuː jɪrz oʊld/' },
+  '吃饭': { en: 'Eat', phonetic: '/iːt/' },
+  '喝水': { en: 'Drink water', phonetic: '/drɪŋk ˈwɔːtər/' },
+  '睡觉': { en: 'Sleep', phonetic: '/sliːp/' },
+  '起来': { en: 'Get up', phonetic: '/ɡɛt ʌp/' },
+  '坐下': { en: 'Sit down', phonetic: '/sɪt daʊn/' },
+  '过来': { en: 'Come here', phonetic: '/kʌm hɪr/' },
+  '等一下': { en: 'Wait a moment', phonetic: '/weɪt ə ˈmoʊmənt/' },
+  '小心': { en: 'Be careful', phonetic: '/biː ˈkɛrfəl/' },
+  '加油': { en: 'Come on', phonetic: '/kʌm ɑːn/' },
+  '真棒': { en: 'Great job', phonetic: '/ɡreɪt dʒɑːb/' },
+  '好可爱': { en: 'So cute', phonetic: '/soʊ kjuːt/' },
+  '宝宝': { en: 'Baby', phonetic: '/ˈbeɪbi/' },
+  '妈妈': { en: 'Mommy', phonetic: '/ˈmɑːmi/' },
+  '爸爸': { en: 'Daddy', phonetic: '/ˈdædi/' },
+  '玩': { en: 'Play', phonetic: '/pleɪ/' },
+  '玩具': { en: 'Toy', phonetic: '/tɔɪ/' },
+  '书': { en: 'Book', phonetic: '/bʊk/' },
+  '牛奶': { en: 'Milk', phonetic: '/mɪlk/' },
+  '苹果': { en: 'Apple', phonetic: '/ˈæpəl/' },
+  '香蕉': { en: 'Banana', phonetic: '/bəˈnænə/' },
+  '狗': { en: 'Dog', phonetic: '/dɔːɡ/' },
+  '猫': { en: 'Cat', phonetic: '/kæt/' },
+  '颜色': { en: 'Color', phonetic: '/ˈkʌlər/' },
+  '红色': { en: 'Red', phonetic: '/rɛd/' },
+  '蓝色': { en: 'Blue', phonetic: '/bluː/' },
+  '绿色': { en: 'Green', phonetic: '/ɡriːn/' },
+  '黄色': { en: 'Yellow', phonetic: '/ˈjɛloʊ/' },
+  '今天是星期几': { en: 'What day is it today?', phonetic: '/wɑːt deɪ ɪz ɪt təˈdeɪ/' },
+  '今天星期一': { en: 'Today is Monday', phonetic: '/təˈdeɪ ɪz ˈmʌndeɪ/' },
+  '几点了': { en: 'What time is it?', phonetic: '/wɑːt taɪm ɪz ɪt/' },
+  '多少钱': { en: 'How much is it?', phonetic: '/haʊ mʌtʃ ɪz ɪt/' },
+  '我喜欢': { en: 'I like it', phonetic: '/aɪ laɪk ɪt/' },
+  '我不喜欢': { en: 'I don\'t like it', phonetic: '/aɪ doʊnt laɪk ɪt/' },
+  '请帮我': { en: 'Please help me', phonetic: '/pliːz hɛlp miː/' },
+  '可以吗': { en: 'Is it okay?', phonetic: '/ɪz ɪt oʊˈkeɪ/' },
+  '生日快乐': { en: 'Happy birthday', phonetic: '/ˈhæpi ˈbɜːrθdeɪ/' },
+  '新年快乐': { en: 'Happy New Year', phonetic: '/ˈhæpi nuː jɪr/' },
+  '圣诞快乐': { en: 'Merry Christmas', phonetic: '/ˈmɛri ˈkrɪsməs/' },
+  '今天很开心': { en: 'I\'m very happy today', phonetic: '/aɪm ˈvɛri ˈhæpi təˈdeɪ/' },
+  '我累了': { en: 'I\'m tired', phonetic: '/aɪm ˈtaɪərd/' },
+  '我饿了': { en: 'I\'m hungry', phonetic: '/aɪm ˈhʌŋɡri/' },
+  '我渴了': { en: 'I\'m thirsty', phonetic: '/aɪm ˈθɜːrsti/' },
+  '去睡觉': { en: 'Go to sleep', phonetic: '/ɡoʊ tuː sliːp/' },
+  '刷牙': { en: 'Brush your teeth', phonetic: '/brʌʃ jʊr tiːθ/' },
+  '洗澡': { en: 'Take a bath', phonetic: '/teɪk ə bæθ/' },
+  '穿衣服': { en: 'Get dressed', phonetic: '/ɡɛt drɛst/' },
+  '脱鞋': { en: 'Take off your shoes', phonetic: '/teɪk ɔːf jʊr ʃuːz/' },
+  '关门': { en: 'Close the door', phonetic: '/kloʊz ðə dɔːr/' },
+  '开门': { en: 'Open the door', phonetic: '/ˈoʊpən ðə dɔːr/' },
+  '快一点': { en: 'Hurry up', phonetic: '/ˈhɜːri ʌp/' },
+  '慢一点': { en: 'Slow down', phonetic: '/sloʊ daʊn/' },
+  '安静': { en: 'Be quiet', phonetic: '/biː ˈkwaɪət/' },
+  '听我说': { en: 'Listen to me', phonetic: '/ˈlɪsən tuː miː/' },
+  '看着我': { en: 'Look at me', phonetic: '/lʊk æt miː/' },
+  '笑一个': { en: 'Smile', phonetic: '/smaɪl/' },
+  '亲一下': { en: 'Give me a kiss', phonetic: '/ɡɪv miː ə kɪs/' },
+  '抱抱': { en: 'Give me a hug', phonetic: '/ɡɪv miː ə hʌɡ/' },
+  '好孩子': { en: 'Good boy/girl', phonetic: '/ɡʊd bɔɪ/ɡɜːrl/' },
+  '不要碰': { en: 'Don\'t touch', phonetic: '/doʊnt tʌtʃ/' },
+  '危险': { en: 'Dangerous', phonetic: '/ˈdeɪndʒərəs/' },
+  '疼': { en: 'It hurts', phonetic: '/ɪt hɜːrts/' },
+  '医院': { en: 'Hospital', phonetic: '/ˈhɑːspɪtəl/' },
+  '医生': { en: 'Doctor', phonetic: '/ˈdɑːktər/' },
+  '药': { en: 'Medicine', phonetic: '/ˈmɛdɪsɪn/' },
+  '发烧': { en: 'Have a fever', phonetic: '/hæv ə ˈfiːvər/' },
+  '感冒': { en: 'Have a cold', phonetic: '/hæv ə koʊld/' },
+  '肚子疼': { en: 'Stomachache', phonetic: '/ˈstʌməkˌeɪk/' },
+  '鸡蛋': { en: 'Egg', phonetic: '/ɛɡ/' },
+  '面包': { en: 'Bread', phonetic: '/brɛd/' },
+  '米饭': { en: 'Rice', phonetic: '/raɪs/' },
+  '面条': { en: 'Noodles', phonetic: '/ˈnuːdəlz/' },
+  '鸡肉': { en: 'Chicken', phonetic: '/ˈtʃɪkɪn/' },
+  '鱼': { en: 'Fish', phonetic: '/fɪʃ/' },
+  '蔬菜': { en: 'Vegetables', phonetic: '/ˈvɛdʒtəbəlz/' },
+  '水果': { en: 'Fruit', phonetic: '/fruːt/' },
+  '蛋糕': { en: 'Cake', phonetic: '/keɪk/' },
+  '糖果': { en: 'Candy', phonetic: '/ˈkændi/' },
+  '冰淇淋': { en: 'Ice cream', phonetic: '/aɪs kriːm/' },
+  '好饿': { en: 'So hungry', phonetic: '/soʊ ˈhʌŋɡri/' },
+  '好吃': { en: 'Delicious', phonetic: '/dɪˈlɪʃəs/' },
+  '还要': { en: 'More please', phonetic: '/mɔːr pliːz/' },
+  '够了': { en: 'That\'s enough', phonetic: '/ðæts ɪˈnʌf/' },
+  '超市': { en: 'Supermarket', phonetic: '/ˈsuːpərˌmɑːrkɪt/' },
+  '公园': { en: 'Park', phonetic: '/pɑːrk/' },
+  '学校': { en: 'School', phonetic: '/skuːl/' },
+  '回家': { en: 'Go home', phonetic: '/ɡoʊ hoʊm/' },
+  '开车': { en: 'Drive', phonetic: '/draɪv/' },
+  '走路': { en: 'Walk', phonetic: '/wɔːk/' },
+  '跑步': { en: 'Run', phonetic: '/rʌn/' },
+  '跳舞': { en: 'Dance', phonetic: '/dæns/' },
+  '唱歌': { en: 'Sing', phonetic: '/sɪŋ/' },
+  '画画': { en: 'Draw', phonetic: '/drɔː/' },
+  '故事': { en: 'Story', phonetic: '/ˈstɔːri/' },
+  '歌': { en: 'Song', phonetic: '/sɔːŋ/' },
+  '动画片': { en: 'Cartoon', phonetic: '/kɑːrˈtuːn/' },
+  '下雨了': { en: 'It\'s raining', phonetic: '/ɪts ˈreɪnɪŋ/' },
+  '下雪了': { en: 'It\'s snowing', phonetic: '/ɪts ˈsnoʊɪŋ/' },
+  '出太阳了': { en: 'The sun is out', phonetic: '/ðə sʌn ɪz aʊt/' },
+  '好热': { en: 'It\'s so hot', phonetic: '/ɪts soʊ hɑːt/' },
+  '好冷': { en: 'It\'s so cold', phonetic: '/ɪts soʊ koʊld/' },
+  '我们走吧': { en: 'Let\'s go', phonetic: '/lɛts ɡoʊ/' },
+  '等一下我': { en: 'Wait for me', phonetic: '/weɪt fɔːr miː/' },
+  '跟我来': { en: 'Follow me', phonetic: '/ˈfɑːloʊ miː/' },
+  '我能帮你吗': { en: 'Can I help you?', phonetic: '/kæn aɪ hɛlp juː/' },
+  '你想要什么': { en: 'What do you want?', phonetic: '/wɑːt duː juː wɑːnt/' },
+  '这个给你': { en: 'This is for you', phonetic: '/ðɪs ɪz fɔːr juː/' },
+  '好漂亮': { en: 'So beautiful', phonetic: '/soʊ ˈbjuːtɪfəl/' },
+  '真聪明': { en: 'So smart', phonetic: '/soʊ smɑːrt/' },
+  '慢慢来': { en: 'Take your time', phonetic: '/teɪk jʊr taɪm/' },
+  '没关系别哭': { en: 'It\'s okay, don\'t cry', phonetic: '/ɪts oʊˈkeɪ doʊnt kraɪ/' },
+  '妈妈在这里': { en: 'Mommy is here', phonetic: '/ˈmɑːmi ɪz hɪr/' },
+  '你好漂亮': { en: 'You look beautiful', phonetic: '/juː lʊk ˈbjuːtɪfəl/' },
+  '欢迎回家': { en: 'Welcome home', phonetic: '/ˈwɛlkəm hoʊm/' },
+  '小心车': { en: 'Watch out for cars', phonetic: '/wɑːtʃ aʊt fɔːr kɑːrz/' },
+  '别跑太快': { en: 'Don\'t run too fast', phonetic: '/doʊnt rʌn tuː fæst/' },
+  '把玩具收好': { en: 'Put away your toys', phonetic: '/pʊt əˈweɪ jʊr tɔɪz/' },
+  '该睡觉了': { en: 'Time for bed', phonetic: '/taɪm fɔːr bɛd/' },
+  '做个好梦': { en: 'Sweet dreams', phonetic: '/swiːt driːmz/' },
+  '明天见': { en: 'See you tomorrow', phonetic: '/siː juː təˈmɑːroʊ/' },
+  '苹果': { en: 'Apple', phonetic: '/ˈæp.əl/', pos: 'n.', meaning: '苹果' },
+  '香蕉': { en: 'Banana', phonetic: '/bəˈnæn.ə/', pos: 'n.', meaning: '香蕉' },
+  '猫': { en: 'Cat', phonetic: '/kæt/', pos: 'n.', meaning: '猫' },
+  '狗': { en: 'Dog', phonetic: '/dɔːɡ/', pos: 'n.', meaning: '狗' },
+  'hello': { en: 'Hello', phonetic: '/həˈloʊ/', pos: 'int.', meaning: '你好' },
+  'goodbye': { en: 'Goodbye', phonetic: '/ɡʊdˈbaɪ/', pos: 'int.', meaning: '再见' },
+  'love': { en: 'Love', phonetic: '/lʌv/', pos: 'v./n.', meaning: '爱；热爱' },
+  'happy': { en: 'Happy', phonetic: '/ˈhæp.i/', pos: 'adj.', meaning: '开心的；幸福的' },
+  'beautiful': { en: 'Beautiful', phonetic: '/ˈbjuː.tɪ.fəl/', pos: 'adj.', meaning: '美丽的' },
+  'baby': { en: 'Baby', phonetic: '/ˈbeɪ.bi/', pos: 'n.', meaning: '宝宝；婴儿' },
+  'mother': { en: 'Mother', phonetic: '/ˈmʌð.ər/', pos: 'n.', meaning: '母亲；妈妈' },
+  'family': { en: 'Family', phonetic: '/ˈfæm.əl.i/', pos: 'n.', meaning: '家庭；家人' },
+  'friend': { en: 'Friend', phonetic: '/frend/', pos: 'n.', meaning: '朋友' },
+  'water': { en: 'Water', phonetic: '/ˈwɔː.tər/', pos: 'n./v.', meaning: '水；浇水' },
+  'food': { en: 'Food', phonetic: '/fuːd/', pos: 'n.', meaning: '食物' },
+  'sleep': { en: 'Sleep', phonetic: '/sliːp/', pos: 'v./n.', meaning: '睡觉；睡眠' },
+  'dream': { en: 'Dream', phonetic: '/driːm/', pos: 'n./v.', meaning: '梦；梦想；做梦' },
+  'smile': { en: 'Smile', phonetic: '/smaɪl/', pos: 'v./n.', meaning: '微笑' },
+  'strong': { en: 'Strong', phonetic: '/strɔːŋ/', pos: 'adj.', meaning: '坚强的；强壮的' },
+  'brave': { en: 'Brave', phonetic: '/breɪv/', pos: 'adj.', meaning: '勇敢的' },
+  'kind': { en: 'Kind', phonetic: '/kaɪnd/', pos: 'adj.', meaning: '善良的；友好的' },
+  'morning': { en: 'Morning', phonetic: '/ˈmɔːr.nɪŋ/', pos: 'n.', meaning: '早晨' },
+  'evening': { en: 'Evening', phonetic: '/ˈiːv.nɪŋ/', pos: 'n.', meaning: '傍晚；晚上' },
+  'today': { en: 'Today', phonetic: '/təˈdeɪ/', pos: 'n./adv.', meaning: '今天' },
+  'tomorrow': { en: 'Tomorrow', phonetic: '/təˈmɔːr.oʊ/', pos: 'n./adv.', meaning: '明天' },
+  'sunshine': { en: 'Sunshine', phonetic: '/ˈsʌn.ʃaɪn/', pos: 'n.', meaning: '阳光' },
+  'rainbow': { en: 'Rainbow', phonetic: '/ˈreɪn.boʊ/', pos: 'n.', meaning: '彩虹' },
+  'flower': { en: 'Flower', phonetic: '/ˈflaʊ.ər/', pos: 'n.', meaning: '花' },
+  'star': { en: 'Star', phonetic: '/stɑːr/', pos: 'n.', meaning: '星星；明星' },
+  'moon': { en: 'Moon', phonetic: '/muːn/', pos: 'n.', meaning: '月亮' },
+  'heart': { en: 'Heart', phonetic: '/hɑːrt/', pos: 'n.', meaning: '心；心脏' },
+  'music': { en: 'Music', phonetic: '/ˈmjuː.zɪk/', pos: 'n.', meaning: '音乐' },
+  'dance': { en: 'Dance', phonetic: '/dæns/', pos: 'v./n.', meaning: '跳舞；舞蹈' },
+  'sing': { en: 'Sing', phonetic: '/sɪŋ/', pos: 'v.', meaning: '唱歌' },
+  'play': { en: 'Play', phonetic: '/pleɪ/', pos: 'v./n.', meaning: '玩耍；演奏' },
+  'read': { en: 'Read', phonetic: '/riːd/', pos: 'v.', meaning: '阅读；读' },
+  'write': { en: 'Write', phonetic: '/raɪt/', pos: 'v.', meaning: '写' },
+  'learn': { en: 'Learn', phonetic: '/lɜːrn/', pos: 'v.', meaning: '学习' },
+  'teach': { en: 'Teach', phonetic: '/tiːtʃ/', pos: 'v.', meaning: '教' },
+  'listen': { en: 'Listen', phonetic: '/ˈlɪs.ən/', pos: 'v.', meaning: '听' },
+  'speak': { en: 'Speak', phonetic: '/spiːk/', pos: 'v.', meaning: '说话；讲' },
+  'thank': { en: 'Thank', phonetic: '/θæŋk/', pos: 'v.', meaning: '感谢' },
+  'please': { en: 'Please', phonetic: '/pliːz/', pos: 'adv.', meaning: '请' },
+  'sorry': { en: 'Sorry', phonetic: '/ˈsɔːr.i/', pos: 'adj.', meaning: '抱歉的' },
+  'welcome': { en: 'Welcome', phonetic: '/ˈwel.kəm/', pos: 'v./adj.', meaning: '欢迎' },
+  'wonderful': { en: 'Wonderful', phonetic: '/ˈwʌn.dər.fəl/', pos: 'adj.', meaning: '精彩的；极好的' },
+  'amazing': { en: 'Amazing', phonetic: '/əˈmeɪ.zɪŋ/', pos: 'adj.', meaning: '令人惊叹的' },
+  'delicious': { en: 'Delicious', phonetic: '/dɪˈlɪʃ.əs/', pos: 'adj.', meaning: '美味的' },
+  'together': { en: 'Together', phonetic: '/təˈɡeð.ər/', pos: 'adv.', meaning: '一起' },
+  'always': { en: 'Always', phonetic: '/ˈɔːl.weɪz/', pos: 'adv.', meaning: '总是；永远' },
+  'never': { en: 'Never', phonetic: '/ˈnev.ər/', pos: 'adv.', meaning: '从不' },
+  'sweet': { en: 'Sweet', phonetic: '/swiːt/', pos: 'adj.', meaning: '甜的；可爱的' },
+  'cute': { en: 'Cute', phonetic: '/kjuːt/', pos: 'adj.', meaning: '可爱的' },
+  'pretty': { en: 'Pretty', phonetic: '/ˈprɪt.i/', pos: 'adj.', meaning: '漂亮的' },
+  'nice': { en: 'Nice', phonetic: '/naɪs/', pos: 'adj.', meaning: '好的；友好的' },
+  'good': { en: 'Good', phonetic: '/ɡʊd/', pos: 'adj.', meaning: '好的' },
+  'great': { en: 'Great', phonetic: '/ɡreɪt/', pos: 'adj.', meaning: '很棒的；伟大的' },
+  'best': { en: 'Best', phonetic: '/best/', pos: 'adj.', meaning: '最好的' }
+};
+
+function lookupWord() {
+  var input = document.getElementById('dictInput').value.trim();
+  if (!input) return;
+  var el = document.getElementById('dictResult');
+  
+  // 判断输入语言
+  var isChinese = /[\u4e00-\u9fff]/.test(input);
+  
+  if (isChinese) {
+    // 中文→英文翻译
+    var result = DICT[input];
+    if (result && result.en) {
+      el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
+        '<div class="flex items-center gap-3 mb-2">' +
+        '<span class="text-xs text-gray-400">' + escapeHtml(input) + '</span>' +
+        '<span class="text-gray-400">→</span>' +
+        '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span>' +
+        '<button onclick="speakWord(\'' + escapeHtml(result.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
+        '</div>' +
+        (result.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(result.phonetic) + '</div>' : '') +
+        '<button onclick="addWordToRead(\'' + escapeHtml(result.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
+        '</div>';
+    } else {
+      // 没有精确匹配，尝试模糊匹配
+      var found = false;
+      for (var key in DICT) {
+        if (key.indexOf(input) >= 0 || input.indexOf(key) >= 0) {
+          var r = DICT[key];
+          if (r.en) {
+            el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
+              '<div class="flex items-center gap-3 mb-2">' +
+              '<span class="text-xs text-gray-400">' + escapeHtml(key) + '</span>' +
+              '<span class="text-gray-400">→</span>' +
+              '<span class="text-lg font-bold text-purple-600">' + escapeHtml(r.en) + '</span>' +
+              '<button onclick="speakWord(\'' + escapeHtml(r.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
+              '</div>' +
+              (r.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(r.phonetic) + '</div>' : '') +
+              '<button onclick="addWordToRead(\'' + escapeHtml(r.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
+              '</div>';
+            found = true;
+            break;
+          }
+        }
+      }
+      if (!found) {
+        el.innerHTML = '<div class="text-xs text-gray-400 bg-white rounded-xl p-4 border border-gray-100">没有找到"'+escapeHtml(input)+'"的翻译，试试输入完整的词或换个说法～</div>';
+      }
+    }
+  } else {
+    // 英文查词
+    var key = input.toLowerCase();
+    var result = DICT[key];
+    if (result && result.meaning) {
+      el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
+        '<div class="flex items-center gap-3 mb-2">' +
+        '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span>' +
+        '<span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">' + (result.pos || '') + '</span>' +
+        '<button onclick="speakWord(\'' + escapeHtml(result.en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
+        '</div>' +
+        (result.phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(result.phonetic) + '</div>' : '') +
+        '<div class="text-xs text-gray-600 mt-1">释义：' + escapeHtml(result.meaning || '') + '</div>' +
+        '<button onclick="addWordToRead(\'' + escapeHtml(result.en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
+        '</div>';
+    } else {
+      // 也查中文
+      for (var k in DICT) {
+        if (DICT[k].en && DICT[k].en.toLowerCase() === key) {
+          el.innerHTML = '<div class="bg-white rounded-xl p-4 border border-purple-100">' +
+            '<div class="flex items-center gap-3 mb-2">' +
+            '<span class="text-xs text-gray-400">' + escapeHtml(k) + '</span>' +
+            '<span class="text-gray-400">→</span>' +
+            '<span class="text-lg font-bold text-purple-600">' + escapeHtml(DICT[k].en) + '</span>' +
+            '<button onclick="speakWord(\'' + escapeHtml(DICT[k].en) + '\')" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600">🔊</button>' +
+            '</div>' +
+            (DICT[k].phonetic ? '<div class="text-xs text-gray-500">音标：' + escapeHtml(DICT[k].phonetic) + '</div>' : '') +
+            '<button onclick="addWordToRead(\'' + escapeHtml(DICT[k].en) + '\')" class="mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full">➕ 加入跟读</button>' +
+            '</div>';
+          return;
+        }
+      }
+      el.innerHTML = '<div class="text-xs text-gray-400 bg-white rounded-xl p-4 border border-gray-100">没有找到"'+escapeHtml(input)+'"的解释，试试其他单词～</div>';
+    }
+  }
+}
+
+function speakWord(word) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-US';
+  u.rate = 0.8;
+  window.speechSynthesis.speak(u);
+}
+
+function addWordToRead(word) {
+  readSentences.unshift({ id: 'rs'+Date.now(), text: word, status: 'bad' });
+  STORE.set('readSentences', readSentences);
+  renderReadList();
+  showSection('english');
+  toast('已加入跟读列表');
+}
+
+// 每日单词库
+var dailyWordBank = [];
+(function buildWordBank() {
+  for (var k in DICT) {
+    if (DICT[k].en) dailyWordBank.push({ cn: k, en: DICT[k].en, phonetic: DICT[k].phonetic || '' });
+  }
+})();
+
+var dailyWords = STORE.get('dailyWords', []);
+var dailyWordScores = STORE.get('dailyWordScores', {}); // { '2026-07-27': {0:5, 1:3, ...} }
+var dailyWordsDate = STORE.get('dailyWordsDate', '');
+
+function getTodayDailyWords() {
+  var today = new Date().toISOString().slice(0,10);
+  if (dailyWordsDate !== today || dailyWords.length === 0) {
+    shuffleDailyWords();
+  }
+  return dailyWords;
+}
+
+function shuffleDailyWords() {
+  var today = new Date().toISOString().slice(0,10);
+  dailyWordsDate = today;
+  var pool = dailyWordBank.slice();
+  // Fisher-Yates shuffle
+  for (var i = pool.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+  }
+  dailyWords = pool.slice(0, 50);
+  STORE.set('dailyWords', dailyWords);
+  STORE.set('dailyWordsDate', dailyWordsDate);
+  renderDailyWords();
+}
+
+function getTodayScores() {
+  var today = new Date().toISOString().slice(0,10);
+  if (!dailyWordScores[today]) dailyWordScores[today] = {};
+  return dailyWordScores[today];
+}
+
+function renderDailyWords() {
+  var words = getTodayDailyWords();
+  var scores = getTodayScores();
+  var el = document.getElementById('dailyWordList');
+  el.innerHTML = '';
+  if (words.length === 0) { el.innerHTML = '<div class="text-xs text-gray-400">点击「换一组」开始打卡</div>'; return; }
+  
+  var scored = Object.keys(scores).length;
+  document.getElementById('dailyWordProgress').textContent = scored + '/50';
+  
+  words.forEach(function(w, idx) {
+    var score = scores[idx] || 0;
+    var div = document.createElement('div');
+    div.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
+    
+    var infoSpan = document.createElement('span');
+    infoSpan.className = 'text-sm flex-1 min-w-0';
+    infoSpan.innerHTML = '<span class="text-xs text-gray-400">' + escapeHtml(w.cn) + '</span> <span class="text-purple-600 font-medium">' + escapeHtml(w.en) + '</span>';
+    div.appendChild(infoSpan);
+    
+    var speakBtn = document.createElement('button');
+    speakBtn.className = 'text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-600 shrink-0';
+    speakBtn.textContent = '🔊';
+    speakBtn.onclick = (function(word) { return function() { speakWord(word); }; })(w.en);
+    div.appendChild(speakBtn);
+    
+    // 打分按钮 1-5
+    var scoreDiv = document.createElement('div');
+    scoreDiv.className = 'flex gap-0.5 shrink-0';
+    for (var s = 1; s <= 5; s++) {
+      var sb = document.createElement('button');
+      sb.textContent = s <= score ? '⭐' : '☆';
+      sb.className = 'text-xs ' + (s <= score ? 'text-yellow-400' : 'text-gray-300');
+      sb.onclick = (function(i, star) { return function() {
+        var sc = getTodayScores();
+        sc[i] = star;
+        STORE.set('dailyWordScores', dailyWordScores);
+        renderDailyWords();
+      }; })(idx, s);
+      scoreDiv.appendChild(sb);
+    }
+    div.appendChild(scoreDiv);
+    
+    el.appendChild(div);
+  });
+  
+  updateDailyWordAnalysis();
+}
+
+function speakAllDailyWords() {
+  var words = getTodayDailyWords();
+  if (!('speechSynthesis' in window)) { toast('浏览器不支持语音'); return; }
+  window.speechSynthesis.cancel();
+  words.forEach(function(w, i) {
+    var u = new SpeechSynthesisUtterance(w.en);
+    u.lang = 'en-US';
+    u.rate = 0.7;
+    window.speechSynthesis.speak(u);
+  });
+}
+
+function scoreAllDailyWords() {
+  var scores = getTodayScores();
+  var words = getTodayDailyWords();
+  words.forEach(function(w, i) {
+    if (!scores[i]) scores[i] = 3; // 默认3分
+  });
+  STORE.set('dailyWordScores', dailyWordScores);
+  renderDailyWords();
+  toast('已全部默认打分，可手动调整⭐');
+}
+
+function updateDailyWordAnalysis() {
+  var scores = getTodayScores();
+  var words = getTodayDailyWords();
+  var scored = Object.keys(scores).length;
+  if (scored === 0) {
+    document.getElementById('dailyWordAnalysis').textContent = '开始跟读并打分后，这里自动生成分析。';
+    document.getElementById('dailyWordQuote').textContent = '';
+    return;
+  }
+  
+  var total = 0, count = 0, maxScore = 0;
+  for (var k in scores) { total += scores[k]; count++; if (scores[k] > maxScore) maxScore = scores[k]; }
+  var avg = (total / count).toFixed(1);
+  
+  var analysis = '📊 已打卡 ' + scored + '/50 组，平均分 ' + avg + ' 分\n';
+  if (avg >= 4.5) analysis += '🌟 非常优秀！发音很标准！';
+  else if (avg >= 3.5) analysis += '👍 不错哦，继续练习会更好！';
+  else if (avg >= 2.5) analysis += '💪 还有提升空间，多听多读！';
+  else analysis += '📖 需要多加练习，别灰心！';
+  
+  document.getElementById('dailyWordAnalysis').textContent = analysis;
+  
+  // 老师语录
+  var quotes = [
+    '每天进步一点点，50天后你会感谢今天的自己。',
+    '语言学习没有捷径，但坚持就是最快的路。',
+    '今天你认真读的每一个单词，都是未来的底气。',
+    '发音不准没关系，敢开口就是最棒的！',
+    '跟读是最好的老师，模仿是最好的学习。',
+    '你今天已经比昨天更厉害了，继续保持！'
+  ];
+  document.getElementById('dailyWordQuote').textContent = '👩‍🏫 老师的话：' + quotes[Math.floor(Math.random() * quotes.length)];
+}
 
 // ---------- 每月收支 ----------
 let financeCurrentMonth = new Date().toISOString().slice(0,7); // YYYY-MM
@@ -1133,10 +1590,21 @@ if ('speechSynthesis' in window) {
 }
 
 function addReadSentence() {
-  const input = document.getElementById('newReadSentence');
-  const text = input.value.trim();
+  var input = document.getElementById('newReadSentence');
+  var text = input.value.trim();
   if (!text) return;
-  readSentences.unshift({ id: 'rs'+Date.now(), text, status: 'bad' });
+  // 如果是中文，尝试翻译
+  if (/[\u4e00-\u9fff]/.test(text)) {
+    var result = DICT[text];
+    if (result && result.en) {
+      text = result.en;
+    } else {
+      // 没有精确匹配，保持原样（用户可能需要输入英文）
+      toast('词典中暂无此句翻译，请直接输入英文');
+      return;
+    }
+  }
+  readSentences.unshift({ id: 'rs'+Date.now(), text: text, status: 'bad' });
   input.value = '';
   STORE.set('readSentences', readSentences);
   renderReadList();
@@ -1765,37 +2233,34 @@ const moodBgColors = ['', '#fef2f2', '#fff7ed', '#fefce8', '#f0fdf4', '#f0fdf4']
 const moodLabels = ['', '很差', '不好', '一般', '还行', '很好'];
 
 function setTodayMood(level) {
-  const todayStr = new Date().toISOString().slice(0,10);
+  var todayStr = new Date().toISOString().slice(0,10);
   moodData[todayStr] = level;
   STORE.set('moodData', moodData);
-  renderMoodModule();
+  renderMoodInReview();
+  // 更新情绪日历和趋势
+  renderMoodCalendar();
+  renderMoodChart();
 }
 
-function renderMoodModule() {
-  const now = new Date();
-  const todayStr = now.toISOString().slice(0,10);
-  document.getElementById('moodMonthLabel').textContent = `${now.getFullYear()}年${now.getMonth()+1}月`;
-
-  // 今日选中
-  const todayLevel = moodData[todayStr] || 0;
-  document.querySelectorAll('.mood-opt').forEach(b => {
-    const lv = parseInt(b.dataset.level);
+function renderMoodInReview() {
+  var todayStr = new Date().toISOString().slice(0,10);
+  var todayLevel = moodData[todayStr] || 0;
+  
+  // 高亮情绪按钮
+  document.querySelectorAll('.mood-opt2').forEach(function(b) {
+    var lv = parseInt(b.dataset.level);
     if (lv === todayLevel) {
       b.classList.add('bg-pink-100', 'rounded-2xl', 'border', 'border-pink-300');
     } else {
       b.classList.remove('bg-pink-100', 'rounded-2xl', 'border', 'border-pink-300');
     }
   });
-  const selEl = document.getElementById('moodSelected');
-  selEl.textContent = todayLevel ? `今天的心情：${moodEmojis[todayLevel]} ${moodLabels[todayLevel]}` : '';
-
-  // 日历
-  renderMoodCalendar();
-
-  // 本周趋势
-  renderMoodChart();
-
-  // 能量语录
+  
+  var selEl = document.getElementById('moodSelected2');
+  if (selEl) {
+    selEl.textContent = todayLevel ? '今天的心情：' + moodEmojis[todayLevel] + ' ' + moodLabels[todayLevel] : '';
+  }
+  
   document.getElementById('energyQuote').textContent = moodQuotes[moodQuoteIdx];
 }
 
@@ -1932,16 +2397,9 @@ function getTodayReview() {
 }
 
 function renderReview() {
-  const todayStr = new Date().toISOString().slice(0,10);
+  var todayStr = new Date().toISOString().slice(0,10);
   document.getElementById('reviewDate').textContent = todayStr;
-  const r = getTodayReview();
-
-  // 心情显示
-  if (r.mood) {
-    document.getElementById('moodDisplay').innerHTML = `<span class="text-2xl mr-2">${r.mood}</span><span class="text-gray-700">${r.moodLabel}</span>`;
-  } else {
-    document.getElementById('moodDisplay').textContent = '今天心情怎么样？选一个吧～';
-  }
+  var r = getTodayReview();
 
   // 总结
   document.getElementById('reviewToday').value = r.summary || '';
@@ -1954,6 +2412,11 @@ function renderReview() {
 
   // 概览
   updateReviewSummary();
+  
+  // 情绪
+  renderMoodInReview();
+  renderMoodCalendar();
+  renderMoodChart();
 }
 
 function setMood(mood, label) {
@@ -2036,40 +2499,42 @@ function renderReviewHistory() {
 }
 
 function updateReviewSummary() {
-  const el = document.getElementById('reviewSummary');
+  var el = document.getElementById('reviewSummary');
   if (!el) return;
-  const todayStr = new Date().toISOString().slice(0,10);
-  // 计算今日数据
-  const todayTasks = tasks.today.filter(t => t.done).length + tasks.scheduled.filter(t => t.done).length;
-  const totalTasks = tasks.today.length + tasks.scheduled.length;
-  const doneEnglish = englishTasks.filter(t => t.done).length;
-  const doneWorkouts = workouts.filter(w => w.date === todayStr && w.done).length;
-  const readOk = readSentences.filter(rs => rs.status === 'ok').length;
-  const reviewR = getTodayReview();
-  const moodText = reviewR.mood || '🤔';
+  var todayStr = new Date().toISOString().slice(0,10);
+  
+  var todayTasks = tasks.today.filter(function(t) { return t.done; }).length + tasks.scheduled.filter(function(t) { return t.done; }).length;
+  var totalTasks = tasks.today.length + tasks.scheduled.length;
+  var doneEnglish = englishTasks.filter(function(t) { return t.done; }).length;
+  var doneWorkouts = workouts.filter(function(w) { return w.date === todayStr && w.done; }).length;
+  var readOk = readSentences.filter(function(rs) { return rs.status === 'ok'; }).length;
+  
+  // 减肥
+  var dietInfo = dietRecords.length > 0 ? dietRecords[0].weight + 'kg' : '--';
+  
+  // 存钱
+  var month = todayStr.slice(0,7);
+  var monthSavings = savingsRecords.filter(function(r) { return r.month === month; });
+  var selfSaved = monthSavings.filter(function(r) { return r.type === 'self'; }).reduce(function(s, r) { return s + r.amount; }, 0);
+  var babySaved = monthSavings.filter(function(r) { return r.type === 'baby'; }).reduce(function(s, r) { return s + r.amount; }, 0);
+  
+  // 情绪
+  var reviewR = getTodayReview();
+  var moodText = moodData[todayStr] ? moodEmojis[moodData[todayStr]] : '🤔';
+  
+  // 每日单词
+  var wordScores = getTodayScores ? getTodayScores() : {};
+  var wordCount = Object.keys(wordScores).length;
 
-  el.innerHTML = `
-    <div class="bg-white rounded-xl p-3">
-      <div class="text-xs text-gray-500">任务完成</div>
-      <div class="text-lg font-bold text-pink-500">${todayTasks}/${totalTasks}</div>
-    </div>
-    <div class="bg-white rounded-xl p-3">
-      <div class="text-xs text-gray-500">英语完成</div>
-      <div class="text-lg font-bold text-purple-500">${doneEnglish}/${englishTasks.length}</div>
-    </div>
-    <div class="bg-white rounded-xl p-3">
-      <div class="text-xs text-gray-500">健身打卡</div>
-      <div class="text-lg font-bold text-pink-500">${doneWorkouts}</div>
-    </div>
-    <div class="bg-white rounded-xl p-3">
-      <div class="text-xs text-gray-500">跟读会读</div>
-      <div class="text-lg font-bold text-purple-500">${readOk}</div>
-    </div>
-    <div class="bg-white rounded-xl p-3">
-      <div class="text-xs text-gray-500">今日心情</div>
-      <div class="text-lg">${moodText}</div>
-    </div>
-  `;
+  el.innerHTML = 
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">任务</div><div class="text-lg font-bold text-pink-500">' + todayTasks + '/' + totalTasks + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">英语</div><div class="text-lg font-bold text-purple-500">' + doneEnglish + '/' + englishTasks.length + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">体重</div><div class="text-lg font-bold text-pink-500">' + dietInfo + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">健身</div><div class="text-lg font-bold text-purple-500">' + doneWorkouts + '项</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">存钱</div><div class="text-lg font-bold text-pink-500">¥' + (selfSaved + babySaved) + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">单词</div><div class="text-lg font-bold text-purple-500">' + wordCount + '/50</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">跟读</div><div class="text-lg font-bold text-pink-500">' + readOk + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">心情</div><div class="text-lg">' + moodText + '</div></div>';
 }
 let customModules = STORE.get('customModules', []);
 let selectedIcon = '⭐';
@@ -2283,6 +2748,7 @@ loadTrends();
 renderIdeas();
 renderEnglishTasks();
 renderReadList();
+renderDailyWords();
 document.getElementById('financeMonth').value = financeCurrentMonth;
 updateFinCategory();
 renderFinance();
@@ -2292,7 +2758,6 @@ renderTravelSelect();
 renderTravelPlan();
 initDiet();
 renderWorkouts();
-renderMoodModule();
 renderParenting();
 renderReview();
 setInterval(checkWorkoutReminder, 60000);
@@ -2329,9 +2794,6 @@ if (customModules.length === 0 && !localStorage.getItem('hcj_customInited')) {
       </button>
       <button onclick="showSection('savings')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="savings">
         <span class="text-xl">🐷</span><span>存钱</span>
-      </button>
-      <button onclick="showSection('mood')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="mood">
-        <span class="text-xl">😊</span><span>情绪</span>
       </button>
       <button onclick="showSection('ideas')" class="bottom-nav-item px-2 py-1 rounded-xl text-xs flex-shrink-0" data-section="ideas">
         <span class="text-xl">💡</span><span>灵感</span>
