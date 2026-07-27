@@ -1037,15 +1037,19 @@ function renderReadList() {
     const colors = { ok: 'border-green-300 bg-pink-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
     const labels = { ok: '🟢 会读', bad: '🟡 不会读', unknown: '🔴 不认识' };
     const div = document.createElement('div');
-    div.className = `flex items-center gap-2 px-3 py-2 rounded-lg border ${colors[rs.status]} flex-wrap`;
+    div.className = `px-3 py-3 rounded-lg border ${colors[rs.status]}`;
     div.innerHTML = `
-      <span class="text-sm flex-1 min-w-0 break-all">${escapeHtml(rs.text)}</span>
-      <button onclick="readSentence(${idx})" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 shrink-0" title="老师带读">🔊</button>
-      <span class="text-xs text-gray-500 shrink-0">${labels[rs.status]}</span>
-      <button onclick="setReadStatus(${idx},'ok')" class="text-xs px-2 py-1 rounded ${rs.status==='ok'?'bg-pink-500 text-white':'bg-gray-200'}">会读</button>
-      <button onclick="setReadStatus(${idx},'bad')" class="text-xs px-2 py-1 rounded ${rs.status==='bad'?'bg-yellow-500 text-white':'bg-gray-200'}">不会读</button>
-      <button onclick="setReadStatus(${idx},'unknown')" class="text-xs px-2 py-1 rounded ${rs.status==='unknown'?'bg-red-500 text-white':'bg-gray-200'}">不认识</button>
-      <button onclick="delReadSentence(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-sm flex-1 min-w-0 break-all">${escapeHtml(rs.text)}</span>
+        <button onclick="readSentence(${idx})" class="text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 shrink-0" title="老师带读">🔊</button>
+      </div>
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <span class="text-xs text-gray-500 mr-1">${labels[rs.status]}</span>
+        <button onclick="setReadStatus(${idx},'ok')" class="text-xs px-2 py-1 rounded ${rs.status==='ok'?'bg-pink-500 text-white':'bg-gray-200'}">会读</button>
+        <button onclick="setReadStatus(${idx},'bad')" class="text-xs px-2 py-1 rounded ${rs.status==='bad'?'bg-yellow-500 text-white':'bg-gray-200'}">不会读</button>
+        <button onclick="setReadStatus(${idx},'unknown')" class="text-xs px-2 py-1 rounded ${rs.status==='unknown'?'bg-red-500 text-white':'bg-gray-200'}">不认识</button>
+        <button onclick="delReadSentence(${idx})" class="text-gray-400 hover:text-red-500 text-xs ml-auto">✕</button>
+      </div>
     `;
     el.appendChild(div);
   });
