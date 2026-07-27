@@ -1037,21 +1037,50 @@ function renderReadList() {
     const colors = { ok: 'border-green-300 bg-pink-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
     const labels = { ok: '🟢 会读', bad: '🟡 不会读', unknown: '🔴 不认识' };
     const div = document.createElement('div');
-    div.className = `px-3 py-3 rounded-lg border ${colors[rs.status]}`;
+    div.className = 'px-3 py-3 rounded-lg border ' + colors[rs.status];
     div.dataset.rsIdx = idx;
-    div.innerHTML = `
-      <div class="flex items-center gap-2 mb-2">
-        <span class="text-sm flex-1 min-w-0 break-all">${escapeHtml(rs.text)}</span>
-        <button class="rs-speak text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 shrink-0">🔊</button>
-      </div>
-      <div class="flex items-center gap-1.5 flex-wrap">
-        <span class="text-xs text-gray-500 mr-1">${labels[rs.status]}</span>
-        <button class="rs-ok text-xs px-2 py-1 rounded ${rs.status==='ok'?'bg-pink-500 text-white':'bg-gray-200'}">会读</button>
-        <button class="rs-bad text-xs px-2 py-1 rounded ${rs.status==='bad'?'bg-yellow-500 text-white':'bg-gray-200'}">不会读</button>
-        <button class="rs-unknown text-xs px-2 py-1 rounded ${rs.status==='unknown'?'bg-red-500 text-white':'bg-gray-200'}">不认识</button>
-        <button class="rs-del text-gray-400 hover:text-red-500 text-xs ml-auto">✕</button>
-      </div>
-    `;
+    
+    // 第一行：句子 + 朗读
+    const row1 = document.createElement('div');
+    row1.className = 'flex items-center gap-2 mb-2';
+    const span = document.createElement('span');
+    span.className = 'text-sm flex-1 min-w-0 break-all';
+    span.textContent = rs.text;
+    const speakBtn = document.createElement('button');
+    speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 shrink-0';
+    speakBtn.textContent = '🔊';
+    speakBtn.onclick = function() { readSentence(idx); };
+    row1.appendChild(span);
+    row1.appendChild(speakBtn);
+    
+    // 第二行：状态 + 三个按钮 + 删��
+    const row2 = document.createElement('div');
+    row2.className = 'flex items-center gap-1.5 flex-wrap';
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'text-xs text-gray-500 mr-1';
+    labelSpan.textContent = labels[rs.status];
+    row2.appendChild(labelSpan);
+    
+    ['ok','bad','unknown'].forEach(function(st) {
+      const b = document.createElement('button');
+      var activeClass = 'bg-gray-200';
+      if (st === 'ok' && rs.status === 'ok') activeClass = 'bg-pink-500 text-white';
+      if (st === 'bad' && rs.status === 'bad') activeClass = 'bg-yellow-500 text-white';
+      if (st === 'unknown' && rs.status === 'unknown') activeClass = 'bg-red-500 text-white';
+      b.className = 'text-xs px-2 py-1 rounded ' + activeClass;
+      b.textContent = st === 'ok' ? '会读' : (st === 'bad' ? '不会读' : '不认识');
+      b.onclick = (function(s) { return function() { setReadStatus(idx, s); }; })(st);
+      row2.appendChild(b);
+    });
+    
+    const delBtn = document.createElement('button');
+    delBtn.className = 'text-gray-400 hover:text-red-500 text-xs ml-auto';
+    delBtn.textContent = '✕';
+    delBtn.onclick = function() { delReadSentence(idx); };
+    row2.appendChild(delBtn);
+    
+    div.appendChild(row1);
+    div.appendChild(row2);
     el.appendChild(div);
   });
   document.getElementById('readOkCount').textContent = ok;
@@ -1060,20 +1089,6 @@ function renderReadList() {
   const el2 = document.getElementById('engReadCount');
   if (el2) el2.textContent = readSentences.length;
 }
-
-// 跟读列表事件委托（修复 iOS PWA 点击无反应）
-document.getElementById('readList').addEventListener('click', function(e) {
-  const btn = e.target.closest('button');
-  if (!btn) return;
-  const item = e.target.closest('[data-rs-idx]');
-  if (!item) return;
-  const idx = parseInt(item.dataset.rsIdx);
-  if (btn.classList.contains('rs-speak')) readSentence(idx);
-  else if (btn.classList.contains('rs-ok')) setReadStatus(idx, 'ok');
-  else if (btn.classList.contains('rs-bad')) setReadStatus(idx, 'bad');
-  else if (btn.classList.contains('rs-unknown')) setReadStatus(idx, 'unknown');
-  else if (btn.classList.contains('rs-del')) delReadSentence(idx);
-});
 
 // TTS 老师带读
 function readSentence(idx) {
