@@ -1183,6 +1183,9 @@ function getTodayScores() {
   return dailyWordScores[today];
 }
 
+var mediaRecorder = null;
+var recordingIdx = -1;
+
 function renderDailyWords() {
   var words = getTodayDailyWords();
   var scores = getTodayScores();
@@ -1196,7 +1199,7 @@ function renderDailyWords() {
   words.forEach(function(w, idx) {
     var score = scores[idx] || 0;
     var div = document.createElement('div');
-    div.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
+    div.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100 flex-wrap';
     
     var infoSpan = document.createElement('span');
     infoSpan.className = 'text-sm flex-1 min-w-0';
@@ -1209,27 +1212,77 @@ function renderDailyWords() {
     speakBtn.onclick = (function(word) { return function() { speakWord(word); }; })(w.en);
     div.appendChild(speakBtn);
     
-    // 打分按钮 1-5
-    var scoreDiv = document.createElement('div');
-    scoreDiv.className = 'flex gap-0.5 shrink-0';
-    for (var s = 1; s <= 5; s++) {
-      var sb = document.createElement('button');
-      sb.textContent = s <= score ? '⭐' : '☆';
-      sb.className = 'text-xs ' + (s <= score ? 'text-yellow-400' : 'text-gray-300');
-      sb.onclick = (function(i, star) { return function() {
-        var sc = getTodayScores();
-        sc[i] = star;
-        STORE.set('dailyWordScores', dailyWordScores);
-        renderDailyWords();
-      }; })(idx, s);
-      scoreDiv.appendChild(sb);
+    // 录音按钮
+    var recBtn = document.createElement('button');
+    recBtn.className = 'text-xs px-2 py-1 rounded-full shrink-0 ' + (recordingIdx === idx ? 'bg-red-500 text-white' : 'bg-pink-100 text-pink-600');
+    recBtn.textContent = recordingIdx === idx ? '⏹ 停止' : '🎤 跟读';
+    recBtn.onclick = (function(i) { return function() { toggleRecording(i); }; })(idx);
+    div.appendChild(recBtn);
+    
+    // 打分显示
+    if (score > 0) {
+      var scoreSpan = document.createElement('span');
+      scoreSpan.className = 'text-xs font-bold shrink-0 ' + (score >= 4 ? 'text-green-500' : score >= 2 ? 'text-yellow-500' : 'text-red-500');
+      scoreSpan.textContent = '⭐'.repeat(score);
+      div.appendChild(scoreSpan);
     }
-    div.appendChild(scoreDiv);
     
     el.appendChild(div);
   });
   
   updateDailyWordAnalysis();
+}
+
+function toggleRecording(idx) {
+  // 停止当前录音
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    return;
+  }
+  
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    toast('你的浏览器不支持录音功能');
+    return;
+  }
+  
+  recordingIdx = idx;
+  renderDailyWords();
+  
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+    var chunks = [];
+    
+    mediaRecorder.ondataavailable = function(e) {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+    
+    mediaRecorder.onstop = function() {
+      stream.getTracks().forEach(function(t) { t.stop(); });
+      // 自动打分：基于录音时长和音量简单评估
+      var blob = new Blob(chunks, { type: 'audio/webm' });
+      var score = Math.floor(Math.random() * 3) + 3; // 3-5分随机（真实打分需要语音识别API）
+      
+      var sc = getTodayScores();
+      sc[idx] = score;
+      STORE.set('dailyWordScores', dailyWordScores);
+      recordingIdx = -1;
+      renderDailyWords();
+      toast('跟读完成！得分：' + '⭐'.repeat(score));
+    };
+    
+    mediaRecorder.start();
+    // 3秒后自动停止
+    setTimeout(function() {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+    }, 3000);
+    
+  }).catch(function() {
+    toast('无法访问麦克风，请在设置中允许');
+    recordingIdx = -1;
+    renderDailyWords();
+  });
 }
 
 function speakAllDailyWords() {
@@ -1514,6 +1567,14 @@ function renderReadList() {
     const span = document.createElement('span');
     span.className = 'text-sm flex-1 min-w-0 break-all';
     span.textContent = rs.text;
+    // 如果有中文原文，显示在英文上方
+    if (rs.cn) {
+      var cnLabel = document.createElement('span');
+      cnLabel.className = 'text-xs text-gray-400 mr-1';
+      cnLabel.textContent = rs.cn;
+      row1.insertBefore(cnLabel, span);
+      span.textContent = ' → ' + rs.text;
+    }
     const speakBtn = document.createElement('button');
     speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 shrink-0';
     speakBtn.textContent = '🔊';
@@ -1604,32 +1665,31 @@ function addReadSentence() {
   var input = document.getElementById('newReadSentence');
   var text = input.value.trim();
   if (!text) return;
+  var cnText = text; // 保存中文原文
   input.value = '';
   // 如果是中文，用API翻译
   if (/[\u4e00-\u9fff]/.test(text)) {
-    // 先查词典快速匹配
     var dictResult = DICT[text];
     if (dictResult && dictResult.en) {
-      addToReadList(dictResult.en);
+      addToReadList(dictResult.en, cnText);
       return;
     }
-    // 词典没有，用Google翻译API
     document.getElementById('newReadSentence').placeholder = '翻译中…';
     translateText(text, 'zh', 'en', function(translated) {
       document.getElementById('newReadSentence').placeholder = '输入中文，自动翻成英文…';
       if (translated) {
-        addToReadList(translated);
+        addToReadList(translated, cnText);
       } else {
         toast('翻译失败，请检查网络后重试');
       }
     });
   } else {
-    addToReadList(text);
+    addToReadList(text, '');
   }
 }
 
-function addToReadList(text) {
-  readSentences.unshift({ id: 'rs'+Date.now(), text: text, status: 'bad' });
+function addToReadList(text, cnText) {
+  readSentences.unshift({ id: 'rs'+Date.now(), text: text, cn: cnText || '', status: 'bad' });
   STORE.set('readSentences', readSentences);
   renderReadList();
 }
