@@ -1257,6 +1257,9 @@ function getTodayScores() {
 var mediaRecorder = null;
 var recordingIdx = -1;
 var recordedAudios = {}; // { idx: blob }
+var audioContext = null;
+var audioAnalyser = null;
+var hasSoundDetected = false;
 
 function renderDailyWords() {
   var words = getTodayDailyWords();
@@ -1284,10 +1287,10 @@ function renderDailyWords() {
     speakBtn.onclick = (function(word) { return function() { speakWord(word); }; })(w.en);
     div.appendChild(speakBtn);
     
-    // 录音按钮
+    // 跟读按钮：按住开始，松开停止
     var recBtn = document.createElement('button');
     recBtn.className = 'text-xs px-2 py-1 rounded-full shrink-0 ' + (recordingIdx === idx ? 'bg-red-500 text-white' : 'bg-pink-100 text-pink-600');
-    recBtn.textContent = recordingIdx === idx ? '🔴 录音中' : '🎤 跟读';
+    recBtn.textContent = recordingIdx === idx ? '🔴 跟读中' : '🎤 跟读';
     recBtn.style.userSelect = 'none';
     recBtn.style.webkitUserSelect = 'none';
     recBtn.style.touchAction = 'none';
@@ -1307,21 +1310,16 @@ function renderDailyWords() {
       playBtn.onclick = (function(i) { return function() {
         var blob = recordedAudios[i];
         if (!blob) return;
-        // 每次创建新的 URL 确保能播放
         var url = URL.createObjectURL(blob);
         var audio = new Audio();
         audio.src = url;
         audio.onended = function() { URL.revokeObjectURL(url); };
-        audio.onerror = function() {
-          toast('播放失败，请重试');
-          URL.revokeObjectURL(url);
-        };
-        audio.play().catch(function() { toast('播放失败'); });
+        audio.play().catch(function() { toast('播放失败'); URL.revokeObjectURL(url); });
       }; })(idx);
       div.appendChild(playBtn);
     }
     
-    // 打分显示
+    // 打分
     if (score > 0) {
       var scoreSpan = document.createElement('span');
       scoreSpan.className = 'text-xs font-bold shrink-0 ' + (score >= 4 ? 'text-green-500' : score >= 2 ? 'text-yellow-500' : 'text-red-500');
@@ -1336,26 +1334,42 @@ function renderDailyWords() {
 }
 
 function startRecording(idx) {
-  if (mediaRecorder && mediaRecorder.state === 'recording') {
-    mediaRecorder.stop();
-    return;
+  if (mediaRecorder && mediaRecorder.state === 'recording') return;
+  
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    autoScore(idx); return;
   }
   
   recordingIdx = idx;
+  hasSoundDetected = false;
   renderDailyWords();
   
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    toast('你的浏览器不支持录音，使用智能评分');
-    recordingIdx = -1;
-    renderDailyWords();
-    autoScore(idx);
-    return;
-  }
-  
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    // 创建音频分析器检测是否有声音
     try {
-      var mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-      mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      var source = audioContext.createMediaStreamSource(stream);
+      audioAnalyser = audioContext.createAnalyser();
+      audioAnalyser.fftSize = 256;
+      source.connect(audioAnalyser);
+      var dataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
+      
+      // 每200ms检测一次音量
+      var soundCheck = setInterval(function() {
+        if (!audioAnalyser) { clearInterval(soundCheck); return; }
+        audioAnalyser.getByteFrequencyData(dataArray);
+        var sum = 0;
+        for (var i = 0; i < dataArray.length; i++) sum += dataArray[i];
+        var avg = sum / dataArray.length;
+        if (avg > 10) hasSoundDetected = true; // 音量超过阈值
+      }, 200);
+      
+      // 保存 interval 以便清理
+      stream._soundCheck = soundCheck;
+    } catch(e) {}
+    
+    try {
+      mediaRecorder = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm' });
     } catch(e) {
       mediaRecorder = new MediaRecorder(stream);
     }
@@ -1367,26 +1381,28 @@ function startRecording(idx) {
     
     mediaRecorder.onstop = function() {
       stream.getTracks().forEach(function(t) { t.stop(); });
-      var savedIdx = recordingIdx;
+      if (stream._soundCheck) clearInterval(stream._soundCheck);
+      if (audioContext && audioContext.state !== 'closed') audioContext.close().catch(function(){});
+      audioAnalyser = null;
       
-      // 检测录音内容：如果没有声音数据，不给分
-      if (chunks.length === 0 || (chunks.length === 1 && chunks[0].size < 100)) {
-        recordingIdx = -1;
+      var savedIdx = recordingIdx;
+      recordingIdx = -1;
+      
+      // 没检测到声音：不打分，不保存录音
+      if (!hasSoundDetected || chunks.length === 0 || (chunks.length === 1 && chunks[0].size < 500)) {
         renderDailyWords();
-        toast('未检测到声音，请重新录音');
+        toast('未检测到声音，请重新跟读');
         return;
       }
       
-      // 保存录音 blob 供回放
+      // 有声音：保存录音 + 打分
       var blob = new Blob(chunks, { type: 'audio/webm' });
       recordedAudios[savedIdx] = blob;
       
-      // 智能打分
       var score = Math.floor(Math.random() * 3) + 3;
       var sc = getTodayScores();
       sc[savedIdx] = score;
       STORE.set('dailyWordScores', dailyWordScores);
-      recordingIdx = -1;
       renderDailyWords();
       toast('跟读完成！得分：' + '⭐'.repeat(score));
     };
