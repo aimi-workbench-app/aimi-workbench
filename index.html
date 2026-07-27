@@ -1200,7 +1200,16 @@ function speakWord(word) {
   window.speechSynthesis.cancel();
   var u = new SpeechSynthesisUtterance(word);
   u.lang = 'en-US';
-  u.rate = 0.8;
+  u.rate = 0.85;
+  u.pitch = 1.0;
+  // 选美式女声
+  var voices = window.speechSynthesis.getVoices();
+  var best = voices.find(function(v) { return v.lang === 'en-US' && v.name.indexOf('Samantha') >= 0; }) ||
+             voices.find(function(v) { return v.lang === 'en-US' && v.name.indexOf('Karen') >= 0; }) ||
+             voices.find(function(v) { return v.lang === 'en-US' && v.name.indexOf('Female') >= 0; }) ||
+             voices.find(function(v) { return v.lang === 'en-US'; }) ||
+             voices.find(function(v) { return v.lang.startsWith('en'); });
+  if (best) u.voice = best;
   window.speechSynthesis.speak(u);
 }
 
@@ -1779,10 +1788,13 @@ function readSentence(idx) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     utterance.rate = parseFloat(document.getElementById('readSpeed').value) || 0.8;
-    utterance.pitch = 1.1;
-    // 选择女声
+    utterance.pitch = 1.0;
     const voices = window.speechSynthesis.getVoices();
-    const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+    const enVoice = voices.find(v => v.lang === 'en-US' && v.name.indexOf('Samantha') >= 0) ||
+                    voices.find(v => v.lang === 'en-US' && v.name.indexOf('Karen') >= 0) ||
+                    voices.find(v => v.lang === 'en-US' && v.name.indexOf('Female') >= 0) ||
+                    voices.find(v => v.lang === 'en-US') ||
+                    voices.find(v => v.lang.startsWith('en'));
     if (enVoice) utterance.voice = enVoice;
     window.speechSynthesis.speak(utterance);
   } else {
@@ -1795,12 +1807,16 @@ function readAllSentences() {
   window.speechSynthesis.cancel();
   const rate = parseFloat(document.getElementById('readSpeed').value) || 0.8;
   const voices = window.speechSynthesis.getVoices();
-  const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || voices.find(v => v.lang.startsWith('en'));
+  const enVoice = voices.find(v => v.lang === 'en-US' && v.name.indexOf('Samantha') >= 0) ||
+                  voices.find(v => v.lang === 'en-US' && v.name.indexOf('Karen') >= 0) ||
+                  voices.find(v => v.lang === 'en-US' && v.name.indexOf('Female') >= 0) ||
+                  voices.find(v => v.lang === 'en-US') ||
+                  voices.find(v => v.lang.startsWith('en'));
   readSentences.forEach((rs, i) => {
     const utterance = new SpeechSynthesisUtterance(rs.text);
     utterance.lang = 'en-US';
     utterance.rate = rate;
-    utterance.pitch = 1.1;
+    utterance.pitch = 1.0;
     if (enVoice) utterance.voice = enVoice;
     window.speechSynthesis.speak(utterance);
   });
