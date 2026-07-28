@@ -10,15 +10,15 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="艾米工作台">
-  <meta name="theme-color" content="#f472b6">
+  <meta name="theme-color" content="#1a1a2e">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" href="icon-192.png">
   <script src="tailwind.js"></script>
   <style>
-    :root { --brand: #f472b6; --brand-light: #fce7f3; --accent: #c084fc; }
+    :root { --brand: #374151; --brand-light: #f3f4f6; --accent: #4b5563; }
     html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(180deg, #fdf2f8 0%, #f5f3ff 100%); -webkit-text-size-adjust: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(180deg, #f8f9fa 0%, #f0f0f0 100%); -webkit-text-size-adjust: 100%; }
     /* iOS PWA 输入修复：确保输入框可聚焦可输入 */
     input, textarea, select {
       -webkit-user-select: text;
@@ -29,8 +29,8 @@
       -webkit-tap-highlight-color: transparent;
     }
     input[type="checkbox"] { -webkit-appearance: checkbox; appearance: checkbox; }
-    .card { background: #fff; border-radius: 20px; box-shadow: 0 4px 16px rgba(244,114,182,0.08); border: 1px solid #fce7f3; }
-    .nav-item.active { background: linear-gradient(135deg, #f472b6, #ec4899); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(236,72,153,0.25); }
+    .card { background: #fff; border-radius: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; }
+    .nav-item.active { background: #374151; color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     .nav-item { transition: all .15s; -webkit-tap-highlight-color: transparent; }
     .nav-item:hover:not(.active) { background: #f0f0f0; }
     .checkbox:checked + span { text-decoration: line-through; color: #9ca3af; }
@@ -76,8 +76,8 @@
 <header class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-200">
   <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <button onclick="toggleDrawer(true)" class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-lg active:scale-95 transition" aria-label="菜单">☰</button>
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-300 to-rose-400 flex items-center justify-center text-white text-sm">米</div>
+      <button onclick="toggleDrawer(true)" class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-lg active:scale-95 transition" aria-label="菜单">☰</button>
+      <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-sm">米</div>
       <h1 class="font-bold text-lg">艾米的工作台</h1>
     </div>
     <div class="text-xs text-gray-500" id="todayDate"></div>
@@ -85,7 +85,7 @@
 </header>
 
 <!-- 暖心标语 -->
-<div class="bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 text-white text-center py-2.5 px-4 shadow-sm">
+<div class="bg-gray-800 text-white text-center py-2.5 px-4 shadow-sm">
   <p class="text-sm font-medium tracking-wide">今天的你也很好，要开心、开心、再开心 🥳</p>
 </div>
 
@@ -94,7 +94,7 @@
 <aside id="drawerMenu" class="fixed top-0 left-0 bottom-0 z-[70] w-[260px] shadow-2xl overflow-y-auto" style="padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);">
   <div class="p-5 pb-4">
     <div class="flex items-center gap-3 mb-1">
-      <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-300 to-rose-400 flex items-center justify-center text-2xl shadow-sm">🧀</div>
+      <div class="w-10 h-10 rounded-2xl bg-gray-700 flex items-center justify-center text-2xl shadow-sm">🧀</div>
       <h2 class="text-xl font-bold text-white">艾米的工作台</h2>
     </div>
   </div>
@@ -161,22 +161,22 @@
     <section id="tasks" class="card p-5 fade-in">
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-bold text-lg flex items-center gap-2">📋 每日任务</h2>
-        <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded-full" id="taskProgress">0/0</span>
+        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full" id="taskProgress">0/0</span>
       </div>
 
       <!-- 日历日期 -->
-      <div class="bg-gradient-to-br from-pink-100 via-pink-50 to-purple-100 rounded-2xl p-4 mb-4 border border-pink-200">
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-200">
         <div class="flex items-center gap-4">
-          <div class="bg-white rounded-xl px-4 py-3 text-center shadow-sm border border-pink-100">
+          <div class="bg-white rounded-xl px-4 py-3 text-center shadow-sm border border-gray-200">
             <div class="text-xs text-gray-500" id="calMonth">7月</div>
-            <div class="text-3xl font-bold text-pink-500" id="calDay">26</div>
+            <div class="text-3xl font-bold text-gray-800" id="calDay">26</div>
             <div class="text-xs text-gray-400" id="calWeekday">周六</div>
           </div>
           <div class="flex-1">
             <div class="text-sm font-semibold text-gray-700" id="calFullDate">2026年7月26日</div>
             <div class="text-xs text-gray-500 mt-1" id="calGreeting">又是元气满满的一天！</div>
             <div class="flex gap-2 mt-2">
-              <span class="text-xs bg-pink-200 text-pink-700 px-2 py-0.5 rounded-full" id="calTaskHint">今日待办</span>
+              <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full" id="calTaskHint">今日待办</span>
             </div>
           </div>
         </div>
@@ -188,8 +188,8 @@
           <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">☀️ 当天任务</div>
           <ul class="space-y-2" id="todayTaskList"></ul>
           <div class="mt-3 flex gap-2">
-            <input type="text" id="newTodayTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
-            <button onclick="addTask('today')" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+            <input type="text" id="newTodayTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-gray-500">
+            <button onclick="addTask('today')" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
           </div>
         </div>
         <!-- 排期任务 -->
@@ -197,8 +197,8 @@
           <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 排期任务</div>
           <ul class="space-y-2" id="scheduledTaskList"></ul>
           <div class="mt-3 flex gap-2">
-            <input type="text" id="newScheduledTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
-            <button onclick="addTask('scheduled')" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+            <input type="text" id="newScheduledTask" placeholder="加一项…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-gray-500">
+            <button onclick="addTask('scheduled')" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
           </div>
         </div>
       </div>
@@ -235,7 +235,7 @@
           <input type="number" id="dietPoop" placeholder="排便(次)" step="1" min="0" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
           <input type="date" id="dietDate" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
         </div>
-        <button onclick="addDietRecord()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">记录</button>
+        <button onclick="addDietRecord()" class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">记录</button>
       </div>
 
       <!-- 记录列表 -->
@@ -245,11 +245,11 @@
       </div>
 
       <!-- 自动分析 -->
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">
+      <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
         <div class="text-sm font-semibold text-gray-800 mb-3">📊 自动总结分析</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center mb-3">
-          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">当前体重</div><div class="text-lg font-bold text-pink-500" id="dietCurrentWeight">--</div></div>
-          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">已减</div><div class="text-lg font-bold text-pink-500" id="dietLost">--</div></div>
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">当前体重</div><div class="text-lg font-bold text-gray-800" id="dietCurrentWeight">--</div></div>
+          <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">已减</div><div class="text-lg font-bold text-gray-800" id="dietLost">--</div></div>
           <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">日均喝水</div><div class="text-lg font-bold text-blue-700" id="dietAvgWater">--</div></div>
           <div class="bg-white rounded-lg p-3"><div class="text-xs text-gray-500">日均排便</div><div class="text-lg font-bold text-amber-700" id="dietAvgPoop">--</div></div>
         </div>
@@ -263,7 +263,7 @@
         <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">💪 每日健身打卡</div>
         <div class="flex gap-2 mb-3">
           <input type="text" id="newWorkout" placeholder="如：帕梅拉20分钟 / 跳绳300个" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addWorkout()">
-          <button onclick="addWorkout()" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+          <button onclick="addWorkout()" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
         </div>
         <ul class="space-y-2" id="workoutList"></ul>
         <div class="mt-3 text-xs text-gray-500 bg-white rounded-lg p-3 border border-gray-100" id="workoutSummary">
@@ -283,8 +283,8 @@
     <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📖 今日学习计划</div>
     <ul class="space-y-2" id="englishTaskList"></ul>
     <div class="mt-3 flex gap-2">
-      <input type="text" id="newEnglishTask" placeholder="加一项学习任务…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-pink-400">
-      <button onclick="addEnglishTask()" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+      <input type="text" id="newEnglishTask" placeholder="加一项学习任务…" class="flex-1 min-w-0 text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-gray-500">
+      <button onclick="addEnglishTask()" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
     </div>
   </div>
 
@@ -293,43 +293,43 @@
     <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">📅 本周进度</div>
     <div class="grid grid-cols-3 gap-3 text-center text-xs">
       <div class="bg-white rounded-lg p-3">
-        <div class="text-2xl font-bold text-pink-500" id="engDoneCount">0</div>
+        <div class="text-2xl font-bold text-gray-800" id="engDoneCount">0</div>
         <div class="text-gray-500 mt-1">完成任务</div>
       </div>
       <div class="bg-white rounded-lg p-3">
-        <div class="text-2xl font-bold text-pink-500" id="engReadCount">0</div>
+        <div class="text-2xl font-bold text-gray-800" id="engReadCount">0</div>
         <div class="text-gray-500 mt-1">跟读句子</div>
       </div>
       <div class="bg-white rounded-lg p-3">
-        <div class="text-2xl font-bold text-pink-500" id="engStreak">0</div>
+        <div class="text-2xl font-bold text-gray-800" id="engStreak">0</div>
         <div class="text-gray-500 mt-1">连续天数</div>
       </div>
     </div>
   </div>
 
   <!-- 查单词 -->
-  <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 mt-4 border border-purple-100">
+  <div class="bg-gray-50 rounded-2xl p-4 mt-4 border border-gray-200">
     <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🔍 查单词 / 翻译</div>
     <div class="flex gap-2 mb-3">
       <input type="text" id="dictInput" placeholder="输入中文或英文…" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')lookupWord()">
-      <button onclick="lookupWord()" class="bg-purple-500 text-white px-4 py-2 rounded-xl text-sm">查询</button>
+      <button onclick="lookupWord()" class="bg-gray-700 text-white px-4 py-2 rounded-xl text-sm">查询</button>
     </div>
     <div id="dictResult" class="text-sm"></div>
   </div>
 
   <!-- 跟读练习 -->
   <div class="bg-gray-50 rounded-xl p-4 mt-4">
-    <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习 <span class="text-xs text-pink-500 bg-pink-50 px-2 py-0.5 rounded-full">👩‍🏫 老师带读</span></div>
+    <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">🗣️ 跟读练习 <span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">👩‍🏫 老师带读</span></div>
     <div class="text-xs text-gray-400 mb-2">💡 输入中文，自动翻译为英文跟读</div>
     <div class="flex gap-2 mb-3">
       <input type="text" id="newReadSentence" placeholder="输入中文，自动翻成英文…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addReadSentence()">
-      <button onclick="addReadSentence()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">添加</button>
+      <button onclick="addReadSentence()" class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">添加</button>
     </div>
     <div class="flex gap-2 mb-3 items-center">
       <span class="text-xs text-gray-500">语速：</span>
-      <input type="range" id="readSpeed" min="0.5" max="1.5" step="0.1" value="0.8" class="accent-pink-500" oninput="document.getElementById('readSpeedVal').textContent=this.value" style="width:80px;">
+      <input type="range" id="readSpeed" min="0.5" max="1.5" step="0.1" value="0.8" class="accent-gray-700" oninput="document.getElementById('readSpeedVal').textContent=this.value" style="width:80px;">
       <span class="text-xs text-gray-500" id="readSpeedVal">0.8</span>
-      <button onclick="readAllSentences()" class="text-xs bg-purple-100 text-purple-600 px-3 py-1 rounded-full hover:bg-purple-200">📢 全部朗读</button>
+      <button onclick="readAllSentences()" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full hover:bg-gray-200">📢 全部朗读</button>
     </div>
     <div id="readList" class="space-y-2"></div>
     <div class="flex gap-4 mt-3 text-xs text-gray-500">
@@ -340,22 +340,22 @@
   </div>
 
   <!-- 每日单词+口语打卡 -->
-  <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mt-4 border border-pink-100">
+  <div class="bg-gray-50 rounded-2xl p-4 mt-4 border border-gray-200">
     <div class="flex items-center justify-between mb-3">
       <div class="text-sm font-semibold text-gray-700 flex items-center gap-2">📝 每日单词+口语打卡</div>
       <div class="flex gap-2">
-        <span class="text-xs bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full" id="dailyWordProgress">0/50</span>
+        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full" id="dailyWordProgress">0/50</span>
         <button onclick="shuffleDailyWords()" class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">🔄 换一组</button>
       </div>
     </div>
     <div class="text-xs text-gray-400 mb-2">每天随机50组单词/短句，跟读并打分</div>
     <div id="dailyWordList" class="space-y-2 max-h-96 overflow-y-auto"></div>
     <div class="mt-3 flex gap-2">
-      <button onclick="speakAllDailyWords()" class="text-xs bg-purple-100 text-purple-600 px-3 py-1.5 rounded-full">📢 全部带读</button>
-      <button onclick="scoreAllDailyWords()" class="text-xs bg-pink-100 text-pink-600 px-3 py-1.5 rounded-full">⭐ 全部打分</button>
+      <button onclick="speakAllDailyWords()" class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">📢 全部带读</button>
+      <button onclick="scoreAllDailyWords()" class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">⭐ 全部打分</button>
     </div>
     <div id="dailyWordAnalysis" class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100"></div>
-    <div id="dailyWordQuote" class="mt-2 text-xs text-pink-600 bg-pink-50 rounded-lg p-3 text-center italic"></div>
+    <div id="dailyWordQuote" class="mt-2 text-xs text-gray-600 bg-gray-50 rounded-lg p-3 text-center italic"></div>
   </div>
 </section>
     <!-- 每月收支 -->
@@ -369,22 +369,22 @@
 
       <!-- 汇总卡片 -->
       <div class="grid grid-cols-3 gap-3 mb-4">
-        <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-4 text-center border border-pink-200">
+        <div class="bg-gray-50 rounded-2xl p-4 text-center border border-gray-200">
           <div class="text-xs text-gray-500 mb-1">💰 收入</div>
-          <div class="text-xl font-bold text-pink-500" id="totalIncome">¥0</div>
+          <div class="text-xl font-bold text-gray-800" id="totalIncome">¥0</div>
         </div>
-        <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-4 text-center border border-red-200">
+        <div class="bg-red-50 rounded-2xl p-4 text-center border border-red-200">
           <div class="text-xs text-gray-500 mb-1">💸 支出</div>
           <div class="text-xl font-bold text-red-500" id="totalExpense">¥0</div>
         </div>
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4 text-center border border-purple-200">
+        <div class="bg-gray-50 rounded-2xl p-4 text-center border border-gray-200">
           <div class="text-xs text-gray-500 mb-1">🏦 结余</div>
-          <div class="text-xl font-bold text-purple-600" id="totalBalance">¥0</div>
+          <div class="text-xl font-bold text-gray-800" id="totalBalance">¥0</div>
         </div>
       </div>
 
       <!-- 快捷记账 -->
-      <div class="bg-gradient-to-br from-pink-50 to-white rounded-2xl p-4 mb-4 border border-pink-100">
+      <div class="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-200">
         <div class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">✍️ 记一笔</div>
         <div class="flex gap-2 mb-3">
           <button onclick="setFinType('expense')" id="finBtnExpense" class="flex-1 py-2 rounded-xl text-sm font-medium bg-red-500 text-white">💸 支出</button>
@@ -406,7 +406,7 @@
           </select>
         </div>
         <input type="text" id="finNote" placeholder="备注（如：给宝宝买尿不湿）" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm mb-3">
-        <button onclick="addFinance()" class="w-full bg-pink-500 text-white py-2.5 rounded-xl text-sm font-medium">💾 记一笔</button>
+        <button onclick="addFinance()" class="w-full bg-gray-700 text-white py-2.5 rounded-xl text-sm font-medium">💾 记一笔</button>
       </div>
 
       <!-- 流水列表 -->
@@ -423,61 +423,61 @@
       </div>
 
       <!-- 自己存钱 -->
-      <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-5 mb-4 border border-pink-200">
+      <div class="bg-gray-50 rounded-2xl p-5 mb-4 border border-gray-200">
         <div class="flex items-center justify-between mb-3">
           <div>
-            <div class="text-sm font-semibold text-pink-600">💖 给自己存</div>
-            <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-pink-500" id="selfGoalDisplay">¥300</span></div>
+            <div class="text-sm font-semibold text-gray-700">💖 给自己存</div>
+            <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-gray-800" id="selfGoalDisplay">¥300</span></div>
           </div>
           <div class="flex gap-2">
-            <button onclick="quickSaveSavings('self', null)" id="savingsSelfBtn" class="px-4 py-2 rounded-xl text-xs font-medium bg-white text-pink-500 border border-pink-200">存月目标</button>
+            <button onclick="quickSaveSavings('self', null)" id="savingsSelfBtn" class="px-4 py-2 rounded-xl text-xs font-medium bg-white text-gray-700 border border-gray-300">存月目标</button>
           </div>
         </div>
         <!-- 自定义金额存入 -->
         <div class="flex gap-2 mb-3">
-          <input type="number" id="selfAmount" placeholder="本次存多少" class="flex-1 px-3 py-2 rounded-xl border border-pink-200 text-sm">
-          <input type="text" id="selfNote" placeholder="备注" class="w-24 px-3 py-2 rounded-xl border border-pink-200 text-sm">
-          <button onclick="addSavingsRecord('self')" class="bg-pink-500 text-white px-3 py-2 rounded-xl text-sm">存入</button>
+          <input type="number" id="selfAmount" placeholder="本次存多少" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-sm">
+          <input type="text" id="selfNote" placeholder="备注" class="w-24 px-3 py-2 rounded-xl border border-gray-200 text-sm">
+          <button onclick="addSavingsRecord('self')" class="bg-gray-700 text-white px-3 py-2 rounded-xl text-sm">存入</button>
         </div>
         <div class="bg-white rounded-xl p-3">
           <div class="flex justify-between text-xs text-gray-500 mb-1">
             <span>本月已存</span><span>月目标</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-3">
-            <div class="bg-pink-500 rounded-full h-3 transition-all" id="selfProgressBar" style="width:0%"></div>
+            <div class="bg-gray-700 rounded-full h-3 transition-all" id="selfProgressBar" style="width:0%"></div>
           </div>
           <div class="flex justify-between text-xs mt-1">
-            <span class="text-pink-500 font-bold" id="selfSaved">¥0</span>
+            <span class="text-gray-800 font-bold" id="selfSaved">¥0</span>
             <span class="text-gray-400" id="selfGoalBar">¥0</span>
           </div>
         </div>
       </div>
 
       <!-- 宝宝存钱 -->
-      <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-5 mb-4 border border-purple-200">
+      <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5 mb-4 border border-gray-300">
         <div class="flex items-center justify-between mb-3">
           <div>
-            <div class="text-sm font-semibold text-purple-600">👶 给宝宝存</div>
-            <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-purple-500" id="babyGoalDisplay">¥200</span></div>
+            <div class="text-sm font-semibold text-gray-800">👶 给宝宝存</div>
+            <div class="text-xs text-gray-500 mt-1">目标：每月存 <span class="font-bold text-gray-700" id="babyGoalDisplay">¥200</span></div>
           </div>
           <div class="flex gap-2">
-            <button onclick="quickSaveSavings('baby', null)" id="savingsBabyBtn" class="px-4 py-2 rounded-xl text-xs font-medium bg-white text-purple-500 border border-purple-200">存月目标</button>
+            <button onclick="quickSaveSavings('baby', null)" id="savingsBabyBtn" class="px-4 py-2 rounded-xl text-xs font-medium bg-white text-gray-700 border border-gray-300">存月目标</button>
           </div>
         </div>
         <div class="flex gap-2 mb-3">
-          <input type="number" id="babyAmount" placeholder="本次存多少" class="flex-1 px-3 py-2 rounded-xl border border-purple-200 text-sm">
-          <input type="text" id="babyNote" placeholder="备注" class="w-24 px-3 py-2 rounded-xl border border-purple-200 text-sm">
-          <button onclick="addSavingsRecord('baby')" class="bg-purple-500 text-white px-3 py-2 rounded-xl text-sm">存入</button>
+          <input type="number" id="babyAmount" placeholder="本次存多少" class="flex-1 px-3 py-2 rounded-xl border border-gray-300 text-sm">
+          <input type="text" id="babyNote" placeholder="备注" class="w-24 px-3 py-2 rounded-xl border border-gray-300 text-sm">
+          <button onclick="addSavingsRecord('baby')" class="bg-gray-700 text-white px-3 py-2 rounded-xl text-sm">存入</button>
         </div>
         <div class="bg-white rounded-xl p-3">
           <div class="flex justify-between text-xs text-gray-500 mb-1">
             <span>本月已存</span><span>月目标</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-3">
-            <div class="bg-purple-500 rounded-full h-3 transition-all" id="babyProgressBar" style="width:0%"></div>
+            <div class="bg-gray-700 rounded-full h-3 transition-all" id="babyProgressBar" style="width:0%"></div>
           </div>
           <div class="flex justify-between text-xs mt-1">
-            <span class="text-purple-500 font-bold" id="babySaved">¥0</span>
+            <span class="text-gray-700 font-bold" id="babySaved">¥0</span>
             <span class="text-gray-400" id="babyGoalBar">¥0</span>
           </div>
         </div>
@@ -505,20 +505,20 @@
       </div>
 
       <!-- 累计总结 -->
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-5 border border-pink-100">
+      <div class="bg-gradient-to-br from-gray-50 to-gray-50 rounded-2xl p-5 border border-gray-200">
         <div class="text-sm font-semibold text-gray-700 mb-3">📊 累计总结</div>
         <div class="grid grid-cols-3 gap-3 text-center">
           <div class="bg-white rounded-xl p-3">
             <div class="text-xs text-gray-500">自己累计</div>
-            <div class="text-lg font-bold text-pink-500" id="selfTotal">¥0</div>
+            <div class="text-lg font-bold text-gray-700" id="selfTotal">¥0</div>
           </div>
           <div class="bg-white rounded-xl p-3">
             <div class="text-xs text-gray-500">宝宝累计</div>
-            <div class="text-lg font-bold text-purple-500" id="babyTotal">¥0</div>
+            <div class="text-lg font-bold text-gray-700" id="babyTotal">¥0</div>
           </div>
           <div class="bg-white rounded-xl p-3">
             <div class="text-xs text-gray-500">总计</div>
-            <div class="text-lg font-bold text-pink-600" id="savingsGrandTotal">¥0</div>
+            <div class="text-lg font-bold text-gray-600" id="savingsGrandTotal">¥0</div>
           </div>
         </div>
         <div class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100" id="savingsSummary">
@@ -534,7 +534,7 @@
       </div>
       <div class="flex gap-2 mb-4">
         <input type="text" id="newIdea" placeholder="记录一个新选题…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm">
-        <button onclick="addIdea()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">保存</button>
+        <button onclick="addIdea()" class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">保存</button>
       </div>
       <div id="ideasList" class="space-y-2"></div>
     </section>
@@ -583,7 +583,7 @@
       </div>
       <div class="flex gap-2 mb-4">
         <input type="text" id="newMemo" placeholder="记点什么…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addMemo()">
-        <button onclick="addMemo()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">记下</button>
+        <button onclick="addMemo()" class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">记下</button>
       </div>
       <div id="memoList" class="space-y-2"></div>
     </section>
@@ -606,7 +606,7 @@
           <input type="text" id="tpPeople" placeholder="人数（如 2大1小）" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
           <input type="text" id="tpSeason" placeholder="季节/月份" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
         </div>
-        <button onclick="saveTravelInfo()" class="mt-3 bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">保存基本信息</button>
+        <button onclick="saveTravelInfo()" class="mt-3 bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">保存基本信息</button>
       </div>
 
       <!-- 五大类攻略 -->
@@ -622,13 +622,13 @@
           <textarea id="tpDrink" rows="3" placeholder="奶茶/咖啡/当地饮品…&#10;如：清补凉15元，老爸茶10元" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
         </div>
         <!-- 玩 -->
-        <div class="bg-pink-50 rounded-xl p-4">
-          <div class="text-sm font-semibold text-pink-500 mb-2 flex items-center gap-2">🎢 玩什么</div>
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">🎢 玩什么</div>
           <textarea id="tpPlay" rows="3" placeholder="景点、体验、门票…&#10;如：蜈支洲岛门票144，潜水300" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
         </div>
         <!-- 乐 -->
-        <div class="bg-pink-50 rounded-xl p-4">
-          <div class="text-sm font-semibold text-pink-700 mb-2 flex items-center gap-2">🎉 乐什么</div>
+        <div class="bg-gray-50 rounded-xl p-4">
+          <div class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">🎉 乐什么</div>
           <textarea id="tpFun" rows="3" placeholder="夜生活、演出、亲子项目…&#10;如：千古情演出280，夜市免费逛" class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"></textarea>
         </div>
         <!-- 住 -->
@@ -649,11 +649,11 @@
           <input type="number" id="tpBudgetStay" placeholder="住宿预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
           <input type="number" id="tpBudgetOther" placeholder="其他预算" class="px-3 py-2 rounded-lg border border-gray-200 text-sm">
         </div>
-        <button onclick="saveTravelBudget()" class="bg-pink-500 text-white px-4 py-2 rounded-lg text-sm">保存车费预算</button>
+        <button onclick="saveTravelBudget()" class="bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">保存车费预算</button>
       </div>
 
       <!-- 懒人总览 -->
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">
+      <div class="bg-gradient-to-br from-gray-50 to-gray-50 rounded-xl p-4 border border-gray-200">
         <div class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">📌 懒人一图看懂（自动计算）</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
           <div class="bg-white rounded-lg p-3">
@@ -666,7 +666,7 @@
           </div>
           <div class="bg-white rounded-lg p-3 md:col-span-2">
             <div class="text-xs text-gray-500">总预算（人均自动 ÷ 人数）</div>
-            <div class="text-lg font-bold text-pink-500" id="tpSumTotal">¥0</div>
+            <div class="text-lg font-bold text-gray-700" id="tpSumTotal">¥0</div>
             <div class="text-xs text-gray-400 mt-1" id="tpSumPerPerson">人均 ¥0</div>
           </div>
         </div>
@@ -688,7 +688,7 @@
       </div>
 
       <!-- 今日情绪 -->
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mb-4 border border-pink-100">
+      <div class="bg-gradient-to-br from-gray-50 to-gray-50 rounded-2xl p-4 mb-4 border border-gray-200">
         <div class="text-sm font-semibold text-gray-700 mb-3">😊 今天心情</div>
         <div class="flex justify-around mb-2" id="moodSelector2">
           <button onclick="setTodayMood(1)" data-level="1" class="mood-opt2 flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-xs">
@@ -707,11 +707,11 @@
             <span class="text-2xl">😄</span><span>很好</span>
           </button>
         </div>
-        <div id="moodSelected2" class="text-sm text-center text-pink-600 font-medium"></div>
+        <div id="moodSelected2" class="text-sm text-center text-gray-600 font-medium"></div>
       </div>
 
       <!-- 今日数据概览 -->
-      <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 mb-4 border border-pink-100">
+      <div class="bg-gradient-to-br from-gray-50 to-gray-50 rounded-2xl p-4 mb-4 border border-gray-200">
         <div class="text-sm font-semibold text-gray-700 mb-3">📊 今日概览</div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center" id="reviewSummary"></div>
       </div>
@@ -746,18 +746,18 @@
         <div class="text-sm font-semibold text-gray-700 mb-3">🎯 明日计划</div>
         <div class="flex gap-2 mb-3">
           <input type="text" id="newReviewPlan" placeholder="加一项明日计划…" class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addReviewPlan()">
-          <button onclick="addReviewPlan()" class="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm">+</button>
+          <button onclick="addReviewPlan()" class="bg-gray-700 text-white px-4 py-2 rounded-xl text-sm">+</button>
         </div>
         <ul id="reviewPlanList" class="space-y-2"></ul>
       </div>
 
       <!-- 能量语录 -->
-      <div class="bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl p-5 border border-pink-200 text-center mb-4">
-        <div class="text-sm font-semibold text-pink-600 mb-2">💪 今日能量</div>
+      <div class="bg-gray-50 rounded-2xl p-5 border border-gray-300 text-center mb-4">
+        <div class="text-sm font-semibold text-gray-600 mb-2">💪 今日能量</div>
         <div class="text-base text-gray-700 font-medium italic" id="energyQuote">"做一个很棒的妈妈，也做一个很棒的自己。"</div>
         <div class="flex justify-center gap-4 mt-3">
-          <button onclick="prevQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500">◀</button>
-          <button onclick="nextQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-pink-500">▶</button>
+          <button onclick="prevQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-gray-700">◀</button>
+          <button onclick="nextQuote()" class="text-xs px-3 py-1 rounded-full bg-white text-gray-700">▶</button>
         </div>
       </div>
 
@@ -803,10 +803,10 @@
       <div>
         <label class="text-xs text-gray-500">类型</label>
         <div class="flex gap-2 mt-1">
-          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-pink-400 has-[:checked]:bg-pink-50">
+          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-gray-400 has-[:checked]:bg-gray-50">
             <input type="radio" name="modType" value="list" checked class="hidden">📋 清单
           </label>
-          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-pink-400 has-[:checked]:bg-pink-50">
+          <label class="flex-1 border border-gray-200 rounded-lg p-2 text-sm text-center cursor-pointer has-[:checked]:border-gray-400 has-[:checked]:bg-gray-50">
             <input type="radio" name="modType" value="note" class="hidden">📝 笔记
           </label>
         </div>
@@ -815,7 +815,7 @@
     </div>
     <div class="flex gap-2 mt-4">
       <button onclick="closeModuleDialog()" class="flex-1 px-4 py-2 rounded-lg bg-gray-100 text-sm">取消</button>
-      <button onclick="saveModule()" class="flex-1 px-4 py-2 rounded-lg bg-pink-500 text-white text-sm">创建</button>
+      <button onclick="saveModule()" class="flex-1 px-4 py-2 rounded-lg bg-gray-700 text-white text-sm">创建</button>
     </div>
   </div>
 </div>
@@ -1156,14 +1156,14 @@ function showDictResult(cn, en, phonetic, pos) {
   el.innerHTML = '';
   
   var card = document.createElement('div');
-  card.className = 'bg-white rounded-xl p-4 border border-purple-100';
+  card.className = 'bg-white rounded-xl p-4 border border-gray-200';
   
   var row1 = document.createElement('div');
   row1.className = 'flex items-center gap-3 mb-2 flex-wrap';
-  row1.innerHTML = '<span class="text-xs text-gray-400">' + escapeHtml(cn) + '</span><span class="text-gray-400">→</span><span class="text-lg font-bold text-purple-600">' + escapeHtml(en) + '</span>';
+  row1.innerHTML = '<span class="text-xs text-gray-400">' + escapeHtml(cn) + '</span><span class="text-gray-400">→</span><span class="text-lg font-bold text-gray-800">' + escapeHtml(en) + '</span>';
   
   var speakBtn = document.createElement('button');
-  speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600';
+  speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-gray-100 text-gray-600';
   speakBtn.textContent = '🔊';
   speakBtn.onclick = function() { speakWord(en); };
   row1.appendChild(speakBtn);
@@ -1177,7 +1177,7 @@ function showDictResult(cn, en, phonetic, pos) {
   }
   
   var addBtn = document.createElement('button');
-  addBtn.className = 'mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full';
+  addBtn.className = 'mt-2 text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full';
   addBtn.textContent = '➕ 加入跟读';
   addBtn.onclick = function() { addWordToRead(en); };
   card.appendChild(addBtn);
@@ -1190,14 +1190,14 @@ function showEnDictResult(result) {
   el.innerHTML = '';
   
   var card = document.createElement('div');
-  card.className = 'bg-white rounded-xl p-4 border border-purple-100';
+  card.className = 'bg-white rounded-xl p-4 border border-gray-200';
   
   var row1 = document.createElement('div');
   row1.className = 'flex items-center gap-3 mb-2 flex-wrap';
-  row1.innerHTML = '<span class="text-lg font-bold text-purple-600">' + escapeHtml(result.en) + '</span><span class="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">' + (result.pos || '') + '</span>';
+  row1.innerHTML = '<span class="text-lg font-bold text-gray-800">' + escapeHtml(result.en) + '</span><span class="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-gray-700">' + (result.pos || '') + '</span>';
   
   var speakBtn = document.createElement('button');
-  speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600';
+  speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-gray-100 text-gray-600';
   speakBtn.textContent = '🔊';
   speakBtn.onclick = function() { speakWord(result.en); };
   row1.appendChild(speakBtn);
@@ -1216,7 +1216,7 @@ function showEnDictResult(result) {
   card.appendChild(meaning);
   
   var addBtn = document.createElement('button');
-  addBtn.className = 'mt-2 text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full';
+  addBtn.className = 'mt-2 text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full';
   addBtn.textContent = '➕ 加入跟读';
   addBtn.onclick = function() { addWordToRead(result.en); };
   card.appendChild(addBtn);
@@ -1365,18 +1365,18 @@ function renderDailyWords() {
     
     var infoSpan = document.createElement('span');
     infoSpan.className = 'text-sm flex-1 min-w-0';
-    infoSpan.innerHTML = '<span class="text-xs text-gray-400">' + escapeHtml(w.cn) + '</span> <span class="text-purple-600 font-medium">' + escapeHtml(w.en) + '</span>';
+    infoSpan.innerHTML = '<span class="text-xs text-gray-400">' + escapeHtml(w.cn) + '</span> <span class="text-gray-800 font-medium">' + escapeHtml(w.en) + '</span>';
     div.appendChild(infoSpan);
     
     var speakBtn = document.createElement('button');
-    speakBtn.className = 'text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-600 shrink-0';
+    speakBtn.className = 'text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600 shrink-0';
     speakBtn.textContent = '🔊';
     speakBtn.onclick = (function(word) { return function() { speakWord(word); }; })(w.en);
     div.appendChild(speakBtn);
     
     // 跟读按钮：按住开始，松开停止
     var recBtn = document.createElement('button');
-    recBtn.className = 'text-xs px-2 py-1 rounded-full shrink-0 ' + (recordingIdx === idx ? 'bg-red-500 text-white' : 'bg-pink-100 text-pink-600');
+    recBtn.className = 'text-xs px-2 py-1 rounded-full shrink-0 ' + (recordingIdx === idx ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600');
     recBtn.textContent = recordingIdx === idx ? '🔴 跟读中' : '🎤 跟读';
     recBtn.style.userSelect = 'none';
     recBtn.style.webkitUserSelect = 'none';
@@ -1392,7 +1392,7 @@ function renderDailyWords() {
     // 回放按钮
     if (recordedAudios[idx]) {
       var playBtn = document.createElement('button');
-      playBtn.className = 'text-xs px-2 py-1 rounded-full bg-pink-100 text-pink-600 shrink-0';
+      playBtn.className = 'text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600 shrink-0';
       playBtn.textContent = '▶️ 回放';
       playBtn.onclick = (function(i) { return function() {
         var blob = recordedAudios[i];
@@ -1422,7 +1422,7 @@ function renderDailyWords() {
     var scoreAllDiv = document.createElement('div');
     scoreAllDiv.className = 'mt-3 text-center';
     var scoreBtn = document.createElement('button');
-    scoreBtn.className = 'bg-pink-500 text-white px-4 py-2 rounded-xl text-sm font-medium';
+    scoreBtn.className = 'bg-gray-700 text-white px-4 py-2 rounded-xl text-sm font-medium';
     scoreBtn.textContent = '⭐ 全部打分';
     scoreBtn.onclick = function() { scoreAllDailyWords(); };
     scoreAllDiv.appendChild(scoreBtn);
@@ -1648,7 +1648,7 @@ function renderTasks() {
       const li = document.createElement('li');
       li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
       li.innerHTML = `
-        <input type="checkbox" class="checkbox w-4 h-4 accent-pink-500" ${t.done?'checked':''} onchange="toggleTask('${col}',${idx})">
+        <input type="checkbox" class="checkbox w-4 h-4 accent-gray-700" ${t.done?'checked':''} onchange="toggleTask('${col}',${idx})">
         <span class="text-sm flex-1 ${t.done?'line-through text-gray-400':''}">${t.text}</span>
         <button onclick="delTask('${col}',${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
       `;
@@ -1690,7 +1690,7 @@ function renderCategoryFilters() {
   el.innerHTML = '';
   cats.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = `text-xs px-3 py-1.5 rounded-full border transition ${activeCategories.has(c) ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-gray-600 border-gray-200'}`;
+    btn.className = `text-xs px-3 py-1.5 rounded-full border transition ${activeCategories.has(c) ? 'bg-gray-700 text-white border-gray-700' : 'bg-white text-gray-600 border-gray-200'}`;
     btn.textContent = c;
     btn.onclick = () => {
       if (activeCategories.has(c)) activeCategories.delete(c); else activeCategories.add(c);
@@ -1713,16 +1713,16 @@ function renderTrends() {
       <div class="flex items-start justify-between gap-3">
         <div>
           <div class="font-semibold text-sm">${t.title}</div>
-          <div class="text-xs text-gray-500 mt-1">🔥 ${formatHeat(t.heat)} · 适配分 <span class="text-pink-500 font-bold">${t.fit_score}</span></div>
+          <div class="text-xs text-gray-500 mt-1">🔥 ${formatHeat(t.heat)} · 适配分 <span class="text-gray-700 font-bold">${t.fit_score}</span></div>
         </div>
-        <button onclick='saveTrendIdea(${JSON.stringify(t).replace(/'/g,"&#39;")})' class="shrink-0 bg-pink-500 text-white text-xs px-3 py-1.5 rounded-lg">存灵感</button>
+        <button onclick='saveTrendIdea(${JSON.stringify(t).replace(/'/g,"&#39;")})' class="shrink-0 bg-gray-700 text-white text-xs px-3 py-1.5 rounded-lg">存灵感</button>
       </div>
       <div class="flex flex-wrap gap-1.5 mt-2">${t.category.map(c=>`<span class="tag">${c}</span>`).join('')}</div>
       <div class="mt-3 text-xs text-gray-600 bg-white rounded-lg p-3 border border-gray-100">
         <div class="font-medium text-gray-800 mb-1">为什么适合我</div>
         ${t.why_fit}
       </div>
-      <div class="mt-2 text-xs text-pink-600 bg-pink-50 rounded-lg p-2">
+      <div class="mt-2 text-xs text-gray-600 bg-gray-50 rounded-lg p-2">
         💡 二创思路：${t.idea}
       </div>
     `;
@@ -1784,7 +1784,7 @@ function renderEnglishTasks() {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
     li.innerHTML = `
-      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${t.done?'checked':''} onchange="toggleEnglishTask(${idx})">
+      <input type="checkbox" class="w-4 h-4 accent-gray-700" ${t.done?'checked':''} onchange="toggleEnglishTask(${idx})">
       <span class="text-sm flex-1 ${t.done?'line-through text-gray-400':''}">${t.text}</span>
       <button onclick="delEnglishTask(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
     `;
@@ -1828,7 +1828,7 @@ function renderReadList() {
   let ok = 0, bad = 0, unknown = 0;
   readSentences.forEach((rs, idx) => {
     if (rs.status === 'ok') ok++; else if (rs.status === 'bad') bad++; else unknown++;
-    const colors = { ok: 'border-green-300 bg-pink-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
+    const colors = { ok: 'border-green-300 bg-gray-50', bad: 'border-yellow-300 bg-yellow-50', unknown: 'border-red-300 bg-red-50' };
     const labels = { ok: '🟢 会读', bad: '🟡 不会读', unknown: '🔴 不认识' };
     const div = document.createElement('div');
     div.className = 'px-3 py-3 rounded-lg border ' + colors[rs.status];
@@ -1846,10 +1846,10 @@ function renderReadList() {
     const row1 = document.createElement('div');
     row1.className = 'flex items-center gap-2 mb-2';
     const span = document.createElement('span');
-    span.className = 'text-sm flex-1 min-w-0 break-all text-purple-700 font-medium';
+    span.className = 'text-sm flex-1 min-w-0 break-all text-gray-800 font-medium';
     span.textContent = rs.text;
     const speakBtn = document.createElement('button');
-    speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-purple-100 text-purple-600 shrink-0';
+    speakBtn.className = 'text-sm px-2 py-1 rounded-full bg-gray-100 text-gray-600 shrink-0';
     speakBtn.textContent = '🔊';
     speakBtn.onclick = function() { readSentence(idx); };
     row1.appendChild(span);
@@ -1867,7 +1867,7 @@ function renderReadList() {
     ['ok','bad','unknown'].forEach(function(st) {
       const b = document.createElement('button');
       var activeClass = 'bg-gray-200';
-      if (st === 'ok' && rs.status === 'ok') activeClass = 'bg-pink-500 text-white';
+      if (st === 'ok' && rs.status === 'ok') activeClass = 'bg-gray-700 text-white';
       if (st === 'bad' && rs.status === 'bad') activeClass = 'bg-yellow-500 text-white';
       if (st === 'unknown' && rs.status === 'unknown') activeClass = 'bg-red-500 text-white';
       b.className = 'text-xs px-2 py-1 rounded ' + activeClass;
@@ -2046,7 +2046,7 @@ function renderDietRecords() {
     div.className = 'bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-2 flex-wrap';
     div.innerHTML = `
       <span class="text-xs text-gray-400">${r.date}</span>
-      <span class="text-sm font-bold text-pink-500">${r.weight}kg</span>
+      <span class="text-sm font-bold text-gray-700">${r.weight}kg</span>
       <span class="text-xs text-gray-500">吃：${r.food}</span>
       <span class="text-xs text-blue-500">💧${r.water}杯</span>
       <span class="text-xs text-amber-500">🚽${r.poop}次</span>
@@ -2120,7 +2120,7 @@ function renderWorkouts() {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
     li.innerHTML = `
-      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${w.done?'checked':''} onchange="toggleWorkout(${idx})">
+      <input type="checkbox" class="w-4 h-4 accent-gray-700" ${w.done?'checked':''} onchange="toggleWorkout(${idx})">
       <span class="text-sm flex-1 ${w.done?'line-through text-gray-400':''}">${escapeHtml(w.text)}</span>
       <span class="text-xs text-gray-400">${w.date||''}</span>
       <button onclick="delWorkout(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
@@ -2171,7 +2171,7 @@ function setFinType(type) {
   finType = type;
   document.getElementById('finType').value = type;
   document.getElementById('finBtnExpense').className = 'flex-1 py-2 rounded-xl text-sm font-medium ' + (type==='expense' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500');
-  document.getElementById('finBtnIncome').className = 'flex-1 py-2 rounded-xl text-sm font-medium ' + (type==='income' ? 'bg-pink-500 text-white' : 'bg-gray-100 text-gray-500');
+  document.getElementById('finBtnIncome').className = 'flex-1 py-2 rounded-xl text-sm font-medium ' + (type==='income' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-500');
   // 切换支出/收入时更新分类下拉
   updateFinCategory();
 }
@@ -2202,7 +2202,7 @@ function renderFinance() {
   const balance = income - expense;
   const balEl = document.getElementById('totalBalance');
   balEl.textContent = '¥' + balance.toLocaleString();
-  balEl.className = 'text-xl font-bold ' + (balance >= 0 ? 'text-purple-600' : 'text-red-600');
+  balEl.className = 'text-xl font-bold ' + (balance >= 0 ? 'text-gray-800' : 'text-red-600');
 
   const el = document.getElementById('financeList');
   el.innerHTML = '';
@@ -2214,11 +2214,11 @@ function renderFinance() {
     const div = document.createElement('div');
     div.className = 'bg-white px-4 py-3 rounded-xl border border-gray-100 flex items-center gap-3';
     div.innerHTML = `
-      <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg ${isIncome ? 'bg-pink-100' : 'bg-red-100'}">${isIncome ? '💰' : '💸'}</div>
+      <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg ${isIncome ? 'bg-gray-100' : 'bg-red-100'}">${isIncome ? '💰' : '💸'}</div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-sm font-bold ${isIncome ? 'text-pink-500' : 'text-red-500'}">${isIncome?'+':'-'}¥${item.amount.toLocaleString()}</span>
-          <span class="text-xs px-2 py-0.5 rounded-full ${isIncome?'bg-pink-50 text-pink-600':'bg-red-50 text-red-600'}">${item.category||'未分类'}</span>
+          <span class="text-sm font-bold ${isIncome ? 'text-gray-700' : 'text-red-500'}">${isIncome?'+':'-'}¥${item.amount.toLocaleString()}</span>
+          <span class="text-xs px-2 py-0.5 rounded-full ${isIncome?'bg-gray-50 text-gray-600':'bg-red-50 text-red-600'}">${item.category||'未分类'}</span>
         </div>
         <div class="text-xs text-gray-500 mt-1">${item.note||item.usage||''} · ${item.date||''}</div>
       </div>
@@ -2343,12 +2343,12 @@ function renderSavings() {
   const selfBtn = document.getElementById('savingsSelfBtn');
   if (selfBtn) {
     selfBtn.textContent = selfMonthTotal >= savingsGoals.self ? '✅ 已达标' : '存月目标';
-    selfBtn.className = 'px-4 py-2 rounded-xl text-xs font-medium ' + (selfMonthTotal >= savingsGoals.self ? 'bg-pink-500 text-white' : 'bg-white text-pink-500 border border-pink-200');
+    selfBtn.className = 'px-4 py-2 rounded-xl text-xs font-medium ' + (selfMonthTotal >= savingsGoals.self ? 'bg-gray-700 text-white' : 'bg-white text-gray-700 border border-gray-300');
   }
   const babyBtn = document.getElementById('savingsBabyBtn');
   if (babyBtn) {
     babyBtn.textContent = babyMonthTotal >= savingsGoals.baby ? '✅ 已达标' : '存月目标';
-    babyBtn.className = 'px-4 py-2 rounded-xl text-xs font-medium ' + (babyMonthTotal >= savingsGoals.baby ? 'bg-purple-500 text-white' : 'bg-white text-purple-500 border border-purple-200');
+    babyBtn.className = 'px-4 py-2 rounded-xl text-xs font-medium ' + (babyMonthTotal >= savingsGoals.baby ? 'bg-gray-700 text-white' : 'bg-white text-gray-700 border border-gray-300');
   }
 
   // 流水记录
@@ -2364,7 +2364,7 @@ function renderSavings() {
         return `<div class="bg-white px-3 py-2 rounded-lg border border-gray-100 flex items-center gap-3">
           <span class="text-lg">${isSelf ? '💖' : '👶'}</span>
           <div class="flex-1 min-w-0">
-            <span class="text-sm font-bold ${isSelf ? 'text-pink-500' : 'text-purple-500'}">+¥${r.amount.toLocaleString()}</span>
+            <span class="text-sm font-bold ${isSelf ? 'text-gray-700' : 'text-gray-700'}">+¥${r.amount.toLocaleString()}</span>
             <span class="text-xs text-gray-400 ml-2">${r.note||''} · ${r.date}</span>
           </div>
           <button onclick="delSavingsRecord(${realIdx})" class="text-gray-400 hover:text-red-500 text-xs shrink-0">✕</button>
@@ -2615,9 +2615,9 @@ function renderMoodInReview() {
   document.querySelectorAll('.mood-opt2').forEach(function(b) {
     var lv = parseInt(b.dataset.level);
     if (lv === todayLevel) {
-      b.classList.add('bg-pink-100', 'rounded-2xl', 'border', 'border-pink-300');
+      b.classList.add('bg-gray-100', 'rounded-2xl', 'border', 'border-gray-300');
     } else {
-      b.classList.remove('bg-pink-100', 'rounded-2xl', 'border', 'border-pink-300');
+      b.classList.remove('bg-gray-100', 'rounded-2xl', 'border', 'border-gray-300');
     }
   });
   
@@ -2651,7 +2651,7 @@ function renderMoodCalendar() {
     const level = moodData[dateStr] || 0;
     const isToday = d === today;
     const div = document.createElement('div');
-    div.className = `text-center py-1 rounded-lg text-xs ${isToday ? 'ring-2 ring-pink-400 font-bold' : ''}`;
+    div.className = `text-center py-1 rounded-lg text-xs ${isToday ? 'ring-2 ring-gray-700 font-bold' : ''}`;
     div.style.background = level ? moodBgColors[level] : '#f9fafb';
     div.innerHTML = `<div>${d}</div><div class="text-sm">${level ? moodEmojis[level] : ''}</div>`;
     div.title = level ? moodLabels[level] : '';
@@ -2726,11 +2726,11 @@ function renderParenting() {
   el.innerHTML = '';
   if (filtered.length === 0) { el.innerHTML = '<div class="text-sm text-gray-400 text-center py-8">没有找到匹配的育儿知识～</div>'; return; }
 
-  const ageColors = { '0-6': 'bg-pink-100 text-pink-600', '6-12': 'bg-purple-100 text-purple-600', '12-24': 'bg-blue-100 text-blue-600', '24-36': 'bg-green-100 text-green-600' };
+  const ageColors = { '0-6': 'bg-gray-100 text-gray-600', '6-12': 'bg-gray-100 text-gray-600', '12-24': 'bg-blue-100 text-blue-600', '24-36': 'bg-green-100 text-green-600' };
 
   filtered.forEach(p => {
     const div = document.createElement('div');
-    div.className = 'bg-gradient-to-br from-pink-50 to-white rounded-2xl p-4 border border-pink-100 hover:shadow-md transition';
+    div.className = 'bg-gradient-to-br from-gray-50 to-white rounded-2xl p-4 border border-gray-200 hover:shadow-md transition';
     div.innerHTML = `
       <div class="flex items-start justify-between gap-2 mb-2">
         <div class="flex-1">
@@ -2743,7 +2743,7 @@ function renderParenting() {
       </div>
       <div class="text-xs text-gray-600 leading-relaxed bg-white rounded-xl p-3 border border-gray-50" style="white-space:pre-line;">${escapeHtml(p.content)}</div>
       <div class="flex flex-wrap gap-1 mt-2">
-        ${p.tags.map(t => `<span class="text-xs px-1.5 py-0.5 rounded-full bg-pink-50 text-pink-500">#${t}</span>`).join('')}
+        ${p.tags.map(t => `<span class="text-xs px-1.5 py-0.5 rounded-full bg-gray-50 text-gray-700">#${t}</span>`).join('')}
       </div>
     `;
     el.appendChild(div);
@@ -2792,8 +2792,8 @@ function setMood(mood, label) {
   document.getElementById('moodDisplay').innerHTML = `<span class="text-2xl mr-2">${mood}</span><span class="text-gray-700">${label}</span>`;
   // 高亮选中
   document.querySelectorAll('.mood-btn').forEach(b => {
-    if (b.textContent === mood) { b.classList.add('bg-pink-100','border-pink-400'); }
-    else { b.classList.remove('bg-pink-100','border-pink-400'); }
+    if (b.textContent === mood) { b.classList.add('bg-gray-100','border-gray-400'); }
+    else { b.classList.remove('bg-gray-100','border-gray-400'); }
   });
 }
 
@@ -2837,7 +2837,7 @@ function renderReviewPlans() {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-100';
     li.innerHTML = `
-      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${p.done?'checked':''} onchange="toggleReviewPlan(${idx})">
+      <input type="checkbox" class="w-4 h-4 accent-gray-700" ${p.done?'checked':''} onchange="toggleReviewPlan(${idx})">
       <span class="text-sm flex-1 ${p.done?'line-through text-gray-400':''}">${escapeHtml(p.text)}</span>
       <button onclick="delReviewPlan(${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
     `;
@@ -2892,13 +2892,13 @@ function updateReviewSummary() {
   var wordCount = Object.keys(wordScores).length;
 
   el.innerHTML = 
-    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">任务</div><div class="text-lg font-bold text-pink-500">' + todayTasks + '/' + totalTasks + '</div></div>' +
-    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">英语</div><div class="text-lg font-bold text-purple-500">' + doneEnglish + '/' + englishTasks.length + '</div></div>' +
-    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">体重</div><div class="text-lg font-bold text-pink-500">' + dietInfo + '</div></div>' +
-    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">健身</div><div class="text-lg font-bold text-purple-500">' + doneWorkouts + '项</div></div>' +
-    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">存钱</div><div class="text-lg font-bold text-pink-500">¥' + (selfSaved + babySaved) + '</div></div>' +
-    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">单词</div><div class="text-lg font-bold text-purple-500">' + wordCount + '/50</div></div>' +
-    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">跟读</div><div class="text-lg font-bold text-pink-500">' + readOk + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">任务</div><div class="text-lg font-bold text-gray-700">' + todayTasks + '/' + totalTasks + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">英语</div><div class="text-lg font-bold text-gray-700">' + doneEnglish + '/' + englishTasks.length + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">体重</div><div class="text-lg font-bold text-gray-700">' + dietInfo + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">健身</div><div class="text-lg font-bold text-gray-700">' + doneWorkouts + '项</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">存钱</div><div class="text-lg font-bold text-gray-700">¥' + (selfSaved + babySaved) + '</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">单词</div><div class="text-lg font-bold text-gray-700">' + wordCount + '/50</div></div>' +
+    '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">跟读</div><div class="text-lg font-bold text-gray-700">' + readOk + '</div></div>' +
     '<div class="bg-white rounded-xl p-3"><div class="text-xs text-gray-500">心情</div><div class="text-lg">' + moodText + '</div></div>';
 }
 let customModules = STORE.get('customModules', []);
@@ -2926,9 +2926,9 @@ function closeModuleDialog() {
 function highlightIcon() {
   document.querySelectorAll('.icon-opt').forEach(b => {
     if (b.dataset.icon === selectedIcon) {
-      b.classList.add('border-pink-400','bg-pink-50');
+      b.classList.add('border-gray-400','bg-gray-50');
     } else {
-      b.classList.remove('border-pink-400','bg-pink-50');
+      b.classList.remove('border-gray-400','bg-gray-50');
     }
   });
 }
@@ -2993,7 +2993,7 @@ function renderCustomSections() {
       <div class="flex items-center justify-between mb-4">
         <h2 class="font-bold text-lg flex items-center gap-2">${m.icon} ${escapeHtml(m.name)}</h2>
         <div class="flex gap-2">
-          <button onclick="editModule('${m.id}')" class="text-xs text-gray-500 hover:text-pink-500 bg-gray-100 px-2 py-1 rounded">编辑</button>
+          <button onclick="editModule('${m.id}')" class="text-xs text-gray-500 hover:text-gray-700 bg-gray-100 px-2 py-1 rounded">编辑</button>
           <button onclick="delModule('${m.id}')" class="text-xs text-gray-500 hover:text-red-600 bg-gray-100 px-2 py-1 rounded">删除</button>
         </div>
       </div>
@@ -3002,7 +3002,7 @@ function renderCustomSections() {
       inner += `
         <div class="flex gap-2 mb-3">
           <input type="text" id="cmInput_${m.id}" placeholder="加一项…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm" onkeydown="if(event.key==='Enter')addCustomItem('${m.id}')">
-          <button onclick="addCustomItem('${m.id}')" class="bg-pink-500 text-white px-3 py-2 rounded-lg text-sm">+</button>
+          <button onclick="addCustomItem('${m.id}')" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm">+</button>
         </div>
         <ul class="space-y-2" id="cmList_${m.id}"></ul>
       `;
@@ -3032,7 +3032,7 @@ function renderCustomItems(modId) {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100';
     li.innerHTML = `
-      <input type="checkbox" class="w-4 h-4 accent-pink-500" ${item.done?'checked':''} onchange="toggleCustomItem('${modId}',${idx})">
+      <input type="checkbox" class="w-4 h-4 accent-gray-700" ${item.done?'checked':''} onchange="toggleCustomItem('${modId}',${idx})">
       <span class="text-sm flex-1 ${item.done?'line-through text-gray-400':''}">${escapeHtml(item.text)}</span>
       <button onclick="delCustomItem('${modId}',${idx})" class="text-gray-400 hover:text-red-500 text-xs">✕</button>
     `;
